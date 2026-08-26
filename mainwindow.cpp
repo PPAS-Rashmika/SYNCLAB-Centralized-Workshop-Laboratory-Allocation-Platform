@@ -8,6 +8,8 @@
 #include <QSqlError>
 #include <QMessageBox>
 #include <QTextCharFormat>
+#include <QDate>
+#include <QTime>
 #include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent)
@@ -63,7 +65,7 @@ QWidget* MainWindow::createFirstInterface()
     QGridLayout *gridLayout = new QGridLayout();
     gridLayout->setSpacing(20);
 
-    // Creating sample cards (Matching your image_1fa124.jpg concept)
+    // Creating sample cards
     QStringList workshops = {"Automotive", "Robotics", "Mechanical", "Painting", "Welding"};
     for(int i = 0; i < workshops.size(); i++) {
         gridLayout->addWidget(createCard(workshops[i]), 0, i);
@@ -113,7 +115,7 @@ QWidget* MainWindow::createSecondInterface()
     QWidget *widget = new QWidget();
     QVBoxLayout *mainLayout = new QVBoxLayout(widget);
 
-    // Top section: Back button & Calendar (Matching image_1fa545.jpg)
+    // Top section: Back button & Calendar
     QHBoxLayout *topLayout = new QHBoxLayout();
     
     QPushButton *backBtn = new QPushButton("<- Back to 1st Interface");
@@ -142,14 +144,21 @@ QWidget* MainWindow::createSecondInterface()
     nameInput = new QLineEdit(); nameInput->setPlaceholderText("Enter student name");
     indexInput = new QLineEdit(); indexInput->setPlaceholderText("Enter index number");
     deptInput = new QComboBox(); deptInput->addItems({"Select department", "Computer Science", "Engineering", "Technology"});
-    dateInput = new QComboBox(); dateInput->addItems({"Select date", "2026-03-10", "2026-03-11", "2026-03-12"}); // Simplified
-    timeSlotInput = new QComboBox(); timeSlotInput->addItems({"Select time slot", "08:00 AM - 10:00 AM", "10:00 AM - 12:00 PM"});
+    
+    // Updated: Date Input with Calendar Popup
+    dateInput = new QDateEdit(QDate::currentDate());
+    dateInput->setCalendarPopup(true);
+    dateInput->setDisplayFormat("yyyy-MM-dd");
+
+    // Updated: Time Input
+    timeSlotInput = new QTimeEdit(QTime::currentTime());
+    timeSlotInput->setDisplayFormat("hh:mm AP"); // 12-hour format with AM/PM
     
     leftForm->addWidget(new QLabel("NAME")); leftForm->addWidget(nameInput);
     leftForm->addWidget(new QLabel("INDEX")); leftForm->addWidget(indexInput);
     leftForm->addWidget(new QLabel("DEPARTMENT")); leftForm->addWidget(deptInput);
     leftForm->addWidget(new QLabel("DATE")); leftForm->addWidget(dateInput);
-    leftForm->addWidget(new QLabel("TIME SLOT")); leftForm->addWidget(timeSlotInput);
+    leftForm->addWidget(new QLabel("TIME")); leftForm->addWidget(timeSlotInput);
     
     // Right Form (Description + Submit)
     QVBoxLayout *rightForm = new QVBoxLayout();
@@ -174,10 +183,12 @@ QWidget* MainWindow::createSecondInterface()
 
 void MainWindow::openSecondInterface()
 {
-    // Clear previous inputs
+    // Clear/Reset previous inputs when entering 2nd interface
     nameInput->clear();
     indexInput->clear();
     deptInput->setCurrentIndex(0);
+    dateInput->setDate(QDate::currentDate());
+    timeSlotInput->setTime(QTime::currentTime());
     descriptionInput->clear();
     stackedWidget->setCurrentIndex(1);
 }
@@ -191,7 +202,8 @@ void MainWindow::submitData()
 {
     QString name = nameInput->text();
     QString index = indexInput->text();
-    QString dateStr = calendar->selectedDate().toString("yyyy-MM-dd"); // Using calendar date for actual DB logic
+    QString dateStr = dateInput->date().toString("yyyy-MM-dd"); // Get date from QDateEdit
+    QString timeStr = timeSlotInput->time().toString("hh:mm AP"); // Get time from QTimeEdit
 
     if(name.isEmpty() || index.isEmpty()) {
         QMessageBox::warning(this, "Input Error", "Name and Index are required!");
@@ -206,12 +218,12 @@ void MainWindow::submitData()
     query.bindValue(":index", index);
     query.bindValue(":dept", deptInput->currentText());
     query.bindValue(":date", dateStr);
-    query.bindValue(":time", timeSlotInput->currentText());
+    query.bindValue(":time", timeStr);
     query.bindValue(":desc", descriptionInput->toPlainText());
 
     if (query.exec()) {
         QMessageBox::information(this, "Success", "Data saved successfully!");
-        updateCalendarHighlights();
+        updateCalendarHighlights(); // Refresh highlights on main calendar
         goBack();
     } else {
         QMessageBox::critical(this, "Database Error", query.lastError().text());
@@ -241,7 +253,7 @@ void MainWindow::dateClicked(const QDate &date)
 {
     QString dateStr = date.toString("yyyy-MM-dd");
     QSqlQuery query;
-    query.prepare("SELECT name, index_no, department, description FROM records WHERE record_date = :date");
+    query.prepare("SELECT name, index_no, department, time_slot, description FROM records WHERE record_date = :date");
     query.bindValue(":date", dateStr);
     
     if(query.exec() && query.next()) {
@@ -249,13 +261,22 @@ void MainWindow::dateClicked(const QDate &date)
         nameInput->setText(query.value(0).toString());
         indexInput->setText(query.value(1).toString());
         deptInput->setCurrentText(query.value(2).toString());
-        descriptionInput->setText(query.value(3).toString());
+        
+        // Convert stored strings back to QTime/QDate for the UI
+        dateInput->setDate(date);
+        QTime storedTime = QTime::fromString(query.value(3).toString(), "hh:mm AP");
+        if(storedTime.isValid()) {
+            timeSlotInput->setTime(storedTime);
+        }
+        
+        descriptionInput->setText(query.value(4).toString());
         
         QMessageBox::information(this, "Data Found", "Data loaded for " + dateStr);
     } else {
         // Clear fields if no data for clicked date
         nameInput->clear();
         indexInput->clear();
+        dateInput->setDate(date); // Just update date picker to clicked date
         descriptionInput->clear();
     }
 }

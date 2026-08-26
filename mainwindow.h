@@ -9,6 +9,8 @@
 #include <QComboBox>
 #include <QTextEdit>
 #include <QPushButton>
+#include <QDateEdit>
+#include <QTimeEdit>
 
 class MainWindow : public QMainWindow
 {
@@ -40,8 +42,8 @@ private:
     QLineEdit *nameInput;
     QLineEdit *indexInput;
     QComboBox *deptInput;
-    QComboBox *dateInput; // Normally a QDateEdit is better, but following your UI design
-    QComboBox *timeSlotInput;
+    QDateEdit *dateInput;      // Updated to QDateEdit
+    QTimeEdit *timeSlotInput;  // Updated to QTimeEdit
     QTextEdit *descriptionInput;
     QString currentCategory;
 };
