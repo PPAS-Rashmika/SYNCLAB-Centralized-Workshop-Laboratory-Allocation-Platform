@@ -3,6 +3,7 @@
 
 #include <QString>
 
+// OOP: Encapsulation - Data is private, accessed via public getters/setters
 class StudentRecord
 {
 private:

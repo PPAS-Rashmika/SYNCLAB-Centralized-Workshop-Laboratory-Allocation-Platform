@@ -3,21 +3,21 @@
 #include <QSqlError>
 #include <QVariant>
 
-DatabaseManager::DatabaseManager(const QString &dbName)
+SqliteDatabaseManager::SqliteDatabaseManager(const QString &dbName)
 {
     db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName(dbName);
     db.open();
 }
 
-DatabaseManager::~DatabaseManager()
+SqliteDatabaseManager::~SqliteDatabaseManager()
 {
     if (db.isOpen()) {
         db.close();
     }
 }
 
-bool DatabaseManager::createTable()
+bool SqliteDatabaseManager::createTable()
 {
     QSqlQuery query;
     return query.exec("CREATE TABLE IF NOT EXISTS records ("
@@ -27,7 +27,7 @@ bool DatabaseManager::createTable()
                       "time_slot TEXT, description TEXT, passcode TEXT)");
 }
 
-bool DatabaseManager::addRecord(const StudentRecord &record)
+bool SqliteDatabaseManager::addRecord(const StudentRecord &record)
 {
     QSqlQuery query;
     query.prepare("INSERT INTO records (category, name, index_no, department, record_date, time_slot, description, passcode) "
@@ -43,7 +43,7 @@ bool DatabaseManager::addRecord(const StudentRecord &record)
     return query.exec();
 }
 
-bool DatabaseManager::updateRecord(const StudentRecord &record)
+bool SqliteDatabaseManager::updateRecord(const StudentRecord &record)
 {
     QSqlQuery query;
     query.prepare("UPDATE records SET name=:name, index_no=:index, department=:dept, record_date=:date, time_slot=:time, description=:desc WHERE id=:id");
@@ -57,7 +57,7 @@ bool DatabaseManager::updateRecord(const StudentRecord &record)
     return query.exec();
 }
 
-bool DatabaseManager::deleteRecord(int id)
+bool SqliteDatabaseManager::deleteRecord(int id)
 {
     QSqlQuery query;
     query.prepare("DELETE FROM records WHERE id = :id");
@@ -65,30 +65,34 @@ bool DatabaseManager::deleteRecord(int id)
     return query.exec();
 }
 
-StudentRecord DatabaseManager::getRecordByDateAndCategory(const QString &date, const QString &category)
+QList<StudentRecord> SqliteDatabaseManager::getRecordsByDateAndCategory(const QString &date, const QString &category)
 {
-    StudentRecord record;
+    QList<StudentRecord> records;
     QSqlQuery query;
     query.prepare("SELECT id, name, index_no, department, time_slot, description, passcode "
                   "FROM records WHERE record_date = :date AND category = :category");
     query.bindValue(":date", date);
     query.bindValue(":category", category);
     
-    if (query.exec() && query.next()) {
-        record.setId(query.value(0).toInt());
-        record.setName(query.value(1).toString());
-        record.setIndexNo(query.value(2).toString());
-        record.setDepartment(query.value(3).toString());
-        record.setTimeSlots(query.value(4).toString());
-        record.setDescription(query.value(5).toString());
-        record.setPasscode(query.value(6).toString());
-        record.setRecordDate(date);
-        record.setCategory(category);
+    if (query.exec()) {
+        while (query.next()) {
+            StudentRecord record;
+            record.setId(query.value(0).toInt());
+            record.setName(query.value(1).toString());
+            record.setIndexNo(query.value(2).toString());
+            record.setDepartment(query.value(3).toString());
+            record.setTimeSlots(query.value(4).toString());
+            record.setDescription(query.value(5).toString());
+            record.setPasscode(query.value(6).toString());
+            record.setRecordDate(date);
+            record.setCategory(category);
+            records.append(record);
+        }
     }
-    return record;
+    return records;
 }
 
-QList<QDate> DatabaseManager::getBookedDates(const QString &category)
+QList<QDate> SqliteDatabaseManager::getBookedDates(const QString &category)
 {
     QList<QDate> dates;
     QSqlQuery query;
@@ -104,7 +108,31 @@ QList<QDate> DatabaseManager::getBookedDates(const QString &category)
     return dates;
 }
 
-QString DatabaseManager::getLastError() const
+// Logic to check if the requested time slots overlap with existing bookings
+bool SqliteDatabaseManager::isTimeSlotAvailable(const QString &date, const QString &category, const QStringList &requestedSlots, int excludeRecordId)
+{
+    QSqlQuery query;
+    // Get all time slots booked on this date for this category (excluding the current record if we are updating)
+    query.prepare("SELECT time_slot FROM records WHERE record_date = :date AND category = :category AND id != :id");
+    query.bindValue(":date", date);
+    query.bindValue(":category", category);
+    query.bindValue(":id", excludeRecordId);
+    
+    if (query.exec()) {
+        while (query.next()) {
+            QString bookedStr = query.value(0).toString();
+            // Check against requested slots
+            for (const QString &reqSlot : requestedSlots) {
+                if (bookedStr.contains(reqSlot)) {
+                    return false; // Slot is already booked
+                }
+            }
+        }
+    }
+    return true;
+}
+
+QString SqliteDatabaseManager::getLastError() const
 {
     return db.lastError().text();
 }

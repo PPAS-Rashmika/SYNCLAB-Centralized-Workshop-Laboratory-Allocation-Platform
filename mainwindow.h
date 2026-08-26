@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QDate>
+#include <QStringList>
 #include "databasemanager.h"
 #include "studentrecord.h"
 
@@ -28,17 +29,19 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    DatabaseManager *dbManager; // OOP: Using DatabaseManager as a service
+    IDatabaseManager *dbManager; 
+    
     QString currentCategory;
-    StudentRecord currentRecord; // OOP: Holding current state as an Object
+    StudentRecord currentRecord; 
 
     void setupDynamicUI();
     void updateCalendarHighlights();
     QWidget* createCard(const QString &title);
     bool checkPasscode();
-    QString getSelectedTimeSlots();
+    QStringList getSelectedTimeSlotsList(); 
     void setTimeSlotsInUI(const QString &timeString);
     void clearUI();
+    void loadRecordIntoUI(const StudentRecord &record);
 };
 
 #endif // MAINWINDOW_H

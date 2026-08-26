@@ -4,29 +4,47 @@
 #include <QSqlDatabase>
 #include <QList>
 #include <QDate>
+#include <QString>
+#include <QStringList>
 #include "studentrecord.h"
 
-class DatabaseManager
+class IDatabaseManager 
+{
+public:
+    virtual ~IDatabaseManager() {} 
+    
+    virtual bool createTable() = 0;
+    virtual bool addRecord(const StudentRecord &record) = 0;
+    virtual bool updateRecord(const StudentRecord &record) = 0;
+    virtual bool deleteRecord(int id) = 0;
+    
+    // Changed to return a List of records for the same date
+    virtual QList<StudentRecord> getRecordsByDateAndCategory(const QString &date, const QString &category) = 0;
+    virtual QList<QDate> getBookedDates(const QString &category) = 0;
+    
+    // New Function to check Time Slot Availability
+    virtual bool isTimeSlotAvailable(const QString &date, const QString &category, const QStringList &requestedSlots, int excludeRecordId = -1) = 0;
+    
+    virtual QString getLastError() const = 0;
+};
+
+class SqliteDatabaseManager : public IDatabaseManager
 {
 private:
     QSqlDatabase db;
 
 public:
-    DatabaseManager(const QString &dbName);
-    ~DatabaseManager();
+    SqliteDatabaseManager(const QString &dbName);
+    ~SqliteDatabaseManager() override;
 
-    bool createTable();
-    bool addRecord(const StudentRecord &record);
-    bool updateRecord(const StudentRecord &record);
-    bool deleteRecord(int id);
-    
-    // Returns a record if found, otherwise returns a record with id = -1
-    StudentRecord getRecordByDateAndCategory(const QString &date, const QString &category);
-    
-    // Returns a list of dates that have bookings for a specific category
-    QList<QDate> getBookedDates(const QString &category);
-    
-    QString getLastError() const;
+    bool createTable() override;
+    bool addRecord(const StudentRecord &record) override;
+    bool updateRecord(const StudentRecord &record) override;
+    bool deleteRecord(int id) override;
+    QList<StudentRecord> getRecordsByDateAndCategory(const QString &date, const QString &category) override;
+    QList<QDate> getBookedDates(const QString &category) override;
+    bool isTimeSlotAvailable(const QString &date, const QString &category, const QStringList &requestedSlots, int excludeRecordId = -1) override;
+    QString getLastError() const override;
 };
 
 #endif // DATABASEMANAGER_H
