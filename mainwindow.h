@@ -2,14 +2,12 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QStackedWidget>
 #include <QSqlDatabase>
-#include <QCalendarWidget>
-#include <QLineEdit>
-#include <QComboBox>
-#include <QTextEdit>
-#include <QPushButton>
-#include <QDateEdit>
+#include <QDate>
+
+QT_BEGIN_NAMESPACE
+namespace Ui { class MainWindow; }
+QT_END_NAMESPACE
 
 class MainWindow : public QMainWindow
 {
@@ -20,30 +18,19 @@ public:
     ~MainWindow();
 
 private slots:
-    void openSecondInterface();
+    void openSecondInterface(const QString &category);
     void goBack();
     void submitData();
     void dateClicked(const QDate &date);
 
 private:
-    void setupUI();
-    void setupDatabase();
-    void updateCalendarHighlights();
-    QWidget* createFirstInterface();
-    QWidget* createSecondInterface();
-    QWidget* createCard(const QString &title);
-
-    QStackedWidget *stackedWidget;
+    Ui::MainWindow *ui;
     QSqlDatabase db;
-
-    // 2nd Interface Widgets
-    QCalendarWidget *calendar;
-    QLineEdit *nameInput;
-    QLineEdit *indexInput;
-    QComboBox *deptInput;
-    QDateEdit *dateInput;
-    QComboBox *timeSlotInput; // Changed to QComboBox for Dropdown
-    QTextEdit *descriptionInput;
     QString currentCategory;
+
+    void setupDatabase();
+    void setupDynamicUI();
+    void updateCalendarHighlights();
+    QWidget* createCard(const QString &title);
 };
 #endif // MAINWINDOW_H
