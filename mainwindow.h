@@ -10,7 +10,6 @@
 #include <QTextEdit>
 #include <QPushButton>
 #include <QDateEdit>
-#include <QTimeEdit>
 
 class MainWindow : public QMainWindow
 {
@@ -42,8 +41,8 @@ private:
     QLineEdit *nameInput;
     QLineEdit *indexInput;
     QComboBox *deptInput;
-    QDateEdit *dateInput;      // Updated to QDateEdit
-    QTimeEdit *timeSlotInput;  // Updated to QTimeEdit
+    QDateEdit *dateInput;
+    QComboBox *timeSlotInput; // Changed to QComboBox for Dropdown
     QTextEdit *descriptionInput;
     QString currentCategory;
 };

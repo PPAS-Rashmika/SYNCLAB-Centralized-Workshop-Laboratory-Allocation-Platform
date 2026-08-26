@@ -9,7 +9,9 @@
 #include <QMessageBox>
 #include <QTextCharFormat>
 #include <QDate>
-#include <QTime>
+#include <QStandardItemModel>
+#include <QStandardItem>
+#include <QListView>
 #include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent)
@@ -56,7 +58,6 @@ QWidget* MainWindow::createFirstInterface()
     QWidget *widget = new QWidget();
     QVBoxLayout *mainLayout = new QVBoxLayout(widget);
 
-    // Header
     QLabel *header = new QLabel("1ST INTERFACE - WORKSHOPS & LABORATORIES");
     header->setStyleSheet("font-size: 20px; font-weight: bold; color: #003399; padding: 10px;");
     header->setAlignment(Qt::AlignCenter);
@@ -65,7 +66,6 @@ QWidget* MainWindow::createFirstInterface()
     QGridLayout *gridLayout = new QGridLayout();
     gridLayout->setSpacing(20);
 
-    // Creating sample cards
     QStringList workshops = {"Automotive", "Robotics", "Mechanical", "Painting", "Welding"};
     for(int i = 0; i < workshops.size(); i++) {
         gridLayout->addWidget(createCard(workshops[i]), 0, i);
@@ -115,7 +115,6 @@ QWidget* MainWindow::createSecondInterface()
     QWidget *widget = new QWidget();
     QVBoxLayout *mainLayout = new QVBoxLayout(widget);
 
-    // Top section: Back button & Calendar
     QHBoxLayout *topLayout = new QHBoxLayout();
     
     QPushButton *backBtn = new QPushButton("<- Back to 1st Interface");
@@ -131,7 +130,6 @@ QWidget* MainWindow::createSecondInterface()
     topLayout->addWidget(calendar);
     mainLayout->addLayout(topLayout);
 
-    // Form Section
     QLabel *formHeader = new QLabel("STUDENT INFORMATION");
     formHeader->setAlignment(Qt::AlignCenter);
     formHeader->setStyleSheet("font-size: 16px; font-weight: bold; color: #003399; margin-top: 20px;");
@@ -139,28 +137,39 @@ QWidget* MainWindow::createSecondInterface()
 
     QHBoxLayout *formLayout = new QHBoxLayout();
     
-    // Left Form
     QVBoxLayout *leftForm = new QVBoxLayout();
     nameInput = new QLineEdit(); nameInput->setPlaceholderText("Enter student name");
     indexInput = new QLineEdit(); indexInput->setPlaceholderText("Enter index number");
     deptInput = new QComboBox(); deptInput->addItems({"Select department", "Computer Science", "Engineering", "Technology"});
     
-    // Updated: Date Input with Calendar Popup
     dateInput = new QDateEdit(QDate::currentDate());
     dateInput->setCalendarPopup(true);
     dateInput->setDisplayFormat("yyyy-MM-dd");
 
-    // Updated: Time Input
-    timeSlotInput = new QTimeEdit(QTime::currentTime());
-    timeSlotInput->setDisplayFormat("hh:mm AP"); // 12-hour format with AM/PM
+    // --- Multi-Select ComboBox for Time Slots (Fixed Variable Name) ---
+    timeSlotInput = new QComboBox();
+    QStandardItemModel *timeModel = new QStandardItemModel(4, 1);
+    QStringList timeSlotsList = {"8.30 am - 10.30 am", "10.30 am - 12.30 pm", "1.30 pm - 3.30 pm", "3.30 pm - 5.30 pm"};
+    
+    for (int i = 0; i < timeSlotsList.size(); ++i) {
+        QStandardItem *item = new QStandardItem(timeSlotsList[i]);
+        item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
+        item->setData(Qt::Unchecked, Qt::CheckStateRole); // Default unchecked
+        timeModel->setItem(i, 0, item);
+    }
+    timeSlotInput->setModel(timeModel);
+    
+    // QListView is required to display checkboxes inside ComboBox
+    QListView* listView = new QListView(timeSlotInput);
+    timeSlotInput->setView(listView);
+    // -------------------------------------------------------------------
     
     leftForm->addWidget(new QLabel("NAME")); leftForm->addWidget(nameInput);
     leftForm->addWidget(new QLabel("INDEX")); leftForm->addWidget(indexInput);
     leftForm->addWidget(new QLabel("DEPARTMENT")); leftForm->addWidget(deptInput);
     leftForm->addWidget(new QLabel("DATE")); leftForm->addWidget(dateInput);
-    leftForm->addWidget(new QLabel("TIME")); leftForm->addWidget(timeSlotInput);
+    leftForm->addWidget(new QLabel("TIME SLOTS")); leftForm->addWidget(timeSlotInput);
     
-    // Right Form (Description + Submit)
     QVBoxLayout *rightForm = new QVBoxLayout();
     descriptionInput = new QTextEdit();
     descriptionInput->setPlaceholderText("Enter description");
@@ -183,13 +192,18 @@ QWidget* MainWindow::createSecondInterface()
 
 void MainWindow::openSecondInterface()
 {
-    // Clear/Reset previous inputs when entering 2nd interface
     nameInput->clear();
     indexInput->clear();
     deptInput->setCurrentIndex(0);
     dateInput->setDate(QDate::currentDate());
-    timeSlotInput->setTime(QTime::currentTime());
     descriptionInput->clear();
+    
+    // Reset all checkboxes in Time Slot dropdown
+    QStandardItemModel *model = qobject_cast<QStandardItemModel*>(timeSlotInput->model());
+    for (int i = 0; i < model->rowCount(); ++i) {
+        model->item(i)->setCheckState(Qt::Unchecked);
+    }
+    
     stackedWidget->setCurrentIndex(1);
 }
 
@@ -202,11 +216,21 @@ void MainWindow::submitData()
 {
     QString name = nameInput->text();
     QString index = indexInput->text();
-    QString dateStr = dateInput->date().toString("yyyy-MM-dd"); // Get date from QDateEdit
-    QString timeStr = timeSlotInput->time().toString("hh:mm AP"); // Get time from QTimeEdit
+    QString dateStr = dateInput->date().toString("yyyy-MM-dd"); 
 
-    if(name.isEmpty() || index.isEmpty()) {
-        QMessageBox::warning(this, "Input Error", "Name and Index are required!");
+    // --- Read selected multiple time slots ---
+    QStandardItemModel *model = qobject_cast<QStandardItemModel*>(timeSlotInput->model());
+    QStringList selectedSlots;
+    for (int i = 0; i < model->rowCount(); ++i) {
+        if (model->item(i)->checkState() == Qt::Checked) {
+            selectedSlots << model->item(i)->text();
+        }
+    }
+    QString finalTimeStr = selectedSlots.join(", "); 
+    // -----------------------------------------
+
+    if(name.isEmpty() || index.isEmpty() || finalTimeStr.isEmpty()) {
+        QMessageBox::warning(this, "Input Error", "Name, Index and at least one Time Slot are required!");
         return;
     }
 
@@ -218,12 +242,12 @@ void MainWindow::submitData()
     query.bindValue(":index", index);
     query.bindValue(":dept", deptInput->currentText());
     query.bindValue(":date", dateStr);
-    query.bindValue(":time", timeStr);
+    query.bindValue(":time", finalTimeStr); // Saving multiple times as a comma-separated string
     query.bindValue(":desc", descriptionInput->toPlainText());
 
     if (query.exec()) {
         QMessageBox::information(this, "Success", "Data saved successfully!");
-        updateCalendarHighlights(); // Refresh highlights on main calendar
+        updateCalendarHighlights();
         goBack();
     } else {
         QMessageBox::critical(this, "Database Error", query.lastError().text());
@@ -232,13 +256,12 @@ void MainWindow::submitData()
 
 void MainWindow::updateCalendarHighlights()
 {
-    // Clear previous formatting
     QTextCharFormat defaultFormat;
     calendar->setDateTextFormat(QDate(), defaultFormat); 
 
     QSqlQuery query("SELECT DISTINCT record_date FROM records");
     QTextCharFormat highlightFormat;
-    highlightFormat.setBackground(QColor("#B3D4FF")); // Light blue highlight
+    highlightFormat.setBackground(QColor("#B3D4FF"));
     highlightFormat.setFontWeight(QFont::Bold);
 
     while (query.next()) {
@@ -257,26 +280,35 @@ void MainWindow::dateClicked(const QDate &date)
     query.bindValue(":date", dateStr);
     
     if(query.exec() && query.next()) {
-        // Displaying the retrieved data back into the form fields
         nameInput->setText(query.value(0).toString());
         indexInput->setText(query.value(1).toString());
         deptInput->setCurrentText(query.value(2).toString());
-        
-        // Convert stored strings back to QTime/QDate for the UI
         dateInput->setDate(date);
-        QTime storedTime = QTime::fromString(query.value(3).toString(), "hh:mm AP");
-        if(storedTime.isValid()) {
-            timeSlotInput->setTime(storedTime);
+        
+        // --- Tick the checkboxes based on saved string ---
+        QString storedTime = query.value(3).toString();
+        QStandardItemModel *model = qobject_cast<QStandardItemModel*>(timeSlotInput->model());
+        for (int i = 0; i < model->rowCount(); ++i) {
+            if (storedTime.contains(model->item(i)->text())) {
+                model->item(i)->setCheckState(Qt::Checked);
+            } else {
+                model->item(i)->setCheckState(Qt::Unchecked);
+            }
         }
+        // -------------------------------------------------
         
         descriptionInput->setText(query.value(4).toString());
-        
         QMessageBox::information(this, "Data Found", "Data loaded for " + dateStr);
     } else {
-        // Clear fields if no data for clicked date
         nameInput->clear();
         indexInput->clear();
-        dateInput->setDate(date); // Just update date picker to clicked date
+        dateInput->setDate(date);
         descriptionInput->clear();
+        
+        // Reset Checkboxes
+        QStandardItemModel *model = qobject_cast<QStandardItemModel*>(timeSlotInput->model());
+        for (int i = 0; i < model->rowCount(); ++i) {
+            model->item(i)->setCheckState(Qt::Unchecked);
+        }
     }
 }
