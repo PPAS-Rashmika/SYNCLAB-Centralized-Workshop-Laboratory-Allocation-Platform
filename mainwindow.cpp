@@ -7,11 +7,14 @@
 #include <QStandardItemModel>
 #include <QStandardItem>
 #include <QListView>
+#include <QRandomGenerator>
+#include <QInputDialog>
 #include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
+    , currentRecordId(-1)
 {
     ui->setupUi(this);
 
@@ -20,7 +23,11 @@ MainWindow::MainWindow(QWidget *parent)
     
     connect(ui->backBtn, &QPushButton::clicked, this, &MainWindow::goBack);
     connect(ui->calendar, &QCalendarWidget::clicked, this, &MainWindow::dateClicked);
+    
+    // Connect action buttons
     connect(ui->submitBtn, &QPushButton::clicked, this, &MainWindow::submitData);
+    connect(ui->updateBtn, &QPushButton::clicked, this, &MainWindow::updateData);
+    connect(ui->deleteBtn, &QPushButton::clicked, this, &MainWindow::deleteData);
 }
 
 MainWindow::~MainWindow()
@@ -39,11 +46,12 @@ void MainWindow::setupDatabase()
     }
 
     QSqlQuery query;
+    // Added 'passcode' column
     query.exec("CREATE TABLE IF NOT EXISTS records ("
                "id INTEGER PRIMARY KEY AUTOINCREMENT, "
                "category TEXT, name TEXT, index_no TEXT, "
                "department TEXT, record_date TEXT, "
-               "time_slot TEXT, description TEXT)");
+               "time_slot TEXT, description TEXT, passcode TEXT)");
 }
 
 void MainWindow::setupDynamicUI()
@@ -68,10 +76,8 @@ void MainWindow::setupDynamicUI()
         timeModel->setItem(i, 0, item);
     }
     ui->timeSlotInput->setModel(timeModel);
-    
     QListView* listView = new QListView(ui->timeSlotInput);
     ui->timeSlotInput->setView(listView);
-    ui->dateInput->setDate(QDate::currentDate());
 }
 
 QWidget* MainWindow::createCard(const QString &title)
@@ -106,10 +112,9 @@ QWidget* MainWindow::createCard(const QString &title)
 void MainWindow::openSecondInterface(const QString &category)
 {
     currentCategory = category;
-    
-    // UI එකේ Header එක අදාළ Card එකේ නමට වෙනස් කිරීම
     ui->formHeader->setText(category.toUpper() + " - STUDENT INFORMATION");
     
+    // Reset inputs
     ui->nameInput->clear();
     ui->indexInput->clear();
     ui->deptInput->setCurrentIndex(0);
@@ -121,15 +126,37 @@ void MainWindow::openSecondInterface(const QString &category)
         model->item(i)->setCheckState(Qt::Unchecked);
     }
     
-    // මෙම Card එකට අදාළ දින පමණක් Calendar එකේ Highlight කිරීම
-    updateCalendarHighlights();
+    // Manage Buttons State (New Entry Mode)
+    currentRecordId = -1;
+    currentPasscode.clear();
+    ui->submitBtn->show();
+    ui->updateBtn->hide();
+    ui->deleteBtn->hide();
     
+    updateCalendarHighlights();
     ui->stackedWidget->setCurrentIndex(1);
 }
 
 void MainWindow::goBack()
 {
     ui->stackedWidget->setCurrentIndex(0);
+}
+
+// Function to prompt and verify passcode
+bool MainWindow::checkPasscode()
+{
+    bool ok;
+    QString enteredCode = QInputDialog::getText(this, "Authentication Required",
+                                                "Enter the 4-digit Passcode to modify this record:", 
+                                                QLineEdit::Password,
+                                                "", &ok);
+    if (!ok) return false; // User clicked Cancel
+    
+    if (enteredCode != currentPasscode) {
+        QMessageBox::critical(this, "Access Denied", "Incorrect Passcode!");
+        return false;
+    }
+    return true;
 }
 
 void MainWindow::submitData()
@@ -152,9 +179,13 @@ void MainWindow::submitData()
         return;
     }
 
+    // Generate 4-digit Passcode (1000 to 9999)
+    int generatedPin = QRandomGenerator::global()->bounded(1000, 10000);
+    QString pinStr = QString::number(generatedPin);
+
     QSqlQuery query;
-    query.prepare("INSERT INTO records (category, name, index_no, department, record_date, time_slot, description) "
-                  "VALUES (:category, :name, :index, :dept, :date, :time, :desc)");
+    query.prepare("INSERT INTO records (category, name, index_no, department, record_date, time_slot, description, passcode) "
+                  "VALUES (:category, :name, :index, :dept, :date, :time, :desc, :passcode)");
     query.bindValue(":category", currentCategory);
     query.bindValue(":name", name);
     query.bindValue(":index", index);
@@ -162,12 +193,78 @@ void MainWindow::submitData()
     query.bindValue(":date", dateStr);
     query.bindValue(":time", finalTimeStr); 
     query.bindValue(":desc", ui->descriptionInput->toPlainText());
+    query.bindValue(":passcode", pinStr);
 
     if (query.exec()) {
-        QMessageBox::information(this, "Success", "Data saved successfully!");
-        updateCalendarHighlights(); // Refresh highlights for current category
+        QString msg = QString("Data saved successfully!\n\nYour Unique Passcode is: %1\n\nPlease keep this safe to Edit/Delete this record.").arg(pinStr);
+        QMessageBox::information(this, "Success - Passcode Generated", msg);
+        updateCalendarHighlights();
+        goBack();
     } else {
         QMessageBox::critical(this, "Database Error", query.lastError().text());
+    }
+}
+
+void MainWindow::updateData()
+{
+    if (currentRecordId == -1) return;
+    
+    // Verify Passcode before updating
+    if (!checkPasscode()) return;
+    
+    QString name = ui->nameInput->text();
+    QString index = ui->indexInput->text();
+    QString dateStr = ui->dateInput->date().toString("yyyy-MM-dd"); 
+
+    QStandardItemModel *model = qobject_cast<QStandardItemModel*>(ui->timeSlotInput->model());
+    QStringList selectedSlots;
+    for (int i = 0; i < model->rowCount(); ++i) {
+        if (model->item(i)->checkState() == Qt::Checked) {
+            selectedSlots << model->item(i)->text();
+        }
+    }
+    QString finalTimeStr = selectedSlots.join(", "); 
+
+    QSqlQuery query;
+    query.prepare("UPDATE records SET name=:name, index_no=:index, department=:dept, record_date=:date, time_slot=:time, description=:desc WHERE id=:id");
+    query.bindValue(":name", name);
+    query.bindValue(":index", index);
+    query.bindValue(":dept", ui->deptInput->currentText());
+    query.bindValue(":date", dateStr);
+    query.bindValue(":time", finalTimeStr); 
+    query.bindValue(":desc", ui->descriptionInput->toPlainText());
+    query.bindValue(":id", currentRecordId);
+
+    if (query.exec()) {
+        QMessageBox::information(this, "Updated", "Record updated successfully!");
+        updateCalendarHighlights();
+        openSecondInterface(currentCategory); // Reloads the interface cleanly
+    } else {
+        QMessageBox::critical(this, "Database Error", query.lastError().text());
+    }
+}
+
+void MainWindow::deleteData()
+{
+    if (currentRecordId == -1) return;
+    
+    // Verify Passcode before deleting
+    if (!checkPasscode()) return;
+
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(this, "Confirm Delete", "Are you sure you want to permanently delete this record?", QMessageBox::Yes|QMessageBox::No);
+    if (reply == QMessageBox::Yes) {
+        QSqlQuery query;
+        query.prepare("DELETE FROM records WHERE id = :id");
+        query.bindValue(":id", currentRecordId);
+        
+        if (query.exec()) {
+            QMessageBox::information(this, "Deleted", "Record deleted successfully!");
+            updateCalendarHighlights();
+            openSecondInterface(currentCategory); // Reloads the interface cleanly
+        } else {
+            QMessageBox::critical(this, "Database Error", query.lastError().text());
+        }
     }
 }
 
@@ -177,7 +274,6 @@ void MainWindow::updateCalendarHighlights()
     ui->calendar->setDateTextFormat(QDate(), defaultFormat); 
 
     QSqlQuery query;
-    // තෝරාගත් අංශයට (Category) අදාළ දින පමණක් ලබා ගැනීම
     query.prepare("SELECT DISTINCT record_date FROM records WHERE category = :category");
     query.bindValue(":category", currentCategory);
     query.exec();
@@ -199,18 +295,19 @@ void MainWindow::dateClicked(const QDate &date)
     QString dateStr = date.toString("yyyy-MM-dd");
     QSqlQuery query;
     
-    // තෝරාගත් දිනට සහ තෝරාගෙන ඇති අංශයට අදාළ දත්ත පමණක් ලබා ගැනීම
-    query.prepare("SELECT name, index_no, department, time_slot, description FROM records WHERE record_date = :date AND category = :category");
+    // Fetch Data including ID and Passcode
+    query.prepare("SELECT id, name, index_no, department, time_slot, description, passcode FROM records WHERE record_date = :date AND category = :category");
     query.bindValue(":date", dateStr);
     query.bindValue(":category", currentCategory);
     
     if(query.exec() && query.next()) {
-        ui->nameInput->setText(query.value(0).toString());
-        ui->indexInput->setText(query.value(1).toString());
-        ui->deptInput->setCurrentText(query.value(2).toString());
+        currentRecordId = query.value(0).toInt();
+        ui->nameInput->setText(query.value(1).toString());
+        ui->indexInput->setText(query.value(2).toString());
+        ui->deptInput->setCurrentText(query.value(3).toString());
         ui->dateInput->setDate(date);
         
-        QString storedTime = query.value(3).toString();
+        QString storedTime = query.value(4).toString();
         QStandardItemModel *model = qobject_cast<QStandardItemModel*>(ui->timeSlotInput->model());
         for (int i = 0; i < model->rowCount(); ++i) {
             if (storedTime.contains(model->item(i)->text())) {
@@ -220,9 +317,17 @@ void MainWindow::dateClicked(const QDate &date)
             }
         }
         
-        ui->descriptionInput->setText(query.value(4).toString());
-        QMessageBox::information(this, "Data Found", "Data loaded for " + dateStr + " under " + currentCategory);
+        ui->descriptionInput->setText(query.value(5).toString());
+        currentPasscode = query.value(6).toString(); // Keep passcode in memory for verification
+        
+        // Switch buttons from Submit to Update/Delete
+        ui->submitBtn->hide();
+        ui->updateBtn->show();
+        ui->deleteBtn->show();
+        
+        QMessageBox::information(this, "Data Found", "Data loaded for " + dateStr + "\nTo Edit or Delete, you will need the 4-digit Passcode.");
     } else {
+        // Clear fields and switch back to Submit mode
         ui->nameInput->clear();
         ui->indexInput->clear();
         ui->dateInput->setDate(date);
@@ -232,5 +337,11 @@ void MainWindow::dateClicked(const QDate &date)
         for (int i = 0; i < model->rowCount(); ++i) {
             model->item(i)->setCheckState(Qt::Unchecked);
         }
+        
+        currentRecordId = -1;
+        currentPasscode.clear();
+        ui->submitBtn->show();
+        ui->updateBtn->hide();
+        ui->deleteBtn->hide();
     }
 }

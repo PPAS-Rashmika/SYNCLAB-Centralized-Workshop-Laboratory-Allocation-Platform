@@ -21,16 +21,22 @@ private slots:
     void openSecondInterface(const QString &category);
     void goBack();
     void submitData();
+    void updateData();
+    void deleteData();
     void dateClicked(const QDate &date);
 
 private:
     Ui::MainWindow *ui;
     QSqlDatabase db;
     QString currentCategory;
+    
+    int currentRecordId;       // To keep track of the loaded record
+    QString currentPasscode;   // To temporarily hold the passcode of the loaded record
 
     void setupDatabase();
     void setupDynamicUI();
     void updateCalendarHighlights();
     QWidget* createCard(const QString &title);
+    bool checkPasscode();      // Authentication function
 };
 #endif // MAINWINDOW_H
