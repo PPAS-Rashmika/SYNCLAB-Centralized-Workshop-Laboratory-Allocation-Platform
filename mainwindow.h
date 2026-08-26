@@ -2,8 +2,9 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QSqlDatabase>
 #include <QDate>
+#include "databasemanager.h"
+#include "studentrecord.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -27,16 +28,17 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    QSqlDatabase db;
+    DatabaseManager *dbManager; // OOP: Using DatabaseManager as a service
     QString currentCategory;
-    
-    int currentRecordId;       // To keep track of the loaded record
-    QString currentPasscode;   // To temporarily hold the passcode of the loaded record
+    StudentRecord currentRecord; // OOP: Holding current state as an Object
 
-    void setupDatabase();
     void setupDynamicUI();
     void updateCalendarHighlights();
     QWidget* createCard(const QString &title);
-    bool checkPasscode();      // Authentication function
+    bool checkPasscode();
+    QString getSelectedTimeSlots();
+    void setTimeSlotsInUI(const QString &timeString);
+    void clearUI();
 };
+
 #endif // MAINWINDOW_H
