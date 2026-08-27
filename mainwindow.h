@@ -27,9 +27,11 @@ private slots:
     void deleteData();
     void dateClicked(const QDate &date);
     void updateAvailableTimeSlots(const QDate &date);
-    
-    // අලුත් Window එක විවෘත කිරීමේ Slot එක
     void showRecordsWindow(); 
+    
+    // Popup එකෙන් එන සිග්නල් අල්ලාගන්නා Slots
+    void loadRecordForEdit(const StudentRecord &record);
+    void onDatabaseUpdatedFromPopup();
 
 private:
     Ui::MainWindow *ui;
@@ -37,6 +39,7 @@ private:
     
     QString currentCategory;
     StudentRecord currentRecord; 
+    bool isPasscodeBypassed; // Passcode ඉල්ලීම අක්‍රීය කිරීමේ Flag එක
 
     void setupDynamicUI();
     void updateCalendarHighlights();

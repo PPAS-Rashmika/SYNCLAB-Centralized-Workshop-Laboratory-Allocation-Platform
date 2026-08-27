@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "recordswindow.h" // අලුත් Window එකේ Header එක
+#include "recordswindow.h"
 #include <QMessageBox>
 #include <QTextCharFormat>
 #include <QStandardItemModel>
@@ -17,6 +17,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    isPasscodeBypassed = false; // ආරම්භයේදී Passcode Bypass කිරීම අක්‍රීයයි
 
     dbManager = new SqliteDatabaseManager("student_data.db");
     if (!dbManager->createTable()) {
@@ -26,9 +27,7 @@ MainWindow::MainWindow(QWidget *parent)
     setupDynamicUI();
     
     connect(ui->backBtn, &QPushButton::clicked, this, &MainWindow::goBack);
-    // අලුත් බොත්තම Window එකට සම්බන්ධ කිරීම
     connect(ui->viewRecordsBtn, &QPushButton::clicked, this, &MainWindow::showRecordsWindow);
-    
     connect(ui->calendar, &QCalendarWidget::clicked, this, &MainWindow::dateClicked);
     connect(ui->submitBtn, &QPushButton::clicked, this, &MainWindow::submitData);
     connect(ui->updateBtn, &QPushButton::clicked, this, &MainWindow::updateData);
@@ -134,10 +133,27 @@ void MainWindow::goBack()
 
 void MainWindow::showRecordsWindow()
 {
-    // අලුත් Window Object එක නිර්මාණය කර විවෘත කිරීම
     RecordsWindow *recordsWin = new RecordsWindow(dbManager, currentCategory, this);
-    recordsWin->exec(); // Blocking call (Modal Window)
+    
+    // Popup එකේ Signals, MainWindow එකේ Slots වලට සම්බන්ධ කිරීම
+    connect(recordsWin, &RecordsWindow::editRequested, this, &MainWindow::loadRecordForEdit);
+    connect(recordsWin, &RecordsWindow::databaseUpdated, this, &MainWindow::onDatabaseUpdatedFromPopup);
+    
+    recordsWin->exec(); 
     delete recordsWin;
+}
+
+void MainWindow::loadRecordForEdit(const StudentRecord &record)
+{
+    loadRecordIntoUI(record);
+    isPasscodeBypassed = true; // Table එකෙන් ආවොත් Passcode එක Bypass කරන්න
+}
+
+void MainWindow::onDatabaseUpdatedFromPopup()
+{
+    // Popup එකේදී Delete කළොත් ප්‍රධාන Window එකේ Calendar එක අලුත් කිරීම
+    updateCalendarHighlights();
+    clearUI();
 }
 
 void MainWindow::updateAvailableTimeSlots(const QDate &date)
@@ -171,6 +187,8 @@ void MainWindow::clearUI()
     updateAvailableTimeSlots(currentDate);
     setTimeSlotsInUI(""); 
     ui->descriptionInput->clear();
+    
+    isPasscodeBypassed = false; // අලුත් එකක් කරද්දි Bypass එක අක්‍රීය කිරීම
 }
 
 QStringList MainWindow::getSelectedTimeSlotsList()
@@ -265,7 +283,10 @@ void MainWindow::updateData()
         return;
     }
 
-    if (!checkPasscode()) return;
+    // Bypass Flag එක True නැත්නම් පමණක් Passcode එක පරීක්ෂා කිරීම
+    if (!isPasscodeBypassed) {
+        if (!checkPasscode()) return;
+    }
     
     currentRecord.setName(ui->nameInput->text());
     currentRecord.setIndexNo(ui->indexInput->text());
@@ -286,7 +307,11 @@ void MainWindow::updateData()
 void MainWindow::deleteData()
 {
     if (currentRecord.getId() == -1) return;
-    if (!checkPasscode()) return;
+    
+    // Bypass Flag එක True නැත්නම් පමණක් Passcode එක පරීක්ෂා කිරීම
+    if (!isPasscodeBypassed) {
+        if (!checkPasscode()) return;
+    }
 
     if (QMessageBox::question(this, "Confirm", "Permanently delete this record?") == QMessageBox::Yes) {
         if (dbManager->deleteRecord(currentRecord.getId())) {
@@ -332,6 +357,8 @@ void MainWindow::loadRecordIntoUI(const StudentRecord &record)
 
 void MainWindow::dateClicked(const QDate &date)
 {
+    isPasscodeBypassed = false; // Calendar එකෙන් තේරුවොත් අනිවාර්යයෙන් Passcode ඉල්ලන්න ඕනෑ
+    
     QString dateStr = date.toString("yyyy-MM-dd");
     QList<StudentRecord> records = dbManager->getRecordsByDateAndCategory(dateStr, currentCategory);
     
