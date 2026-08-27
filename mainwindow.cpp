@@ -12,11 +12,11 @@
 #include <QColor>
 #include <QDateTime>
 #include <QFileDialog>
-// අලුතින් එක් කළ Headers (File Management සඳහා)
 #include <QFile>
 #include <QDir>
 #include <QFileInfo>
 #include <QCoreApplication>
+#include <QGraphicsDropShadowEffect>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -56,6 +56,10 @@ MainWindow::~MainWindow()
 
 void MainWindow::setupDynamicUI()
 {
+    ui->gridLayout->setAlignment(Qt::AlignCenter); 
+    ui->gridLayout->setHorizontalSpacing(30);      
+    ui->gridLayout->setVerticalSpacing(30);        
+
     QStringList workshops = {"Automotive", "Robotics", "Mechanical", "Painting", "Welding"};
     for(int i = 0; i < workshops.size(); i++) {
         ui->gridLayout->addWidget(createCard(workshops[i]), 0, i);
@@ -80,7 +84,7 @@ void MainWindow::setupDynamicUI()
     ui->timeSlotInput->setView(listView);
 
     QPushButton *newBookingBtn = new QPushButton("NEW BOOKING", this);
-    newBookingBtn->setStyleSheet("background-color: #28A745; color: white; padding: 15px; border-radius: 5px; font-weight: bold;");
+    newBookingBtn->setStyleSheet("background-color: #10B981; color: white; padding: 15px; border-radius: 5px; font-weight: bold;");
     ui->actionButtonsLayout->insertWidget(0, newBookingBtn);
     
     connect(newBookingBtn, &QPushButton::clicked, this, [this](){
@@ -95,31 +99,97 @@ void MainWindow::setupDynamicUI()
     });
 }
 
+// ------------------------------------------------------------
+// Professional UI Card Creation
+// ------------------------------------------------------------
 QWidget* MainWindow::createCard(const QString &title)
 {
     QFrame *card = new QFrame(this);
-    card->setFixedSize(160, 200);
-    card->setStyleSheet("QFrame { background-color: white; border-radius: 10px; border: 1px solid #D0D0D0; } QFrame:hover { border: 2px solid #0055FF; }");
+    card->setFixedSize(210, 310);
+    
+    card->setStyleSheet(
+        "QFrame {"
+        "background-color: #FFFFFF;"
+        "border-radius: 16px;"
+        "border: 2px solid transparent;"
+        "}"
+        "QFrame:hover {"
+        "border: 2px solid #93C5FD;"
+        "background-color: #FAFCFF;"
+        "}"
+    );
+
+    // Drop Shadow Effect
+    QGraphicsDropShadowEffect *shadow = new QGraphicsDropShadowEffect(card);
+    shadow->setBlurRadius(25);
+    shadow->setXOffset(0);
+    shadow->setYOffset(8);
+    shadow->setColor(QColor(0, 0, 0, 25)); 
+    card->setGraphicsEffect(shadow);
+    
     QVBoxLayout *layout = new QVBoxLayout(card);
+    layout->setContentsMargins(15, 20, 15, 20); 
+    layout->setSpacing(8);
+    layout->setAlignment(Qt::AlignTop | Qt::AlignHCenter);
     
     QLabel *imgBox = new QLabel(card);
-    imgBox->setStyleSheet("background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #0044CC, stop:1 #0088FF); border-radius: 8px;");
-    imgBox->setMinimumHeight(100);
+    imgBox->setFixedSize(170, 140);
+    imgBox->setAlignment(Qt::AlignCenter);
+    
+    // Image Loading
+    QString imgName = title.toLower() + ".png"; 
+    QString imgPath = QCoreApplication::applicationDirPath() + "/assets/" + imgName;
+    QPixmap pix(imgPath);
+    
+    if (!pix.isNull()) {
+        imgBox->setPixmap(pix.scaled(170, 140, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        imgBox->setStyleSheet("background-color: transparent; border: none;");
+    } else {
+        // Image Placeholder
+        imgBox->setStyleSheet("background-color: #F1F5F9; border-radius: 12px; color: #64748B; font-weight: bold; border: 1px dashed #CBD5E1;");
+        imgBox->setText("[ Image ]\n" + title);
+    }
     
     QLabel *nameTag = new QLabel(title, card);
     nameTag->setAlignment(Qt::AlignCenter);
-    nameTag->setStyleSheet("font-weight: bold; color: #333; border: none;");
+    nameTag->setStyleSheet("font-size: 17px; font-weight: bold; color: #0F172A; border: none; font-family: 'Segoe UI', Arial;");
 
-    QPushButton *btn = new QPushButton("SELECT", card);
-    btn->setStyleSheet("background-color: #E6F0FF; color: #0055FF; border-radius: 5px; padding: 5px; font-weight: bold;");
+    // Pill-shaped Gradient Button
+    QPushButton *btn = new QPushButton("   SELECT\n   THIS WORKSHOP", card);
+    btn->setFixedSize(170, 48);
+    btn->setStyleSheet(
+        "QPushButton {"
+        "background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #3B82F6, stop:1 #2563EB);" 
+        "color: white;"
+        "border-radius: 24px;" 
+        "font-size: 11px;"
+        "font-weight: bold;"
+        "text-align: left;"
+        "padding-left: 20px;"
+        "border: none;"
+        "}"
+        "QPushButton:hover {"
+        "background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #2563EB, stop:1 #1D4ED8);" 
+        "}"
+        "QPushButton:pressed {"
+        "background-color: #1E3A8A;"
+        "}"
+    );
     
+    // Custom Arrow Label (Using a standard ASCII '>' instead of Unicode to prevent compiler errors)
+    QLabel *arrowIcon = new QLabel(">", btn);
+    arrowIcon->setStyleSheet("color: white; font-weight: bold; font-size: 16px; background: transparent; border: none;");
+    arrowIcon->setGeometry(15, 13, 20, 20);
+
     connect(btn, &QPushButton::clicked, [this, title](){
         openSecondInterface(title);
     });
 
     layout->addWidget(imgBox);
     layout->addWidget(nameTag);
+    layout->addSpacerItem(new QSpacerItem(20, 10, QSizePolicy::Minimum, QSizePolicy::Expanding)); 
     layout->addWidget(btn);
+    
     return card;
 }
 
@@ -253,36 +323,29 @@ bool MainWindow::checkPasscode()
     return true;
 }
 
-// ------------------------------------------------------------
-// නවතම තර්කනය: PDF එක සුරක්ෂිතව System එක ඇතුළට Copy කරගැනීම
-// ------------------------------------------------------------
 QString MainWindow::savePdfFile(const QString &sourcePath)
 {
     if (sourcePath.isEmpty()) return "";
 
-    // Application එක ධාවනය වන තැන (Build folder එක) ඇතුළේ uploads/pdfs ෆෝල්ඩරය සෑදීම
     QString uploadDirPath = QCoreApplication::applicationDirPath() + "/uploads/pdfs";
     
-    // දැනටමත් අපේ ෆෝල්ඩරේ තියෙන ගොනුවක් නම් (උදා: Update කරන විට) එය Copy කිරීම අවශ්‍ය නැත
     if (sourcePath.startsWith(uploadDirPath)) {
         return sourcePath;
     }
 
     QDir dir(uploadDirPath);
     if (!dir.exists()) {
-        dir.mkpath("."); // ෆෝල්ඩරය නැත්නම් අලුතින් සාදයි
+        dir.mkpath("."); 
     }
 
     QFileInfo fileInfo(sourcePath);
-    // අලුත් නම සෑදීම: "මිලි-තත්පර_මුල්නම.pdf" (Duplicate නම් ගැටීම වැළැක්වීමට)
     QString uniqueFileName = QString::number(QDateTime::currentMSecsSinceEpoch()) + "_" + fileInfo.fileName();
     QString destPath = dir.absoluteFilePath(uniqueFileName);
 
-    // ගොනුව Copy කිරීම
     if (QFile::copy(sourcePath, destPath)) {
-        return destPath; // සාර්ථක නම් අලුත් Path එක Return කරයි
+        return destPath; 
     } else {
-        return sourcePath; // යම් හෙයකින් අසමත් වුවහොත් පැරණි Path එකම යවයි
+        return sourcePath; 
     }
 }
 
@@ -302,7 +365,6 @@ void MainWindow::submitData()
         return;
     }
 
-    // PDF එක ආරක්ෂිත ෆෝල්ඩරයකට Copy කර එහි නව ලිපිනය ලබාගැනීම
     QString securePdfPath = savePdfFile(ui->pdfInput->text());
 
     QString pinStr = QString::number(QRandomGenerator::global()->bounded(1000, 10000));
@@ -315,7 +377,7 @@ void MainWindow::submitData()
     newRecord.setIndexNo(ui->indexInput->text());
     newRecord.setDepartment(ui->deptInput->currentText());
     newRecord.setEmail(ui->emailInput->text());
-    newRecord.setPdfPath(securePdfPath); // ආරක්ෂිත ලිපිනය මෙහි ලබාදෙයි
+    newRecord.setPdfPath(securePdfPath); 
     newRecord.setRecordDate(dateStr);
     newRecord.setTimeSlots(finalTimeStr);
     newRecord.setDescription(ui->descriptionInput->toPlainText());
@@ -350,7 +412,6 @@ void MainWindow::updateData()
         if (!checkPasscode()) return;
     }
     
-    // Update කරන විටත් අලුත් PDF එකක් දැම්මොත් එය Copy කරගැනීම
     QString securePdfPath = savePdfFile(ui->pdfInput->text());
     
     currentRecord.setName(ui->nameInput->text());
@@ -380,7 +441,6 @@ void MainWindow::deleteData()
     }
 
     if (QMessageBox::question(this, "Confirm", "Permanently delete this record?") == QMessageBox::Yes) {
-        // PDF ගොනුව Delete කිරීමද මෙහිදී කළ හැක (Advanced feature), නමුත් දැනට Database Record එක පමණක් මකා දමමු.
         if (dbManager->deleteRecord(currentRecord.getId())) {
             QMessageBox::information(this, "Deleted", "Record deleted successfully!");
             updateCalendarHighlights();
