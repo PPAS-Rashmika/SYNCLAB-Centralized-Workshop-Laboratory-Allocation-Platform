@@ -32,6 +32,25 @@ MainWindow::MainWindow(QWidget *parent)
 
     setupDynamicUI();
     
+    // --- Wallpaper and Logo Loading Logic ---
+    QString bgPath = QCoreApplication::applicationDirPath() + "/assets/wallpaper.jpg";
+    if (QFile::exists(bgPath)) {
+        this->setStyleSheet("#MainWindow { border-image: url(" + bgPath.replace("\\", "/") + ") 0 0 0 0 stretch stretch; }");
+    } else {
+        QString bgPathPng = QCoreApplication::applicationDirPath() + "/assets/wallpaper.png";
+        if (QFile::exists(bgPathPng)) {
+            this->setStyleSheet("#MainWindow { border-image: url(" + bgPathPng.replace("\\", "/") + ") 0 0 0 0 stretch stretch; }");
+        }
+    }
+
+    QString logoPath = QCoreApplication::applicationDirPath() + "/assets/logo.png";
+    if (QFile::exists(logoPath)) {
+        QPixmap logoPix(logoPath);
+        ui->logoLabel->setPixmap(logoPix.scaled(300, 120, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        ui->logoLabel->setText(""); 
+    }
+    // ----------------------------------------
+    
     connect(ui->backBtn, &QPushButton::clicked, this, &MainWindow::goBack);
     connect(ui->viewRecordsBtn, &QPushButton::clicked, this, &MainWindow::showRecordsWindow);
     connect(ui->calendar, &QCalendarWidget::clicked, this, &MainWindow::dateClicked);
@@ -176,7 +195,7 @@ QWidget* MainWindow::createCard(const QString &title)
         "}"
     );
     
-    // Custom Arrow Label (Using a standard ASCII '>' instead of Unicode to prevent compiler errors)
+    // Custom Arrow Label (Using a standard ASCII character to prevent compiler errors)
     QLabel *arrowIcon = new QLabel(">", btn);
     arrowIcon->setStyleSheet("color: white; font-weight: bold; font-size: 16px; background: transparent; border: none;");
     arrowIcon->setGeometry(15, 13, 20, 20);
