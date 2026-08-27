@@ -2,7 +2,6 @@
 
 StudentRecord::StudentRecord() : id(-1) {}
 
-// Getters
 int StudentRecord::getId() const { return id; }
 QString StudentRecord::getCategory() const { return category; }
 QString StudentRecord::getName() const { return name; }
@@ -12,8 +11,8 @@ QString StudentRecord::getRecordDate() const { return recordDate; }
 QString StudentRecord::getTimeSlots() const { return timeSlots; }
 QString StudentRecord::getDescription() const { return description; }
 QString StudentRecord::getPasscode() const { return passcode; }
+QString StudentRecord::getCreatedAt() const { return createdAt; }
 
-// Setters
 void StudentRecord::setId(int newId) { id = newId; }
 void StudentRecord::setCategory(const QString &newCategory) { category = newCategory; }
 void StudentRecord::setName(const QString &newName) { name = newName; }
@@ -23,3 +22,4 @@ void StudentRecord::setRecordDate(const QString &newRecordDate) { recordDate = n
 void StudentRecord::setTimeSlots(const QString &newTimeSlots) { timeSlots = newTimeSlots; }
 void StudentRecord::setDescription(const QString &newDescription) { description = newDescription; }
 void StudentRecord::setPasscode(const QString &newPasscode) { passcode = newPasscode; }
+void StudentRecord::setCreatedAt(const QString &newCreatedAt) { createdAt = newCreatedAt; }

@@ -3,7 +3,6 @@
 
 #include <QString>
 
-// OOP: Encapsulation - Data is private, accessed via public getters/setters
 class StudentRecord
 {
 private:
@@ -16,11 +15,11 @@ private:
     QString timeSlots;
     QString description;
     QString passcode;
+    QString createdAt; // අලුතින් එක්කළ විචල්‍යය (Submitted Date & Time)
 
 public:
     StudentRecord();
 
-    // Getters
     int getId() const;
     QString getCategory() const;
     QString getName() const;
@@ -30,8 +29,8 @@ public:
     QString getTimeSlots() const;
     QString getDescription() const;
     QString getPasscode() const;
+    QString getCreatedAt() const;
 
-    // Setters
     void setId(int newId);
     void setCategory(const QString &newCategory);
     void setName(const QString &newName);
@@ -41,6 +40,7 @@ public:
     void setTimeSlots(const QString &newTimeSlots);
     void setDescription(const QString &newDescription);
     void setPasscode(const QString &newPasscode);
+    void setCreatedAt(const QString &newCreatedAt);
 };
 
 #endif // STUDENTRECORD_H

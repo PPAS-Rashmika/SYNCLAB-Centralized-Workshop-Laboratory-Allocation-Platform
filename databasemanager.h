@@ -18,12 +18,13 @@ public:
     virtual bool updateRecord(const StudentRecord &record) = 0;
     virtual bool deleteRecord(int id) = 0;
     
-    // Changed to return a List of records for the same date
     virtual QList<StudentRecord> getRecordsByDateAndCategory(const QString &date, const QString &category) = 0;
     virtual QList<QDate> getBookedDates(const QString &category) = 0;
-    
-    // New Function to check Time Slot Availability
     virtual bool isTimeSlotAvailable(const QString &date, const QString &category, const QStringList &requestedSlots, int excludeRecordId = -1) = 0;
+    virtual QStringList getBookedTimeSlotsStringList(const QString &date, const QString &category, int excludeRecordId = -1) = 0;
+    
+    // නවතම ශ්‍රිතය: Table එකට පෙන්වීම සඳහා සියලුම දත්ත ලබාගැනීමට
+    virtual QList<StudentRecord> getAllRecordsForCategory(const QString &category) = 0;
     
     virtual QString getLastError() const = 0;
 };
@@ -44,6 +45,8 @@ public:
     QList<StudentRecord> getRecordsByDateAndCategory(const QString &date, const QString &category) override;
     QList<QDate> getBookedDates(const QString &category) override;
     bool isTimeSlotAvailable(const QString &date, const QString &category, const QStringList &requestedSlots, int excludeRecordId = -1) override;
+    QStringList getBookedTimeSlotsStringList(const QString &date, const QString &category, int excludeRecordId = -1) override;
+    QList<StudentRecord> getAllRecordsForCategory(const QString &category) override;
     QString getLastError() const override;
 };
 

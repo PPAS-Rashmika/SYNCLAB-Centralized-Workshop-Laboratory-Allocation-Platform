@@ -26,6 +26,10 @@ private slots:
     void updateData();
     void deleteData();
     void dateClicked(const QDate &date);
+    void updateAvailableTimeSlots(const QDate &date);
+    
+    // අලුත් Window එක විවෘත කිරීමේ Slot එක
+    void showRecordsWindow(); 
 
 private:
     Ui::MainWindow *ui;

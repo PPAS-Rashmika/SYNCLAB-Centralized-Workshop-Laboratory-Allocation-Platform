@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "recordswindow.h" // අලුත් Window එකේ Header එක
 #include <QMessageBox>
 #include <QTextCharFormat>
 #include <QStandardItemModel>
@@ -7,6 +8,9 @@
 #include <QListView>
 #include <QRandomGenerator>
 #include <QInputDialog>
+#include <QBrush>
+#include <QColor>
+#include <QDateTime>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -22,10 +26,14 @@ MainWindow::MainWindow(QWidget *parent)
     setupDynamicUI();
     
     connect(ui->backBtn, &QPushButton::clicked, this, &MainWindow::goBack);
+    // අලුත් බොත්තම Window එකට සම්බන්ධ කිරීම
+    connect(ui->viewRecordsBtn, &QPushButton::clicked, this, &MainWindow::showRecordsWindow);
+    
     connect(ui->calendar, &QCalendarWidget::clicked, this, &MainWindow::dateClicked);
     connect(ui->submitBtn, &QPushButton::clicked, this, &MainWindow::submitData);
     connect(ui->updateBtn, &QPushButton::clicked, this, &MainWindow::updateData);
     connect(ui->deleteBtn, &QPushButton::clicked, this, &MainWindow::deleteData);
+    connect(ui->dateInput, &QDateEdit::dateChanged, this, &MainWindow::updateAvailableTimeSlots);
 }
 
 MainWindow::~MainWindow()
@@ -59,19 +67,19 @@ void MainWindow::setupDynamicUI()
     QListView* listView = new QListView(ui->timeSlotInput);
     ui->timeSlotInput->setView(listView);
 
-    // Create a "NEW BOOKING" button dynamically via C++ so we don't break the XML .ui file
     QPushButton *newBookingBtn = new QPushButton("NEW BOOKING", this);
     newBookingBtn->setStyleSheet("background-color: #28A745; color: white; padding: 15px; border-radius: 5px; font-weight: bold;");
     ui->actionButtonsLayout->insertWidget(0, newBookingBtn);
     
     connect(newBookingBtn, &QPushButton::clicked, this, [this](){
         QDate cd = ui->dateInput->date();
+        currentRecord = StudentRecord();
         clearUI();
-        ui->dateInput->setDate(cd); // Keep the currently selected date
+        ui->dateInput->setDate(cd); 
+        updateAvailableTimeSlots(cd); 
         ui->submitBtn->show();
         ui->updateBtn->hide();
         ui->deleteBtn->hide();
-        currentRecord = StudentRecord();
     });
 }
 
@@ -108,8 +116,8 @@ void MainWindow::openSecondInterface(const QString &category)
     currentCategory = category;
     ui->formHeader->setText(category.toUpper() + " - STUDENT INFORMATION");
     
-    clearUI();
     currentRecord = StudentRecord();
+    clearUI();
     
     ui->submitBtn->show();
     ui->updateBtn->hide();
@@ -124,14 +132,45 @@ void MainWindow::goBack()
     ui->stackedWidget->setCurrentIndex(0);
 }
 
+void MainWindow::showRecordsWindow()
+{
+    // අලුත් Window Object එක නිර්මාණය කර විවෘත කිරීම
+    RecordsWindow *recordsWin = new RecordsWindow(dbManager, currentCategory, this);
+    recordsWin->exec(); // Blocking call (Modal Window)
+    delete recordsWin;
+}
+
+void MainWindow::updateAvailableTimeSlots(const QDate &date)
+{
+    if (currentCategory.isEmpty()) return;
+
+    QString dateStr = date.toString("yyyy-MM-dd");
+    QStringList bookedSlots = dbManager->getBookedTimeSlotsStringList(dateStr, currentCategory, currentRecord.getId());
+    
+    QStandardItemModel *model = qobject_cast<QStandardItemModel*>(ui->timeSlotInput->model());
+    for (int i = 0; i < model->rowCount(); ++i) {
+        QStandardItem *item = model->item(i);
+        if (bookedSlots.contains(item->text())) {
+            item->setEnabled(false); 
+            item->setCheckState(Qt::Unchecked);
+            item->setForeground(QBrush(Qt::gray)); 
+        } else {
+            item->setEnabled(true);
+            item->setForeground(QBrush(Qt::black));
+        }
+    }
+}
+
 void MainWindow::clearUI()
 {
     ui->nameInput->clear();
     ui->indexInput->clear();
     ui->deptInput->setCurrentIndex(0);
-    ui->dateInput->setDate(QDate::currentDate());
-    ui->descriptionInput->clear();
+    QDate currentDate = QDate::currentDate();
+    ui->dateInput->setDate(currentDate);
+    updateAvailableTimeSlots(currentDate);
     setTimeSlotsInUI(""); 
+    ui->descriptionInput->clear();
 }
 
 QStringList MainWindow::getSelectedTimeSlotsList()
@@ -139,7 +178,7 @@ QStringList MainWindow::getSelectedTimeSlotsList()
     QStandardItemModel *model = qobject_cast<QStandardItemModel*>(ui->timeSlotInput->model());
     QStringList selectedSlots;
     for (int i = 0; i < model->rowCount(); ++i) {
-        if (model->item(i)->checkState() == Qt::Checked) {
+        if (model->item(i)->checkState() == Qt::Checked && model->item(i)->isEnabled()) {
             selectedSlots << model->item(i)->text();
         }
     }
@@ -150,7 +189,7 @@ void MainWindow::setTimeSlotsInUI(const QString &timeString)
 {
     QStandardItemModel *model = qobject_cast<QStandardItemModel*>(ui->timeSlotInput->model());
     for (int i = 0; i < model->rowCount(); ++i) {
-        if (!timeString.isEmpty() && timeString.contains(model->item(i)->text())) {
+        if (!timeString.isEmpty() && timeString.contains(model->item(i)->text()) && model->item(i)->isEnabled()) {
             model->item(i)->setCheckState(Qt::Checked);
         } else {
             model->item(i)->setCheckState(Qt::Unchecked);
@@ -161,7 +200,7 @@ void MainWindow::setTimeSlotsInUI(const QString &timeString)
 bool MainWindow::checkPasscode()
 {
     bool ok;
-    QString enteredCode = QInputDialog::getText(this, "Authentication", "Enter the 4-digit Passcode:", QLineEdit::Password, "", &ok);
+    QString enteredCode = QInputDialog::getText(this, "Authentication", "Enter Passcode:", QLineEdit::Password, "", &ok);
     if (!ok) return false; 
     
     if (enteredCode != currentRecord.getPasscode()) {
@@ -176,20 +215,20 @@ void MainWindow::submitData()
     QStringList selectedSlots = getSelectedTimeSlotsList();
 
     if(ui->nameInput->text().isEmpty() || ui->indexInput->text().isEmpty() || selectedSlots.isEmpty()) {
-        QMessageBox::warning(this, "Input Error", "Name, Index and at least one Time Slot are required!");
+        QMessageBox::warning(this, "Input Error", "Name, Index and Time Slot required!");
         return;
     }
 
     QString dateStr = ui->dateInput->date().toString("yyyy-MM-dd");
     
-    // VALIDATION: Prevent Double Bookings
     if (!dbManager->isTimeSlotAvailable(dateStr, currentCategory, selectedSlots)) {
-        QMessageBox::critical(this, "Time Slot Booked", "One or more selected time slots are already booked on this date!\nPlease select a different time slot.");
+        QMessageBox::critical(this, "Time Slot Booked", "Selected time slot is already booked!");
         return;
     }
 
     QString pinStr = QString::number(QRandomGenerator::global()->bounded(1000, 10000));
     QString finalTimeStr = selectedSlots.join(", ");
+    QString currentTimestamp = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm AP");
 
     StudentRecord newRecord;
     newRecord.setCategory(currentCategory);
@@ -200,11 +239,13 @@ void MainWindow::submitData()
     newRecord.setTimeSlots(finalTimeStr);
     newRecord.setDescription(ui->descriptionInput->toPlainText());
     newRecord.setPasscode(pinStr);
+    newRecord.setCreatedAt(currentTimestamp);
 
     if (dbManager->addRecord(newRecord)) {
-        QMessageBox::information(this, "Success", QString("Data saved!\nYour Unique Passcode is: %1").arg(pinStr));
+        QMessageBox::information(this, "Success", QString("Data saved!\nYour Passcode is: %1").arg(pinStr));
         updateCalendarHighlights();
-        goBack();
+        currentRecord = StudentRecord();
+        clearUI();
     } else {
         QMessageBox::critical(this, "Database Error", dbManager->getLastError());
     }
@@ -215,16 +256,12 @@ void MainWindow::updateData()
     if (currentRecord.getId() == -1) return;
     
     QStringList selectedSlots = getSelectedTimeSlotsList();
-    if(selectedSlots.isEmpty()) {
-        QMessageBox::warning(this, "Input Error", "At least one Time Slot is required!");
-        return;
-    }
+    if(selectedSlots.isEmpty()) return;
 
     QString dateStr = ui->dateInput->date().toString("yyyy-MM-dd");
     
-    // VALIDATION: Check if new time slots conflict with OTHER bookings (Exclude current record ID)
     if (!dbManager->isTimeSlotAvailable(dateStr, currentCategory, selectedSlots, currentRecord.getId())) {
-        QMessageBox::critical(this, "Time Slot Booked", "One or more selected time slots are already taken by another booking!");
+        QMessageBox::critical(this, "Time Slot Booked", "Time slot taken by another booking!");
         return;
     }
 
@@ -268,7 +305,6 @@ void MainWindow::updateCalendarHighlights()
     ui->calendar->setDateTextFormat(QDate(), defaultFormat); 
 
     QList<QDate> bookedDates = dbManager->getBookedDates(currentCategory);
-    
     QTextCharFormat highlightFormat;
     highlightFormat.setBackground(QColor("#B3D4FF"));
     highlightFormat.setFontWeight(QFont::Bold);
@@ -285,6 +321,7 @@ void MainWindow::loadRecordIntoUI(const StudentRecord &record)
     ui->indexInput->setText(currentRecord.getIndexNo());
     ui->deptInput->setCurrentText(currentRecord.getDepartment());
     ui->dateInput->setDate(QDate::fromString(currentRecord.getRecordDate(), "yyyy-MM-dd"));
+    updateAvailableTimeSlots(ui->dateInput->date()); 
     setTimeSlotsInUI(currentRecord.getTimeSlots());
     ui->descriptionInput->setText(currentRecord.getDescription());
     
@@ -299,6 +336,7 @@ void MainWindow::dateClicked(const QDate &date)
     QList<StudentRecord> records = dbManager->getRecordsByDateAndCategory(dateStr, currentCategory);
     
     if(records.isEmpty()) {
+        currentRecord = StudentRecord();
         clearUI();
         ui->dateInput->setDate(date);
         ui->submitBtn->show();
@@ -306,26 +344,23 @@ void MainWindow::dateClicked(const QDate &date)
         ui->deleteBtn->hide();
     } 
     else if (records.size() == 1) {
-        // Only one booking exists, load it directly
         loadRecordIntoUI(records.first());
         QMessageBox::information(this, "Booking Loaded", "One booking exists for this date.\n(Click 'NEW BOOKING' to add another)");
     } 
     else {
-        // Multiple bookings exist, ask user which one to view
         QStringList items;
         for (const StudentRecord &rec : records) {
             items << QString("%1 (%2)").arg(rec.getName(), rec.getTimeSlots());
         }
-        
         bool ok;
-        QString selectedItem = QInputDialog::getItem(this, "Multiple Bookings Found", "Select a booking to view or edit:", items, 0, false, &ok);
+        QString selectedItem = QInputDialog::getItem(this, "Multiple Bookings", "Select a booking to view/edit:", items, 0, false, &ok);
         
         if (ok && !selectedItem.isEmpty()) {
             int index = items.indexOf(selectedItem);
             loadRecordIntoUI(records[index]);
-            QMessageBox::information(this, "Booking Loaded", "Booking loaded successfully.\n(Click 'NEW BOOKING' to add another)");
+            QMessageBox::information(this, "Booking Loaded", "Booking loaded successfully.");
         } else {
-            // User cancelled the prompt
+            currentRecord = StudentRecord();
             clearUI();
             ui->dateInput->setDate(date);
         }

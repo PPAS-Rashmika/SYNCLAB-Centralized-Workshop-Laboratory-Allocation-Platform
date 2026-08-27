@@ -10,11 +10,13 @@ SOURCES += \
     databasemanager.cpp \
     main.cpp \
     mainwindow.cpp \
+    recordswindow.cpp \
     studentrecord.cpp
 
 HEADERS += \
     databasemanager.h \
     mainwindow.h \
+    recordswindow.h \
     studentrecord.h
 
 FORMS += \
