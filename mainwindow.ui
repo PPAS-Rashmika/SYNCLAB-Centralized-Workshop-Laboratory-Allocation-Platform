@@ -14,7 +14,7 @@
    <string>Student Workshop App</string>
   </property>
   <property name="styleSheet">
-   <string>#MainWindow { background-color: #F0F4FA; } QWidget#page1, QWidget#page2 { background: transparent; }</string>
+   <string>QMainWindow { background-color: #F0F4FA; }</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -23,29 +23,19 @@
       <property name="currentIndex">
        <number>0</number>
       </property>
-      <property name="styleSheet">
-       <string>background: transparent;</string>
-      </property>
+      
+      <!-- 1st Interface (Home Page) -->
       <widget class="QWidget" name="page1">
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <property name="leftMargin"><number>20</number></property>
         <property name="topMargin"><number>30</number></property>
         <property name="rightMargin"><number>20</number></property>
         <property name="bottomMargin"><number>20</number></property>
-        
-        <!-- Logo Label Added Here -->
-        <item>
-         <widget class="QLabel" name="logoLabel">
-          <property name="text"><string></string></property>
-          <property name="alignment"><set>Qt::AlignCenter</set></property>
-         </widget>
-        </item>
-        
         <item>
          <widget class="QLabel" name="headerLabel">
           <property name="text"><string>WORKSHOPS &amp; LABORATORIES</string></property>
           <property name="alignment"><set>Qt::AlignCenter</set></property>
-          <property name="styleSheet"><string>font-size: 28px; font-weight: 800; color: #112A46; font-family: 'Segoe UI', Arial; letter-spacing: 1px; margin-top: 10px;</string></property>
+          <property name="styleSheet"><string>font-size: 28px; font-weight: 800; color: #112A46; font-family: 'Segoe UI', Arial; letter-spacing: 1px;</string></property>
          </widget>
         </item>
         <item>
@@ -68,6 +58,7 @@
        </layout>
       </widget>
       
+      <!-- 2nd Interface (Details Page) -->
       <widget class="QWidget" name="page2">
        <layout class="QGridLayout" name="gridLayout_2">
         <property name="horizontalSpacing"><number>20</number></property>
@@ -122,13 +113,13 @@
         <item row="2" column="0">
          <layout class="QVBoxLayout" name="leftForm">
           <item><widget class="QLabel" name="label"><property name="text"><string>NAME</string></property></widget></item>
-          <item><widget class="QLineEdit" name="nameInput"><property name="placeholderText"><string>Enter student name</string></property><property name="styleSheet"><string>padding: 8px; border: 1px solid #CBD5E1; border-radius: 4px; background-color: white;</string></property></widget></item>
+          <item><widget class="QLineEdit" name="nameInput"><property name="placeholderText"><string>Enter student name</string></property><property name="styleSheet"><string>padding: 8px; border: 1px solid #CBD5E1; border-radius: 4px;</string></property></widget></item>
           <item><widget class="QLabel" name="label_2"><property name="text"><string>INDEX</string></property></widget></item>
-          <item><widget class="QLineEdit" name="indexInput"><property name="placeholderText"><string>Enter index number</string></property><property name="styleSheet"><string>padding: 8px; border: 1px solid #CBD5E1; border-radius: 4px; background-color: white;</string></property></widget></item>
+          <item><widget class="QLineEdit" name="indexInput"><property name="placeholderText"><string>Enter index number</string></property><property name="styleSheet"><string>padding: 8px; border: 1px solid #CBD5E1; border-radius: 4px;</string></property></widget></item>
           <item><widget class="QLabel" name="label_3"><property name="text"><string>DEPARTMENT</string></property></widget></item>
           <item>
            <widget class="QComboBox" name="deptInput">
-            <property name="styleSheet"><string>padding: 8px; border: 1px solid #CBD5E1; border-radius: 4px; background-color: white;</string></property>
+            <property name="styleSheet"><string>padding: 8px; border: 1px solid #CBD5E1; border-radius: 4px;</string></property>
             <item><property name="text"><string>Select department</string></property></item>
             <item><property name="text"><string>Computer Science</string></property></item>
             <item><property name="text"><string>Engineering</string></property></item>
@@ -136,11 +127,11 @@
            </widget>
           </item>
           <item><widget class="QLabel" name="label_email"><property name="text"><string>EMAIL ADDRESS</string></property></widget></item>
-          <item><widget class="QLineEdit" name="emailInput"><property name="placeholderText"><string>Enter email address</string></property><property name="styleSheet"><string>padding: 8px; border: 1px solid #CBD5E1; border-radius: 4px; background-color: white;</string></property></widget></item>
+          <item><widget class="QLineEdit" name="emailInput"><property name="placeholderText"><string>Enter email address</string></property><property name="styleSheet"><string>padding: 8px; border: 1px solid #CBD5E1; border-radius: 4px;</string></property></widget></item>
           <item><widget class="QLabel" name="label_pdf"><property name="text"><string>ATTACH PDF DOCUMENT</string></property></widget></item>
           <item>
            <layout class="QHBoxLayout" name="pdfLayout">
-            <item><widget class="QLineEdit" name="pdfInput"><property name="placeholderText"><string>Select PDF file...</string></property><property name="readOnly"><bool>true</bool></property><property name="styleSheet"><string>padding: 8px; border: 1px solid #CBD5E1; border-radius: 4px; background-color: white;</string></property></widget></item>
+            <item><widget class="QLineEdit" name="pdfInput"><property name="placeholderText"><string>Select PDF file...</string></property><property name="readOnly"><bool>true</bool></property><property name="styleSheet"><string>padding: 8px; border: 1px solid #CBD5E1; border-radius: 4px;</string></property></widget></item>
             <item><widget class="QPushButton" name="browsePdfBtn"><property name="text"><string>BROWSE</string></property><property name="styleSheet"><string>padding: 8px 15px; background-color: #64748B; color: white; border-radius: 4px; font-weight: bold;</string></property></widget></item>
            </layout>
           </item>
@@ -149,11 +140,11 @@
            <widget class="QDateEdit" name="dateInput">
             <property name="calendarPopup"><bool>true</bool></property>
             <property name="displayFormat"><string>yyyy-MM-dd</string></property>
-            <property name="styleSheet"><string>padding: 8px; border: 1px solid #CBD5E1; border-radius: 4px; background-color: white;</string></property>
+            <property name="styleSheet"><string>padding: 8px; border: 1px solid #CBD5E1; border-radius: 4px;</string></property>
            </widget>
           </item>
           <item><widget class="QLabel" name="label_5"><property name="text"><string>TIME SLOTS</string></property></widget></item>
-          <item><widget class="QComboBox" name="timeSlotInput"><property name="styleSheet"><string>padding: 8px; border: 1px solid #CBD5E1; border-radius: 4px; background-color: white;</string></property></widget></item>
+          <item><widget class="QComboBox" name="timeSlotInput"><property name="styleSheet"><string>padding: 8px; border: 1px solid #CBD5E1; border-radius: 4px;</string></property></widget></item>
          </layout>
         </item>
         
@@ -169,7 +160,7 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
-            <property name="styleSheet"><string>border: 1px solid #CBD5E1; border-radius: 4px; padding: 5px; background-color: white;</string></property>
+            <property name="styleSheet"><string>border: 1px solid #CBD5E1; border-radius: 4px; padding: 5px;</string></property>
            </widget>
           </item>
           <item>
