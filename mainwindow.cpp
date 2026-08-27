@@ -17,6 +17,7 @@
 #include <QFileInfo>
 #include <QCoreApplication>
 #include <QGraphicsDropShadowEffect>
+#include <QMap> // QMap භාවිතා කිරීම සඳහා අලුතින් එක් කළ Header එක
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -56,20 +57,16 @@ MainWindow::~MainWindow()
 
 void MainWindow::setupDynamicUI()
 {
-    // --- Logo එක Load කිරීමේ තර්කනය ---
     QString logoPath = QCoreApplication::applicationDirPath() + "/assets/logo.png";
     QPixmap logoPix(logoPath);
     
     if (!logoPix.isNull()) {
-        // Logo එක සාර්ථකව හමු වුවහොත්
         ui->logoLabel->setPixmap(logoPix.scaled(120, 120, Qt::KeepAspectRatio, Qt::SmoothTransformation));
         ui->logoLabel->setText(""); 
         ui->logoLabel->setStyleSheet("background: transparent; border: none;");
     } else {
-        // Logo එක නොමැති නම් පෙන්වන අලංකාර රවුම් (Circular) Placeholder එක
         ui->logoLabel->setStyleSheet("background-color: #E2E8F0; color: #64748B; font-weight: bold; border-radius: 60px; border: 2px dashed #CBD5E1;");
     }
-    // ---------------------------------
 
     ui->gridLayout->setAlignment(Qt::AlignCenter); 
     ui->gridLayout->setHorizontalSpacing(30);      
@@ -200,11 +197,50 @@ QWidget* MainWindow::createCard(const QString &title)
     return card;
 }
 
+// -------------------------------------------------------------------------
+// 2nd Interface එක Open කිරීම සහ Top Left Card එක යාවත්කාලීන කිරීම (Update)
+// -------------------------------------------------------------------------
 void MainWindow::openSecondInterface(const QString &category)
 {
     currentCategory = category;
+    
+    // මධ්‍යයේ ඇති Form Header එක
     ui->formHeader->setText(category.toUpper() + " - STUDENT INFORMATION");
     
+    // Top-Left Info Card එකේ Name එක
+    ui->selectedNameLabel->setText(category.toUpper() + " WORKSHOP");
+
+    // Workshop Descriptions Map එක
+    QMap<QString, QString> descriptions = {
+        {"Automotive", "Vehicle systems, maintenance, and automotive engineering technology."},
+        {"Robotics", "Automation, robotic arms, and intelligent machine programming."},
+        {"Mechanical", "Heavy machinery, tools, and mechanical component fabrication."},
+        {"Painting", "Professional surface treatment, coatings, and material painting."},
+        {"Welding", "Metal fabrication, joining processes, and industrial welding."},
+        {"Microscope", "Nanomaterials analysis and microscopic optical evaluations."},
+        {"Chemistry", "Organic chemistry, chemical synthesis, and molecular analysis."},
+        {"Coding", "Software engineering, algorithms, data structures, and application development."},
+        {"Test Tubes", "Sample preparation, fluid dynamics, and biochemical experimentation."},
+        {"Circuitry", "PCB design, embedded systems, soldering, and analog/digital electronics."}
+    };
+    
+    // Top-Left Info Card එකේ Description එක (Map එකෙන් සොයා ගැනීම)
+    ui->selectedDescLabel->setText(descriptions.value(category, "Explore facilities, tools, and scheduled activities."));
+
+    // Top-Left Info Card එකේ Image එක Load කිරීම
+    QString imgName = category.toLower() + ".png"; 
+    QString imgPath = QCoreApplication::applicationDirPath() + "/assets/" + imgName;
+    QPixmap pix(imgPath);
+    
+    if (!pix.isNull()) {
+        ui->selectedImgLabel->setPixmap(pix.scaled(120, 90, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        ui->selectedImgLabel->setStyleSheet("background-color: transparent; border: none;");
+        ui->selectedImgLabel->setText("");
+    } else {
+        ui->selectedImgLabel->setStyleSheet("background-color: #F1F5F9; border-radius: 8px; color: #64748B; font-weight: bold; border: 1px dashed #CBD5E1;");
+        ui->selectedImgLabel->setText("[ Image ]");
+    }
+
     currentRecord = StudentRecord();
     clearUI();
     
@@ -215,6 +251,7 @@ void MainWindow::openSecondInterface(const QString &category)
     updateCalendarHighlights();
     ui->stackedWidget->setCurrentIndex(1);
 }
+// -------------------------------------------------------------------------
 
 void MainWindow::goBack()
 {
