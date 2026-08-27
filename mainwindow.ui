@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1000</width>
+    <width>1050</width>
     <height>750</height>
    </rect>
   </property>
@@ -44,9 +44,15 @@
         </item>
        </layout>
       </widget>
+      
+      <!-- 2nd Interface Layout Updated to QGridLayout -->
       <widget class="QWidget" name="page2">
-       <layout class="QVBoxLayout" name="verticalLayout_3">
-        <item>
+       <layout class="QGridLayout" name="gridLayout_2">
+        <property name="horizontalSpacing"><number>20</number></property>
+        <property name="verticalSpacing"><number>20</number></property>
+        
+        <!-- Row 0, Column 0: Top Left Buttons -->
+        <item row="0" column="0" alignment="Qt::AlignTop">
          <layout class="QHBoxLayout" name="horizontalLayout">
           <item alignment="Qt::AlignTop">
            <widget class="QPushButton" name="backBtn">
@@ -65,87 +71,108 @@
             <property name="orientation"><enum>Qt::Horizontal</enum></property>
            </spacer>
           </item>
-          <item>
-           <widget class="QCalendarWidget" name="calendar">
-            <property name="styleSheet"><string>QCalendarWidget QWidget { alternate-background-color: #E6F0FF; }</string></property>
-           </widget>
-          </item>
          </layout>
         </item>
-        <item>
+        
+        <!-- Row 0, Column 1: Calendar -->
+        <item row="0" column="1">
+         <widget class="QCalendarWidget" name="calendar">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="styleSheet"><string>QCalendarWidget QWidget { alternate-background-color: #E6F0FF; }</string></property>
+         </widget>
+        </item>
+        
+        <!-- Row 1, Column 0 spanning 2 Columns: Header -->
+        <item row="1" column="0" colspan="2">
          <widget class="QLabel" name="formHeader">
           <property name="text"><string>STUDENT INFORMATION</string></property>
           <property name="alignment"><set>Qt::AlignCenter</set></property>
-          <property name="styleSheet"><string>font-size: 16px; font-weight: bold; color: #003399; margin-top: 20px; text-transform: uppercase;</string></property>
+          <property name="styleSheet"><string>font-size: 16px; font-weight: bold; color: #003399; margin-top: 10px; margin-bottom: 10px; text-transform: uppercase;</string></property>
          </widget>
         </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_2">
+        
+        <!-- Row 2, Column 0: Left Form Inputs -->
+        <item row="2" column="0">
+         <layout class="QVBoxLayout" name="leftForm">
+          <item><widget class="QLabel" name="label"><property name="text"><string>NAME</string></property></widget></item>
+          <item><widget class="QLineEdit" name="nameInput"><property name="placeholderText"><string>Enter student name</string></property></widget></item>
+          <item><widget class="QLabel" name="label_2"><property name="text"><string>INDEX</string></property></widget></item>
+          <item><widget class="QLineEdit" name="indexInput"><property name="placeholderText"><string>Enter index number</string></property></widget></item>
+          <item><widget class="QLabel" name="label_3"><property name="text"><string>DEPARTMENT</string></property></widget></item>
           <item>
-           <layout class="QVBoxLayout" name="leftForm">
-            <item><widget class="QLabel" name="label"><property name="text"><string>NAME</string></property></widget></item>
-            <item><widget class="QLineEdit" name="nameInput"><property name="placeholderText"><string>Enter student name</string></property></widget></item>
-            <item><widget class="QLabel" name="label_2"><property name="text"><string>INDEX</string></property></widget></item>
-            <item><widget class="QLineEdit" name="indexInput"><property name="placeholderText"><string>Enter index number</string></property></widget></item>
-            <item><widget class="QLabel" name="label_3"><property name="text"><string>DEPARTMENT</string></property></widget></item>
-            <item>
-             <widget class="QComboBox" name="deptInput">
-              <item><property name="text"><string>Select department</string></property></item>
-              <item><property name="text"><string>Computer Science</string></property></item>
-              <item><property name="text"><string>Engineering</string></property></item>
-              <item><property name="text"><string>Technology</string></property></item>
-             </widget>
-            </item>
-            <item><widget class="QLabel" name="label_email"><property name="text"><string>EMAIL ADDRESS</string></property></widget></item>
-            <item><widget class="QLineEdit" name="emailInput"><property name="placeholderText"><string>Enter email address</string></property></widget></item>
-            <item><widget class="QLabel" name="label_pdf"><property name="text"><string>ATTACH PDF DOCUMENT</string></property></widget></item>
-            <item>
-             <layout class="QHBoxLayout" name="pdfLayout">
-              <item><widget class="QLineEdit" name="pdfInput"><property name="placeholderText"><string>Select PDF file...</string></property><property name="readOnly"><bool>true</bool></property></widget></item>
-              <item><widget class="QPushButton" name="browsePdfBtn"><property name="text"><string>BROWSE</string></property></widget></item>
-             </layout>
-            </item>
-            <item><widget class="QLabel" name="label_4"><property name="text"><string>DATE</string></property></widget></item>
-            <item>
-             <widget class="QDateEdit" name="dateInput">
-              <property name="calendarPopup"><bool>true</bool></property>
-              <property name="displayFormat"><string>yyyy-MM-dd</string></property>
-             </widget>
-            </item>
-            <item><widget class="QLabel" name="label_5"><property name="text"><string>TIME SLOTS</string></property></widget></item>
-            <item><widget class="QComboBox" name="timeSlotInput"/></item>
+           <widget class="QComboBox" name="deptInput">
+            <item><property name="text"><string>Select department</string></property></item>
+            <item><property name="text"><string>Computer Science</string></property></item>
+            <item><property name="text"><string>Engineering</string></property></item>
+            <item><property name="text"><string>Technology</string></property></item>
+           </widget>
+          </item>
+          <item><widget class="QLabel" name="label_email"><property name="text"><string>EMAIL ADDRESS</string></property></widget></item>
+          <item><widget class="QLineEdit" name="emailInput"><property name="placeholderText"><string>Enter email address</string></property></widget></item>
+          <item><widget class="QLabel" name="label_pdf"><property name="text"><string>ATTACH PDF DOCUMENT</string></property></widget></item>
+          <item>
+           <layout class="QHBoxLayout" name="pdfLayout">
+            <item><widget class="QLineEdit" name="pdfInput"><property name="placeholderText"><string>Select PDF file...</string></property><property name="readOnly"><bool>true</bool></property></widget></item>
+            <item><widget class="QPushButton" name="browsePdfBtn"><property name="text"><string>BROWSE</string></property></widget></item>
            </layout>
           </item>
+          <item><widget class="QLabel" name="label_4"><property name="text"><string>DATE</string></property></widget></item>
           <item>
-           <layout class="QVBoxLayout" name="rightForm">
-            <item><widget class="QLabel" name="label_6"><property name="text"><string>DESCRIPTION</string></property></widget></item>
-            <item><widget class="QTextEdit" name="descriptionInput"><property name="placeholderText"><string>Enter description</string></property></widget></item>
+           <widget class="QDateEdit" name="dateInput">
+            <property name="calendarPopup"><bool>true</bool></property>
+            <property name="displayFormat"><string>yyyy-MM-dd</string></property>
+           </widget>
+          </item>
+          <item><widget class="QLabel" name="label_5"><property name="text"><string>TIME SLOTS</string></property></widget></item>
+          <item><widget class="QComboBox" name="timeSlotInput"/></item>
+         </layout>
+        </item>
+        
+        <!-- Row 2, Column 1: Description & Action Buttons -->
+        <item row="2" column="1">
+         <layout class="QVBoxLayout" name="rightForm">
+          <item><widget class="QLabel" name="label_6"><property name="text"><string>DESCRIPTION</string></property></widget></item>
+          <item>
+           <widget class="QTextEdit" name="descriptionInput">
+            <property name="placeholderText"><string>Enter description</string></property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="actionButtonsLayout">
             <item>
-             <layout class="QHBoxLayout" name="actionButtonsLayout">
-              <item>
-               <widget class="QPushButton" name="submitBtn">
-                <property name="text"><string>SUBMIT</string></property>
-                <property name="styleSheet"><string>background-color: #0055FF; color: white; padding: 15px; border-radius: 5px; font-weight: bold;</string></property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="updateBtn">
-                <property name="text"><string>UPDATE</string></property>
-                <property name="styleSheet"><string>background-color: #FFA500; color: white; padding: 15px; border-radius: 5px; font-weight: bold;</string></property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="deleteBtn">
-                <property name="text"><string>DELETE</string></property>
-                <property name="styleSheet"><string>background-color: #FF0000; color: white; padding: 15px; border-radius: 5px; font-weight: bold;</string></property>
-               </widget>
-              </item>
-             </layout>
+             <widget class="QPushButton" name="submitBtn">
+              <property name="text"><string>SUBMIT</string></property>
+              <property name="styleSheet"><string>background-color: #0055FF; color: white; padding: 15px; border-radius: 5px; font-weight: bold;</string></property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="updateBtn">
+              <property name="text"><string>UPDATE</string></property>
+              <property name="styleSheet"><string>background-color: #FFA500; color: white; padding: 15px; border-radius: 5px; font-weight: bold;</string></property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="deleteBtn">
+              <property name="text"><string>DELETE</string></property>
+              <property name="styleSheet"><string>background-color: #FF0000; color: white; padding: 15px; border-radius: 5px; font-weight: bold;</string></property>
+             </widget>
             </item>
            </layout>
           </item>
          </layout>
         </item>
+        
        </layout>
       </widget>
      </widget>
