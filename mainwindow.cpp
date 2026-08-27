@@ -11,7 +11,12 @@
 #include <QBrush>
 #include <QColor>
 #include <QDateTime>
-#include <QFileDialog> // PDF එක Browse කිරීම සඳහා
+#include <QFileDialog>
+// අලුතින් එක් කළ Headers (File Management සඳහා)
+#include <QFile>
+#include <QDir>
+#include <QFileInfo>
+#include <QCoreApplication>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -35,7 +40,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->deleteBtn, &QPushButton::clicked, this, &MainWindow::deleteData);
     connect(ui->dateInput, &QDateEdit::dateChanged, this, &MainWindow::updateAvailableTimeSlots);
     
-    // PDF Browse බොත්තම ක්‍රියාත්මක කිරීම
     connect(ui->browsePdfBtn, &QPushButton::clicked, this, [this](){
         QString filePath = QFileDialog::getOpenFileName(this, "Select PDF File", "", "PDF Documents (*.pdf)");
         if (!filePath.isEmpty()) {
@@ -249,6 +253,39 @@ bool MainWindow::checkPasscode()
     return true;
 }
 
+// ------------------------------------------------------------
+// නවතම තර්කනය: PDF එක සුරක්ෂිතව System එක ඇතුළට Copy කරගැනීම
+// ------------------------------------------------------------
+QString MainWindow::savePdfFile(const QString &sourcePath)
+{
+    if (sourcePath.isEmpty()) return "";
+
+    // Application එක ධාවනය වන තැන (Build folder එක) ඇතුළේ uploads/pdfs ෆෝල්ඩරය සෑදීම
+    QString uploadDirPath = QCoreApplication::applicationDirPath() + "/uploads/pdfs";
+    
+    // දැනටමත් අපේ ෆෝල්ඩරේ තියෙන ගොනුවක් නම් (උදා: Update කරන විට) එය Copy කිරීම අවශ්‍ය නැත
+    if (sourcePath.startsWith(uploadDirPath)) {
+        return sourcePath;
+    }
+
+    QDir dir(uploadDirPath);
+    if (!dir.exists()) {
+        dir.mkpath("."); // ෆෝල්ඩරය නැත්නම් අලුතින් සාදයි
+    }
+
+    QFileInfo fileInfo(sourcePath);
+    // අලුත් නම සෑදීම: "මිලි-තත්පර_මුල්නම.pdf" (Duplicate නම් ගැටීම වැළැක්වීමට)
+    QString uniqueFileName = QString::number(QDateTime::currentMSecsSinceEpoch()) + "_" + fileInfo.fileName();
+    QString destPath = dir.absoluteFilePath(uniqueFileName);
+
+    // ගොනුව Copy කිරීම
+    if (QFile::copy(sourcePath, destPath)) {
+        return destPath; // සාර්ථක නම් අලුත් Path එක Return කරයි
+    } else {
+        return sourcePath; // යම් හෙයකින් අසමත් වුවහොත් පැරණි Path එකම යවයි
+    }
+}
+
 void MainWindow::submitData()
 {
     QStringList selectedSlots = getSelectedTimeSlotsList();
@@ -265,6 +302,9 @@ void MainWindow::submitData()
         return;
     }
 
+    // PDF එක ආරක්ෂිත ෆෝල්ඩරයකට Copy කර එහි නව ලිපිනය ලබාගැනීම
+    QString securePdfPath = savePdfFile(ui->pdfInput->text());
+
     QString pinStr = QString::number(QRandomGenerator::global()->bounded(1000, 10000));
     QString finalTimeStr = selectedSlots.join(", ");
     QString currentTimestamp = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm AP");
@@ -275,7 +315,7 @@ void MainWindow::submitData()
     newRecord.setIndexNo(ui->indexInput->text());
     newRecord.setDepartment(ui->deptInput->currentText());
     newRecord.setEmail(ui->emailInput->text());
-    newRecord.setPdfPath(ui->pdfInput->text());
+    newRecord.setPdfPath(securePdfPath); // ආරක්ෂිත ලිපිනය මෙහි ලබාදෙයි
     newRecord.setRecordDate(dateStr);
     newRecord.setTimeSlots(finalTimeStr);
     newRecord.setDescription(ui->descriptionInput->toPlainText());
@@ -310,11 +350,14 @@ void MainWindow::updateData()
         if (!checkPasscode()) return;
     }
     
+    // Update කරන විටත් අලුත් PDF එකක් දැම්මොත් එය Copy කරගැනීම
+    QString securePdfPath = savePdfFile(ui->pdfInput->text());
+    
     currentRecord.setName(ui->nameInput->text());
     currentRecord.setIndexNo(ui->indexInput->text());
     currentRecord.setDepartment(ui->deptInput->currentText());
     currentRecord.setEmail(ui->emailInput->text());
-    currentRecord.setPdfPath(ui->pdfInput->text());
+    currentRecord.setPdfPath(securePdfPath); 
     currentRecord.setRecordDate(dateStr);
     currentRecord.setTimeSlots(selectedSlots.join(", "));
     currentRecord.setDescription(ui->descriptionInput->toPlainText());
@@ -337,6 +380,7 @@ void MainWindow::deleteData()
     }
 
     if (QMessageBox::question(this, "Confirm", "Permanently delete this record?") == QMessageBox::Yes) {
+        // PDF ගොනුව Delete කිරීමද මෙහිදී කළ හැක (Advanced feature), නමුත් දැනට Database Record එක පමණක් මකා දමමු.
         if (dbManager->deleteRecord(currentRecord.getId())) {
             QMessageBox::information(this, "Deleted", "Record deleted successfully!");
             updateCalendarHighlights();

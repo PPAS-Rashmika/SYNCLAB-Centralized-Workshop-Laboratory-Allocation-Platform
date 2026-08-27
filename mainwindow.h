@@ -29,7 +29,6 @@ private slots:
     void updateAvailableTimeSlots(const QDate &date);
     void showRecordsWindow(); 
     
-    // Popup එකෙන් එන සිග්නල් අල්ලාගන්නා Slots
     void loadRecordForEdit(const StudentRecord &record);
     void onDatabaseUpdatedFromPopup();
 
@@ -39,7 +38,7 @@ private:
     
     QString currentCategory;
     StudentRecord currentRecord; 
-    bool isPasscodeBypassed; // Passcode ඉල්ලීම අක්‍රීය කිරීමේ Flag එක
+    bool isPasscodeBypassed; 
 
     void setupDynamicUI();
     void updateCalendarHighlights();
@@ -49,6 +48,9 @@ private:
     void setTimeSlotsInUI(const QString &timeString);
     void clearUI();
     void loadRecordIntoUI(const StudentRecord &record);
+    
+    // නවතම ශ්‍රිතය: PDF ගොනුව Application එක ඇතුළට Copy කරගැනීම සඳහා
+    QString savePdfFile(const QString &sourcePath);
 };
 
 #endif // MAINWINDOW_H

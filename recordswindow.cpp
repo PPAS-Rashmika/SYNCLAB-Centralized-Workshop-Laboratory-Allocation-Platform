@@ -5,12 +5,14 @@
 #include <QHeaderView>
 #include <QMessageBox>
 #include <QWidget>
+#include <QDesktopServices> // Email යැවීම සඳහා
+#include <QUrl>             // URL Encoding සඳහා
 
 RecordsWindow::RecordsWindow(IDatabaseManager *db, const QString &category, QWidget *parent)
     : QDialog(parent), dbManager(db), currentCategory(category)
 {
     setWindowTitle(category.toUpper() + " - ALL BOOKINGS");
-    resize(1400, 500); // නව තීරු සඳහා Window එක තවත් විශාල කරන ලදී
+    resize(1400, 500); 
     setStyleSheet("QDialog { background-color: #F4F7FC; }");
 
     setupUI();
@@ -24,7 +26,6 @@ void RecordsWindow::setupUI()
     QVBoxLayout *layout = new QVBoxLayout(this);
     
     recordsTable = new QTableWidget(this);
-    // Columns ගණන 10 දක්වා වැඩි කරන ලදී (Email, PDF)
     recordsTable->setColumnCount(10); 
     
     recordsTable->setHorizontalHeaderLabels({"Submitted Time", "Name", "Index", "Dept", "Email", "PDF Document", "Booked Date", "Time Slot", "Description", "Actions"});
@@ -91,8 +92,38 @@ void RecordsWindow::loadData()
             }
         });
         
+        // --- අලුතින් යාවත්කාලීන කළ Verify තර්කනය (Auto Email) ---
         connect(verifyBtn, &QPushButton::clicked, [this, record = records[i]]() {
-            QMessageBox::information(this, "Verified", "Booking for " + record.getName() + " has been successfully verified!");
+            QString studentEmail = record.getEmail();
+            
+            // ඊමේල් ලිපිනයක් ඇතුළත් කර ඇත්දැයි පරීක්ෂා කිරීම
+            if (studentEmail.trimmed().isEmpty()) {
+                QMessageBox::warning(this, "Missing Email", "No email address found for this booking.");
+                return;
+            }
+
+            // Email එකේ මාතෘකාව (Subject) සහ අන්තර්ගතය (Body) සකස් කිරීම
+            QString subject = "Booking Verified - " + record.getCategory().toUpper();
+            QString body = "Dear " + record.getName() + ",\n\n"
+                           "Your booking for the " + record.getCategory() + " workshop on " + record.getRecordDate() + 
+                           " (Time: " + record.getTimeSlots() + ") has been successfully VERIFIED.\n\n"
+                           "Thank you.";
+
+            // URL Encoding මගින් 'mailto' ලින්ක් එක සෑදීම
+            QString link = QString("mailto:%1?subject=%2&body=%3")
+                               .arg(studentEmail)
+                               .arg(QString(QUrl::toPercentEncoding(subject)))
+                               .arg(QString(QUrl::toPercentEncoding(body)));
+
+            // පරිගණකයේ ඇති Default Email මෘදුකාංගය විවෘත කිරීම
+            bool success = QDesktopServices::openUrl(QUrl(link, QUrl::TolerantMode));
+
+            if (success) {
+                QMessageBox::information(this, "Verified", "Booking for " + record.getName() + " has been verified.\n\nYour email client has been opened to send the confirmation.");
+            } else {
+                QMessageBox::warning(this, "Error", "Could not open the email client. Please check your default email app settings.");
+            }
         });
+        // --------------------------------------------------------
     }
 }
