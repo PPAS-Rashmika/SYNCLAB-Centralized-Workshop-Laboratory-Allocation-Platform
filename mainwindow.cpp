@@ -133,9 +133,22 @@ void MainWindow::goBack()
 
 void MainWindow::showRecordsWindow()
 {
+    // --- Admin Passcode Validation ---
+    bool ok;
+    QString enteredAdminCode = QInputDialog::getText(this, "Admin Authentication", 
+                                                     "Enter Admin Passcode to view all bookings:", 
+                                                     QLineEdit::Password, "", &ok);
+    
+    if (!ok) return; // පරිශීලකයා 'Cancel' කළහොත් ඉවත් වීම
+    
+    if (enteredAdminCode != "00000000") {
+        QMessageBox::critical(this, "Access Denied", "Incorrect Admin Passcode!");
+        return;
+    }
+    // ---------------------------------
+
     RecordsWindow *recordsWin = new RecordsWindow(dbManager, currentCategory, this);
     
-    // Popup එකේ Signals, MainWindow එකේ Slots වලට සම්බන්ධ කිරීම
     connect(recordsWin, &RecordsWindow::editRequested, this, &MainWindow::loadRecordForEdit);
     connect(recordsWin, &RecordsWindow::databaseUpdated, this, &MainWindow::onDatabaseUpdatedFromPopup);
     
@@ -146,12 +159,11 @@ void MainWindow::showRecordsWindow()
 void MainWindow::loadRecordForEdit(const StudentRecord &record)
 {
     loadRecordIntoUI(record);
-    isPasscodeBypassed = true; // Table එකෙන් ආවොත් Passcode එක Bypass කරන්න
+    isPasscodeBypassed = true; // Admin හරහා පැමිණි නිසා User Passcode එක Bypass කිරීම
 }
 
 void MainWindow::onDatabaseUpdatedFromPopup()
 {
-    // Popup එකේදී Delete කළොත් ප්‍රධාන Window එකේ Calendar එක අලුත් කිරීම
     updateCalendarHighlights();
     clearUI();
 }
@@ -188,7 +200,7 @@ void MainWindow::clearUI()
     setTimeSlotsInUI(""); 
     ui->descriptionInput->clear();
     
-    isPasscodeBypassed = false; // අලුත් එකක් කරද්දි Bypass එක අක්‍රීය කිරීම
+    isPasscodeBypassed = false; 
 }
 
 QStringList MainWindow::getSelectedTimeSlotsList()
@@ -283,7 +295,6 @@ void MainWindow::updateData()
         return;
     }
 
-    // Bypass Flag එක True නැත්නම් පමණක් Passcode එක පරීක්ෂා කිරීම
     if (!isPasscodeBypassed) {
         if (!checkPasscode()) return;
     }
@@ -308,7 +319,6 @@ void MainWindow::deleteData()
 {
     if (currentRecord.getId() == -1) return;
     
-    // Bypass Flag එක True නැත්නම් පමණක් Passcode එක පරීක්ෂා කිරීම
     if (!isPasscodeBypassed) {
         if (!checkPasscode()) return;
     }
@@ -357,7 +367,7 @@ void MainWindow::loadRecordIntoUI(const StudentRecord &record)
 
 void MainWindow::dateClicked(const QDate &date)
 {
-    isPasscodeBypassed = false; // Calendar එකෙන් තේරුවොත් අනිවාර්යයෙන් Passcode ඉල්ලන්න ඕනෑ
+    isPasscodeBypassed = false; 
     
     QString dateStr = date.toString("yyyy-MM-dd");
     QList<StudentRecord> records = dbManager->getRecordsByDateAndCategory(dateStr, currentCategory);
