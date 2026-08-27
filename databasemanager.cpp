@@ -22,20 +22,22 @@ bool SqliteDatabaseManager::createTable()
     return query.exec("CREATE TABLE IF NOT EXISTS records ("
                       "id INTEGER PRIMARY KEY AUTOINCREMENT, "
                       "category TEXT, name TEXT, index_no TEXT, "
-                      "department TEXT, record_date TEXT, "
-                      "time_slot TEXT, description TEXT, passcode TEXT, "
-                      "created_at TEXT)");
+                      "department TEXT, email TEXT, pdf_path TEXT, "
+                      "record_date TEXT, time_slot TEXT, description TEXT, "
+                      "passcode TEXT, created_at TEXT)");
 }
 
 bool SqliteDatabaseManager::addRecord(const StudentRecord &record)
 {
     QSqlQuery query;
-    query.prepare("INSERT INTO records (category, name, index_no, department, record_date, time_slot, description, passcode, created_at) "
-                  "VALUES (:category, :name, :index, :dept, :date, :time, :desc, :passcode, :created_at)");
+    query.prepare("INSERT INTO records (category, name, index_no, department, email, pdf_path, record_date, time_slot, description, passcode, created_at) "
+                  "VALUES (:category, :name, :index, :dept, :email, :pdf, :date, :time, :desc, :passcode, :created_at)");
     query.bindValue(":category", record.getCategory());
     query.bindValue(":name", record.getName());
     query.bindValue(":index", record.getIndexNo());
     query.bindValue(":dept", record.getDepartment());
+    query.bindValue(":email", record.getEmail());
+    query.bindValue(":pdf", record.getPdfPath());
     query.bindValue(":date", record.getRecordDate());
     query.bindValue(":time", record.getTimeSlots());
     query.bindValue(":desc", record.getDescription());
@@ -47,10 +49,12 @@ bool SqliteDatabaseManager::addRecord(const StudentRecord &record)
 bool SqliteDatabaseManager::updateRecord(const StudentRecord &record)
 {
     QSqlQuery query;
-    query.prepare("UPDATE records SET name=:name, index_no=:index, department=:dept, record_date=:date, time_slot=:time, description=:desc WHERE id=:id");
+    query.prepare("UPDATE records SET name=:name, index_no=:index, department=:dept, email=:email, pdf_path=:pdf, record_date=:date, time_slot=:time, description=:desc WHERE id=:id");
     query.bindValue(":name", record.getName());
     query.bindValue(":index", record.getIndexNo());
     query.bindValue(":dept", record.getDepartment());
+    query.bindValue(":email", record.getEmail());
+    query.bindValue(":pdf", record.getPdfPath());
     query.bindValue(":date", record.getRecordDate());
     query.bindValue(":time", record.getTimeSlots());
     query.bindValue(":desc", record.getDescription());
@@ -70,7 +74,7 @@ QList<StudentRecord> SqliteDatabaseManager::getRecordsByDateAndCategory(const QS
 {
     QList<StudentRecord> records;
     QSqlQuery query;
-    query.prepare("SELECT id, name, index_no, department, time_slot, description, passcode, created_at "
+    query.prepare("SELECT id, name, index_no, department, email, pdf_path, time_slot, description, passcode, created_at "
                   "FROM records WHERE record_date = :date AND category = :category");
     query.bindValue(":date", date);
     query.bindValue(":category", category);
@@ -82,10 +86,12 @@ QList<StudentRecord> SqliteDatabaseManager::getRecordsByDateAndCategory(const QS
             record.setName(query.value(1).toString());
             record.setIndexNo(query.value(2).toString());
             record.setDepartment(query.value(3).toString());
-            record.setTimeSlots(query.value(4).toString());
-            record.setDescription(query.value(5).toString());
-            record.setPasscode(query.value(6).toString());
-            record.setCreatedAt(query.value(7).toString());
+            record.setEmail(query.value(4).toString());
+            record.setPdfPath(query.value(5).toString());
+            record.setTimeSlots(query.value(6).toString());
+            record.setDescription(query.value(7).toString());
+            record.setPasscode(query.value(8).toString());
+            record.setCreatedAt(query.value(9).toString());
             record.setRecordDate(date);
             record.setCategory(category);
             records.append(record);
@@ -98,7 +104,7 @@ QList<StudentRecord> SqliteDatabaseManager::getAllRecordsForCategory(const QStri
 {
     QList<StudentRecord> records;
     QSqlQuery query;
-    query.prepare("SELECT id, name, index_no, department, record_date, time_slot, description, passcode, created_at "
+    query.prepare("SELECT id, name, index_no, department, email, pdf_path, record_date, time_slot, description, passcode, created_at "
                   "FROM records WHERE category = :category ORDER BY created_at DESC");
     query.bindValue(":category", category);
     
@@ -109,11 +115,13 @@ QList<StudentRecord> SqliteDatabaseManager::getAllRecordsForCategory(const QStri
             record.setName(query.value(1).toString());
             record.setIndexNo(query.value(2).toString());
             record.setDepartment(query.value(3).toString());
-            record.setRecordDate(query.value(4).toString());
-            record.setTimeSlots(query.value(5).toString());
-            record.setDescription(query.value(6).toString());
-            record.setPasscode(query.value(7).toString());
-            record.setCreatedAt(query.value(8).toString());
+            record.setEmail(query.value(4).toString());
+            record.setPdfPath(query.value(5).toString());
+            record.setRecordDate(query.value(6).toString());
+            record.setTimeSlots(query.value(7).toString());
+            record.setDescription(query.value(8).toString());
+            record.setPasscode(query.value(9).toString());
+            record.setCreatedAt(query.value(10).toString());
             record.setCategory(category);
             records.append(record);
         }
@@ -167,7 +175,6 @@ QStringList SqliteDatabaseManager::getBookedTimeSlotsStringList(const QString &d
     
     if (query.exec()) {
         while (query.next()) {
-            // නිවැරදි කළ කොටස: 'slots' වෙනුවට 'bookedSlotsList' ලෙස යොදා ඇත
             QStringList bookedSlotsList = query.value(0).toString().split(",");
             for (QString slot : bookedSlotsList) {
                 slot = slot.trimmed(); 

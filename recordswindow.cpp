@@ -10,7 +10,7 @@ RecordsWindow::RecordsWindow(IDatabaseManager *db, const QString &category, QWid
     : QDialog(parent), dbManager(db), currentCategory(category)
 {
     setWindowTitle(category.toUpper() + " - ALL BOOKINGS");
-    resize(1250, 500); // Buttons වලට ඉඩ මදි නොවීම සඳහා පළල වැඩි කර ඇත
+    resize(1400, 500); // නව තීරු සඳහා Window එක තවත් විශාල කරන ලදී
     setStyleSheet("QDialog { background-color: #F4F7FC; }");
 
     setupUI();
@@ -24,12 +24,13 @@ void RecordsWindow::setupUI()
     QVBoxLayout *layout = new QVBoxLayout(this);
     
     recordsTable = new QTableWidget(this);
-    recordsTable->setColumnCount(8); // තීරු ගණන 8 දක්වා වැඩි කරන ලදී (Actions සඳහා)
+    // Columns ගණන 10 දක්වා වැඩි කරන ලදී (Email, PDF)
+    recordsTable->setColumnCount(10); 
     
-    recordsTable->setHorizontalHeaderLabels({"Submitted Time", "Name", "Index", "Dept", "Booked Date", "Time Slot", "Description", "Actions"});
+    recordsTable->setHorizontalHeaderLabels({"Submitted Time", "Name", "Index", "Dept", "Email", "PDF Document", "Booked Date", "Time Slot", "Description", "Actions"});
     
     recordsTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-    recordsTable->horizontalHeader()->setSectionResizeMode(7, QHeaderView::ResizeToContents); // Action තීරුව ප්‍රමාණයට හැඩගැස්වීම
+    recordsTable->horizontalHeader()->setSectionResizeMode(9, QHeaderView::ResizeToContents);
     
     recordsTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     recordsTable->setAlternatingRowColors(true);
@@ -49,11 +50,12 @@ void RecordsWindow::loadData()
         recordsTable->setItem(i, 1, new QTableWidgetItem(records[i].getName()));
         recordsTable->setItem(i, 2, new QTableWidgetItem(records[i].getIndexNo()));
         recordsTable->setItem(i, 3, new QTableWidgetItem(records[i].getDepartment()));
-        recordsTable->setItem(i, 4, new QTableWidgetItem(records[i].getRecordDate()));
-        recordsTable->setItem(i, 5, new QTableWidgetItem(records[i].getTimeSlots()));
-        recordsTable->setItem(i, 6, new QTableWidgetItem(records[i].getDescription()));
+        recordsTable->setItem(i, 4, new QTableWidgetItem(records[i].getEmail()));
+        recordsTable->setItem(i, 5, new QTableWidgetItem(records[i].getPdfPath()));
+        recordsTable->setItem(i, 6, new QTableWidgetItem(records[i].getRecordDate()));
+        recordsTable->setItem(i, 7, new QTableWidgetItem(records[i].getTimeSlots()));
+        recordsTable->setItem(i, 8, new QTableWidgetItem(records[i].getDescription()));
         
-        // --- අලුතින් එක් කරන Action Buttons ---
         QWidget *actionWidget = new QWidget();
         QHBoxLayout *hLayout = new QHBoxLayout(actionWidget);
         hLayout->setContentsMargins(2, 2, 2, 2);
@@ -72,26 +74,23 @@ void RecordsWindow::loadData()
         hLayout->addWidget(deleteBtn);
         hLayout->addWidget(verifyBtn);
         
-        recordsTable->setCellWidget(i, 7, actionWidget);
+        recordsTable->setCellWidget(i, 9, actionWidget);
         
-        // Change Button Action (Passcode නොමැතිව Edit කිරීමට යැවීම)
         connect(changeBtn, &QPushButton::clicked, [this, record = records[i]]() {
             emit editRequested(record);
-            this->accept(); // Pop-up Window එක වසා දැමීම
+            this->accept(); 
         });
         
-        // Delete Button Action (Passcode නොමැතිව මකා දැමීම)
         connect(deleteBtn, &QPushButton::clicked, [this, record = records[i]]() {
             if (QMessageBox::question(this, "Confirm", "Permanently delete this record without passcode?") == QMessageBox::Yes) {
                 if(dbManager->deleteRecord(record.getId())) {
                     QMessageBox::information(this, "Deleted", "Record deleted successfully!");
-                    loadData(); // වගුව අලුත් කිරීම
-                    emit databaseUpdated(); // MainWindow එකේ Calendar එක අලුත් කිරීමට දැන්වීම
+                    loadData(); 
+                    emit databaseUpdated(); 
                 }
             }
         });
         
-        // Verify Button Action (සනාථ කිරීමේ පණිවිඩය)
         connect(verifyBtn, &QPushButton::clicked, [this, record = records[i]]() {
             QMessageBox::information(this, "Verified", "Booking for " + record.getName() + " has been successfully verified!");
         });

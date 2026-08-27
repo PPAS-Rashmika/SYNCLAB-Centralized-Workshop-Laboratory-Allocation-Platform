@@ -7,6 +7,8 @@ QString StudentRecord::getCategory() const { return category; }
 QString StudentRecord::getName() const { return name; }
 QString StudentRecord::getIndexNo() const { return indexNo; }
 QString StudentRecord::getDepartment() const { return department; }
+QString StudentRecord::getEmail() const { return email; }
+QString StudentRecord::getPdfPath() const { return pdfPath; }
 QString StudentRecord::getRecordDate() const { return recordDate; }
 QString StudentRecord::getTimeSlots() const { return timeSlots; }
 QString StudentRecord::getDescription() const { return description; }
@@ -18,6 +20,8 @@ void StudentRecord::setCategory(const QString &newCategory) { category = newCate
 void StudentRecord::setName(const QString &newName) { name = newName; }
 void StudentRecord::setIndexNo(const QString &newIndexNo) { indexNo = newIndexNo; }
 void StudentRecord::setDepartment(const QString &newDepartment) { department = newDepartment; }
+void StudentRecord::setEmail(const QString &newEmail) { email = newEmail; }
+void StudentRecord::setPdfPath(const QString &newPdfPath) { pdfPath = newPdfPath; }
 void StudentRecord::setRecordDate(const QString &newRecordDate) { recordDate = newRecordDate; }
 void StudentRecord::setTimeSlots(const QString &newTimeSlots) { timeSlots = newTimeSlots; }
 void StudentRecord::setDescription(const QString &newDescription) { description = newDescription; }

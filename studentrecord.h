@@ -11,11 +11,13 @@ private:
     QString name;
     QString indexNo;
     QString department;
+    QString email;       // අලුතින් එක් කරන ලදී
+    QString pdfPath;     // අලුතින් එක් කරන ලදී
     QString recordDate;
     QString timeSlots;
     QString description;
     QString passcode;
-    QString createdAt; // අලුතින් එක්කළ විචල්‍යය (Submitted Date & Time)
+    QString createdAt;
 
 public:
     StudentRecord();
@@ -25,6 +27,8 @@ public:
     QString getName() const;
     QString getIndexNo() const;
     QString getDepartment() const;
+    QString getEmail() const;
+    QString getPdfPath() const;
     QString getRecordDate() const;
     QString getTimeSlots() const;
     QString getDescription() const;
@@ -36,6 +40,8 @@ public:
     void setName(const QString &newName);
     void setIndexNo(const QString &newIndexNo);
     void setDepartment(const QString &newDepartment);
+    void setEmail(const QString &newEmail);
+    void setPdfPath(const QString &newPdfPath);
     void setRecordDate(const QString &newRecordDate);
     void setTimeSlots(const QString &newTimeSlots);
     void setDescription(const QString &newDescription);

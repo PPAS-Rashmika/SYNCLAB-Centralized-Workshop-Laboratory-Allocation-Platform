@@ -11,13 +11,14 @@
 #include <QBrush>
 #include <QColor>
 #include <QDateTime>
+#include <QFileDialog> // PDF එක Browse කිරීම සඳහා
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    isPasscodeBypassed = false; // ආරම්භයේදී Passcode Bypass කිරීම අක්‍රීයයි
+    isPasscodeBypassed = false; 
 
     dbManager = new SqliteDatabaseManager("student_data.db");
     if (!dbManager->createTable()) {
@@ -33,6 +34,14 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->updateBtn, &QPushButton::clicked, this, &MainWindow::updateData);
     connect(ui->deleteBtn, &QPushButton::clicked, this, &MainWindow::deleteData);
     connect(ui->dateInput, &QDateEdit::dateChanged, this, &MainWindow::updateAvailableTimeSlots);
+    
+    // PDF Browse බොත්තම ක්‍රියාත්මක කිරීම
+    connect(ui->browsePdfBtn, &QPushButton::clicked, this, [this](){
+        QString filePath = QFileDialog::getOpenFileName(this, "Select PDF File", "", "PDF Documents (*.pdf)");
+        if (!filePath.isEmpty()) {
+            ui->pdfInput->setText(filePath);
+        }
+    });
 }
 
 MainWindow::~MainWindow()
@@ -133,19 +142,16 @@ void MainWindow::goBack()
 
 void MainWindow::showRecordsWindow()
 {
-    // --- Admin Passcode Validation ---
     bool ok;
     QString enteredAdminCode = QInputDialog::getText(this, "Admin Authentication", 
-                                                     "Enter Admin Passcode to view all bookings:", 
+                                                     "Enter Admin Passcode:", 
                                                      QLineEdit::Password, "", &ok);
+    if (!ok) return; 
     
-    if (!ok) return; // පරිශීලකයා 'Cancel' කළහොත් ඉවත් වීම
-    
-    if (enteredAdminCode != "00000000") {
+    if (enteredAdminCode != "0000000") {
         QMessageBox::critical(this, "Access Denied", "Incorrect Admin Passcode!");
         return;
     }
-    // ---------------------------------
 
     RecordsWindow *recordsWin = new RecordsWindow(dbManager, currentCategory, this);
     
@@ -159,7 +165,7 @@ void MainWindow::showRecordsWindow()
 void MainWindow::loadRecordForEdit(const StudentRecord &record)
 {
     loadRecordIntoUI(record);
-    isPasscodeBypassed = true; // Admin හරහා පැමිණි නිසා User Passcode එක Bypass කිරීම
+    isPasscodeBypassed = true; 
 }
 
 void MainWindow::onDatabaseUpdatedFromPopup()
@@ -194,6 +200,9 @@ void MainWindow::clearUI()
     ui->nameInput->clear();
     ui->indexInput->clear();
     ui->deptInput->setCurrentIndex(0);
+    ui->emailInput->clear();
+    ui->pdfInput->clear();
+    
     QDate currentDate = QDate::currentDate();
     ui->dateInput->setDate(currentDate);
     updateAvailableTimeSlots(currentDate);
@@ -265,6 +274,8 @@ void MainWindow::submitData()
     newRecord.setName(ui->nameInput->text());
     newRecord.setIndexNo(ui->indexInput->text());
     newRecord.setDepartment(ui->deptInput->currentText());
+    newRecord.setEmail(ui->emailInput->text());
+    newRecord.setPdfPath(ui->pdfInput->text());
     newRecord.setRecordDate(dateStr);
     newRecord.setTimeSlots(finalTimeStr);
     newRecord.setDescription(ui->descriptionInput->toPlainText());
@@ -302,6 +313,8 @@ void MainWindow::updateData()
     currentRecord.setName(ui->nameInput->text());
     currentRecord.setIndexNo(ui->indexInput->text());
     currentRecord.setDepartment(ui->deptInput->currentText());
+    currentRecord.setEmail(ui->emailInput->text());
+    currentRecord.setPdfPath(ui->pdfInput->text());
     currentRecord.setRecordDate(dateStr);
     currentRecord.setTimeSlots(selectedSlots.join(", "));
     currentRecord.setDescription(ui->descriptionInput->toPlainText());
@@ -355,6 +368,8 @@ void MainWindow::loadRecordIntoUI(const StudentRecord &record)
     ui->nameInput->setText(currentRecord.getName());
     ui->indexInput->setText(currentRecord.getIndexNo());
     ui->deptInput->setCurrentText(currentRecord.getDepartment());
+    ui->emailInput->setText(currentRecord.getEmail());
+    ui->pdfInput->setText(currentRecord.getPdfPath());
     ui->dateInput->setDate(QDate::fromString(currentRecord.getRecordDate(), "yyyy-MM-dd"));
     updateAvailableTimeSlots(ui->dateInput->date()); 
     setTimeSlotsInUI(currentRecord.getTimeSlots());

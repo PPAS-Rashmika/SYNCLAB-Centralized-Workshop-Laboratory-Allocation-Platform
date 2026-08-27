@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1000</width>
-    <height>700</height>
+    <height>750</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -54,15 +54,12 @@
             <property name="styleSheet"><string>padding: 10px; background-color: #ccc; border-radius: 5px;</string></property>
            </widget>
           </item>
-          
-          <!-- අලුතින් එක් කළ Button එක -->
           <item alignment="Qt::AlignTop">
            <widget class="QPushButton" name="viewRecordsBtn">
             <property name="text"><string>VIEW ALL BOOKINGS</string></property>
             <property name="styleSheet"><string>padding: 10px; background-color: #17a2b8; color: white; border-radius: 5px; font-weight: bold;</string></property>
            </widget>
           </item>
-          
           <item>
            <spacer name="horizontalSpacer">
             <property name="orientation"><enum>Qt::Horizontal</enum></property>
@@ -98,6 +95,15 @@
               <item><property name="text"><string>Engineering</string></property></item>
               <item><property name="text"><string>Technology</string></property></item>
              </widget>
+            </item>
+            <item><widget class="QLabel" name="label_email"><property name="text"><string>EMAIL ADDRESS</string></property></widget></item>
+            <item><widget class="QLineEdit" name="emailInput"><property name="placeholderText"><string>Enter email address</string></property></widget></item>
+            <item><widget class="QLabel" name="label_pdf"><property name="text"><string>ATTACH PDF DOCUMENT</string></property></widget></item>
+            <item>
+             <layout class="QHBoxLayout" name="pdfLayout">
+              <item><widget class="QLineEdit" name="pdfInput"><property name="placeholderText"><string>Select PDF file...</string></property><property name="readOnly"><bool>true</bool></property></widget></item>
+              <item><widget class="QPushButton" name="browsePdfBtn"><property name="text"><string>BROWSE</string></property></widget></item>
+             </layout>
             </item>
             <item><widget class="QLabel" name="label_4"><property name="text"><string>DATE</string></property></widget></item>
             <item>
