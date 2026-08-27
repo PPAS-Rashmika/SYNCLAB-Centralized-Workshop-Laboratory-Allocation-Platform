@@ -56,6 +56,21 @@ MainWindow::~MainWindow()
 
 void MainWindow::setupDynamicUI()
 {
+    // --- Logo එක Load කිරීමේ තර්කනය ---
+    QString logoPath = QCoreApplication::applicationDirPath() + "/assets/logo.png";
+    QPixmap logoPix(logoPath);
+    
+    if (!logoPix.isNull()) {
+        // Logo එක සාර්ථකව හමු වුවහොත්
+        ui->logoLabel->setPixmap(logoPix.scaled(120, 120, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        ui->logoLabel->setText(""); 
+        ui->logoLabel->setStyleSheet("background: transparent; border: none;");
+    } else {
+        // Logo එක නොමැති නම් පෙන්වන අලංකාර රවුම් (Circular) Placeholder එක
+        ui->logoLabel->setStyleSheet("background-color: #E2E8F0; color: #64748B; font-weight: bold; border-radius: 60px; border: 2px dashed #CBD5E1;");
+    }
+    // ---------------------------------
+
     ui->gridLayout->setAlignment(Qt::AlignCenter); 
     ui->gridLayout->setHorizontalSpacing(30);      
     ui->gridLayout->setVerticalSpacing(30);        
@@ -99,9 +114,6 @@ void MainWindow::setupDynamicUI()
     });
 }
 
-// ------------------------------------------------------------
-// Professional UI Card Creation
-// ------------------------------------------------------------
 QWidget* MainWindow::createCard(const QString &title)
 {
     QFrame *card = new QFrame(this);
@@ -119,7 +131,6 @@ QWidget* MainWindow::createCard(const QString &title)
         "}"
     );
 
-    // Drop Shadow Effect
     QGraphicsDropShadowEffect *shadow = new QGraphicsDropShadowEffect(card);
     shadow->setBlurRadius(25);
     shadow->setXOffset(0);
@@ -136,7 +147,6 @@ QWidget* MainWindow::createCard(const QString &title)
     imgBox->setFixedSize(170, 140);
     imgBox->setAlignment(Qt::AlignCenter);
     
-    // Image Loading
     QString imgName = title.toLower() + ".png"; 
     QString imgPath = QCoreApplication::applicationDirPath() + "/assets/" + imgName;
     QPixmap pix(imgPath);
@@ -145,7 +155,6 @@ QWidget* MainWindow::createCard(const QString &title)
         imgBox->setPixmap(pix.scaled(170, 140, Qt::KeepAspectRatio, Qt::SmoothTransformation));
         imgBox->setStyleSheet("background-color: transparent; border: none;");
     } else {
-        // Image Placeholder
         imgBox->setStyleSheet("background-color: #F1F5F9; border-radius: 12px; color: #64748B; font-weight: bold; border: 1px dashed #CBD5E1;");
         imgBox->setText("[ Image ]\n" + title);
     }
@@ -154,7 +163,6 @@ QWidget* MainWindow::createCard(const QString &title)
     nameTag->setAlignment(Qt::AlignCenter);
     nameTag->setStyleSheet("font-size: 17px; font-weight: bold; color: #0F172A; border: none; font-family: 'Segoe UI', Arial;");
 
-    // Pill-shaped Gradient Button
     QPushButton *btn = new QPushButton("   SELECT\n   THIS WORKSHOP", card);
     btn->setFixedSize(170, 48);
     btn->setStyleSheet(
@@ -176,7 +184,6 @@ QWidget* MainWindow::createCard(const QString &title)
         "}"
     );
     
-    // Custom Arrow Label (Using a standard ASCII '>' instead of Unicode to prevent compiler errors)
     QLabel *arrowIcon = new QLabel(">", btn);
     arrowIcon->setStyleSheet("color: white; font-weight: bold; font-size: 16px; background: transparent; border: none;");
     arrowIcon->setGeometry(15, 13, 20, 20);

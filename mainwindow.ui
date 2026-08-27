@@ -28,14 +28,44 @@
       <widget class="QWidget" name="page1">
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <property name="leftMargin"><number>20</number></property>
-        <property name="topMargin"><number>30</number></property>
+        <property name="topMargin"><number>20</number></property>
         <property name="rightMargin"><number>20</number></property>
         <property name="bottomMargin"><number>20</number></property>
+        
+        <!-- අලුතින් එක් කළ Logo කොටස -->
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_logo">
+          <item>
+           <spacer name="horizontalSpacer_logo_left">
+            <property name="orientation"><enum>Qt::Horizontal</enum></property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QLabel" name="logoLabel">
+            <property name="minimumSize">
+             <size><width>120</width><height>120</height></size>
+            </property>
+            <property name="maximumSize">
+             <size><width>120</width><height>120</height></size>
+            </property>
+            <property name="text"><string>[ LOGO ]</string></property>
+            <property name="alignment"><set>Qt::AlignCenter</set></property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_logo_right">
+            <property name="orientation"><enum>Qt::Horizontal</enum></property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+        <!-- Logo කොටස අවසන් -->
+
         <item>
          <widget class="QLabel" name="headerLabel">
           <property name="text"><string>WORKSHOPS &amp; LABORATORIES</string></property>
           <property name="alignment"><set>Qt::AlignCenter</set></property>
-          <property name="styleSheet"><string>font-size: 28px; font-weight: 800; color: #112A46; font-family: 'Segoe UI', Arial; letter-spacing: 1px;</string></property>
+          <property name="styleSheet"><string>font-size: 28px; font-weight: 800; color: #112A46; font-family: 'Segoe UI', Arial; letter-spacing: 1px; margin-top: 10px;</string></property>
          </widget>
         </item>
         <item>
