@@ -27,13 +27,9 @@ RecordsWindow::RecordsWindow(IDatabaseManager *db, const QString &category, QWid
     : QDialog(parent), dbManager(db), currentCategory(category)
 {
     setWindowTitle(category.toUpper() + " - ALL BOOKINGS");
-    
-    // --- Window එක Minimize සහ Maximize (Full Screen) කිරීමේ පහසුකම එක් කිරීම ---
     setWindowFlags(Qt::Window | Qt::WindowMinimizeButtonHint | Qt::WindowMaximizeButtonHint | Qt::WindowCloseButtonHint);
+    resize(1500, 800); 
     
-    resize(1500, 800); // ආරම්භක ප්‍රමාණය
-    setStyleSheet("QDialog { background-color: #F4F7FC; }");
-
     setupUI();
     loadData();
 }
@@ -42,12 +38,20 @@ RecordsWindow::~RecordsWindow() {}
 
 void RecordsWindow::setupUI()
 {
+    bool isDark = QSettings("StudentWorkshopApp", "ThemeSettings").value("darkMode", false).toBool();
+    QString bg = isDark ? "#0B1120" : "#F4F7FC";
+    QString text = isDark ? "#F8FAFC" : "#1E293B";
+    QString cardBg = isDark ? "#1E293B" : "#FFFFFF";
+    QString border = isDark ? "#334155" : "#CBD5E1";
+    QString subText = isDark ? "#94A3B8" : "#475569";
+
+    this->setStyleSheet(QString("QDialog { background-color: %1; }").arg(bg));
+
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     
     QHBoxLayout *topBar = new QHBoxLayout();
-    
     QLabel *titleLabel = new QLabel("Booking Management: " + currentCategory.toUpper(), this);
-    titleLabel->setStyleSheet("font-size: 20px; font-weight: bold; color: #1E293B;");
+    titleLabel->setStyleSheet(QString("font-size: 20px; font-weight: bold; color: %1;").arg(text));
     
     QPushButton *printAllBtn = new QPushButton("🖨 Print All", this);
     printAllBtn->setStyleSheet("background-color: #0F172A; color: white; font-weight: bold; border-radius: 6px; padding: 10px 20px; font-size: 14px;");
@@ -65,7 +69,7 @@ void RecordsWindow::setupUI()
     mainLayout->addLayout(topBar);
 
     QFrame *calFrame = new QFrame(this);
-    calFrame->setStyleSheet("QFrame { background-color: #FFFFFF; border-radius: 10px; border: 1px solid #CBD5E1; margin-bottom: 10px; }");
+    calFrame->setStyleSheet(QString("QFrame { background-color: %1; border-radius: 10px; border: 1px solid %2; margin-bottom: 10px; }").arg(cardBg, border));
     
     QVBoxLayout *calLayout = new QVBoxLayout(calFrame);
     calLayout->setContentsMargins(15, 15, 15, 15);
@@ -75,9 +79,9 @@ void RecordsWindow::setupUI()
     
     QVBoxLayout *calTextLayout = new QVBoxLayout();
     QLabel *calTitle = new QLabel("Filter by Booked Date", calFrame);
-    calTitle->setStyleSheet("font-size: 16px; font-weight: bold; color: #1E293B; border: none;");
-    QLabel *calDesc = new QLabel("Select a date on the calendar to view bookings. The numbers below each date represent Approved (Green), Pending (Orange), and Rejected (Red) bookings.", calFrame);
-    calDesc->setStyleSheet("font-size: 13px; color: #475569; border: none;");
+    calTitle->setStyleSheet(QString("font-size: 16px; font-weight: bold; color: %1; border: none;").arg(text));
+    QLabel *calDesc = new QLabel("Select a date on the calendar to view bookings. Numbers represent Approved (Green), Pending (Orange), and Rejected (Red).", calFrame);
+    calDesc->setStyleSheet(QString("font-size: 13px; color: %1; border: none;").arg(subText));
     
     calTextLayout->addWidget(calTitle);
     calTextLayout->addWidget(calDesc);
@@ -92,7 +96,26 @@ void RecordsWindow::setupUI()
     calendar = new CustomCalendarWidget(calFrame);
     calendar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred); 
     calendar->setMinimumHeight(250); 
-    calendar->setStyleSheet("CustomCalendarWidget QWidget { alternate-background-color: #F1F5F9; border: none; font-size: 13px; }");
+    
+    // --- දෝෂය නිවැරදි කර අකුරු පැහැදිලිව පෙනෙන පරිදි සකසන ලද Calendar Stylesheet එක ---
+    QString calStyle = isDark ? 
+        "CustomCalendarWidget { background-color: #0B1120; color: #F8FAFC; }"
+        "CustomCalendarWidget QWidget#qt_calendar_navigationbar { background-color: #1E293B; }"
+        "CustomCalendarWidget QToolButton { color: #F8FAFC; font-weight: bold; background-color: transparent; }"
+        "CustomCalendarWidget QToolButton::hover { background-color: #334155; border-radius: 4px; }"
+        "CustomCalendarWidget QMenu { background-color: #1E293B; color: #F8FAFC; }"
+        "CustomCalendarWidget QSpinBox { background-color: #1E293B; color: #F8FAFC; selection-background-color: #38BDF8; }"
+        "CustomCalendarWidget QAbstractItemView { selection-background-color: #38BDF8; selection-color: #0B1120; background-color: #0B1120; color: #F8FAFC; border: 1px solid #334155; alternate-background-color: #1E293B; font-size: 13px; }"
+        :
+        "CustomCalendarWidget { background-color: #FFFFFF; color: #0F172A; }"
+        "CustomCalendarWidget QWidget#qt_calendar_navigationbar { background-color: #F1F5F9; }"
+        "CustomCalendarWidget QToolButton { color: #0F172A; font-weight: bold; background-color: transparent; }"
+        "CustomCalendarWidget QToolButton::hover { background-color: #E2E8F0; border-radius: 4px; }"
+        "CustomCalendarWidget QMenu { background-color: #FFFFFF; color: #0F172A; }"
+        "CustomCalendarWidget QSpinBox { background-color: #FFFFFF; color: #0F172A; selection-background-color: #3B82F6; }"
+        "CustomCalendarWidget QAbstractItemView { selection-background-color: #3B82F6; selection-color: #FFFFFF; background-color: #FFFFFF; color: #0F172A; border: 1px solid #CBD5E1; alternate-background-color: #F8FAFC; font-size: 13px; }";
+    
+    calendar->setStyleSheet(calStyle);
 
     calLayout->addLayout(calTopLayout);
     calLayout->addWidget(calendar);
@@ -116,23 +139,12 @@ void RecordsWindow::setupUI()
     mainLayout->addWidget(scrollArea);
 }
 
-void RecordsWindow::filterByDate(const QDate &date)
-{
-    filterDate = date;
-    loadData(); 
-}
-
-void RecordsWindow::clearFilter()
-{
-    filterDate = QDate(); 
-    calendar->setSelectedDate(QDate::currentDate()); 
-    loadData();
-}
+void RecordsWindow::filterByDate(const QDate &date) { filterDate = date; loadData(); }
+void RecordsWindow::clearFilter() { filterDate = QDate(); calendar->setSelectedDate(QDate::currentDate()); loadData(); }
 
 void RecordsWindow::updateCalendarHighlights()
 {
     if (currentCategory.isEmpty()) return;
-
     QTextCharFormat defaultFormat;
     calendar->setDateTextFormat(QDate(), defaultFormat); 
 
@@ -148,14 +160,16 @@ void RecordsWindow::updateCalendarHighlights()
         }
     }
 
+    bool isDark = QSettings("StudentWorkshopApp", "ThemeSettings").value("darkMode", false).toBool();
     QTextCharFormat highlightFormat;
-    highlightFormat.setBackground(QColor("#E0F2FE"));
+    // Highlight colors ද වඩාත් පැහැදිලි වන ලෙස වෙනස් කර ඇත
+    highlightFormat.setBackground(isDark ? QColor("#0369A1") : QColor("#BAE6FD"));
+    highlightFormat.setForeground(isDark ? QColor("#F8FAFC") : QColor("#0C4A6E"));
     highlightFormat.setFontWeight(QFont::Bold);
 
     for (const QDate &date : bookedDates) {
         calendar->setDateTextFormat(date, highlightFormat);
     }
-
     calendar->setStatusCounts(dateCounts);
 }
 
@@ -164,7 +178,10 @@ void RecordsWindow::openSettingsDialog()
     QDialog dialog(this);
     dialog.setWindowTitle("Admin Email Settings");
     dialog.setMinimumWidth(400);
-    dialog.setStyleSheet("QDialog { background-color: #FFFFFF; } QLabel { font-weight: bold; } QLineEdit { padding: 5px; border: 1px solid #CBD5E1; border-radius: 4px; }");
+    
+    bool isDark = QSettings("StudentWorkshopApp", "ThemeSettings").value("darkMode", false).toBool();
+    dialog.setStyleSheet(isDark ? "QDialog { background-color: #1E293B; color: #F8FAFC; } QLabel { font-weight: bold; } QLineEdit { background-color: #0F172A; color: #F8FAFC; padding: 5px; border: 1px solid #334155; border-radius: 4px; }"
+                                : "QDialog { background-color: #FFFFFF; color: #0F172A; } QLabel { font-weight: bold; } QLineEdit { padding: 5px; border: 1px solid #CBD5E1; border-radius: 4px; }");
     
     QFormLayout form(&dialog);
     form.setSpacing(15);
@@ -282,14 +299,19 @@ void RecordsWindow::loadData()
         delete child;
     }
 
+    bool isDark = QSettings("StudentWorkshopApp", "ThemeSettings").value("darkMode", false).toBool();
+    QString cardBg = isDark ? "#1E293B" : "#FFFFFF";
+    QString text = isDark ? "#F8FAFC" : "#0F172A";
+    QString border = isDark ? "#334155" : "#CBD5E1";
+    QString altBg = isDark ? "#0F172A" : "#F8FAFC";
+    QString headerBg = isDark ? "#0F172A" : "#E2E8F0";
+
     QList<StudentRecord> allRecords = dbManager->getAllRecordsForCategory(currentCategory);
     QList<StudentRecord> recordsToDisplay;
 
     if (filterDate.isValid()) {
         for (const StudentRecord &r : allRecords) {
-            if (r.getRecordDate() == filterDate.toString("yyyy-MM-dd")) {
-                recordsToDisplay.append(r);
-            }
+            if (r.getRecordDate() == filterDate.toString("yyyy-MM-dd")) recordsToDisplay.append(r);
         }
     } else {
         recordsToDisplay = allRecords; 
@@ -305,7 +327,7 @@ void RecordsWindow::loadData()
         QString msg = filterDate.isValid() ? "No bookings found for the selected date." : "No bookings found for this category.";
         QLabel *emptyLabel = new QLabel(msg, this);
         emptyLabel->setAlignment(Qt::AlignCenter);
-        emptyLabel->setStyleSheet("font-size: 16px; color: #64748B; margin-top: 50px;");
+        emptyLabel->setStyleSheet(QString("font-size: 16px; color: %1; margin-top: 50px;").arg(text));
         scrollLayout->addWidget(emptyLabel);
         scrollLayout->addStretch();
         updateCalendarHighlights(); 
@@ -318,39 +340,10 @@ void RecordsWindow::loadData()
         QList<StudentRecord> records = groupedRecords[date];
 
         QGroupBox *groupBox = new QGroupBox(" Date: " + date, this);
-        groupBox->setStyleSheet("QGroupBox { font-size: 16px; font-weight: bold; color: #0F172A; border: 2px solid #CBD5E1; border-radius: 8px; margin-top: 15px; } QGroupBox::title { subcontrol-origin: margin; subcontrol-position: top left; padding: 0 10px; }");
+        groupBox->setStyleSheet(QString("QGroupBox { font-size: 16px; font-weight: bold; color: %1; border: 2px solid %2; border-radius: 8px; margin-top: 15px; } QGroupBox::title { subcontrol-origin: margin; subcontrol-position: top left; padding: 0 10px; }").arg(isDark?"#38BDF8":"#0F172A", border));
         
         QVBoxLayout *gLayout = new QVBoxLayout(groupBox);
         gLayout->setContentsMargins(15, 25, 15, 15);
-
-        QPushButton *emailAllBtn = new QPushButton(" Email All Records Submitted on " + date + " to ppas.rashmika");
-        emailAllBtn->setStyleSheet("background-color: #8B5CF6; color: white; padding: 10px; border-radius: 5px; font-weight: bold; margin-bottom: 10px;");
-        gLayout->addWidget(emailAllBtn);
-        
-        connect(emailAllBtn, &QPushButton::clicked, [this, date, records]() {
-            bool ok;
-            QString recommendation = QInputDialog::getMultiLineText(this, "Admin Recommendation", "Enter Admin Recommendation for all these bookings (Optional):", "", &ok);
-            if (!ok) return;
-
-            QString subject = "All Bookings Submitted for " + currentCategory + " on " + date;
-            QString body = "Here is the summary of all bookings submitted on " + date + ":\n\n";
-            
-            if (!recommendation.trimmed().isEmpty()) {
-                body += ">> ADMIN RECOMMENDATION:\n" + recommendation + "\n\n";
-                body += "--------------------------------------\n\n";
-            }
-            
-            for (const StudentRecord &r : records) {
-                body += "Booking ID: " + r.getBookingId() + "\n";
-                body += "Name: " + r.getName() + " (Index: " + r.getIndexNo() + ")\n";
-                body += "Time Slot: " + r.getTimeSlots() + "\n";
-                body += "Status: " + r.getStatus() + "\n";
-                body += "--------------------------------------\n";
-            }
-            
-            QString link = QString("mailto:ppas.rashmika?subject=%1&body=%2").arg(QString(QUrl::toPercentEncoding(subject))).arg(QString(QUrl::toPercentEncoding(body)));
-            QDesktopServices::openUrl(QUrl(link, QUrl::TolerantMode));
-        });
 
         QTableWidget *table = new QTableWidget(records.size(), 12, groupBox);
         table->setHorizontalHeaderLabels({"Booking ID", "Name", "Index", "Email", "PDF", "Time Slot", "Description", "Submitted", "Actions", "Status", "Admin Remarks", "DB ID"});
@@ -363,7 +356,9 @@ void RecordsWindow::loadData()
         table->setEditTriggers(QAbstractItemView::NoEditTriggers);
         table->setAlternatingRowColors(true);
         table->setSelectionBehavior(QAbstractItemView::SelectRows);
-        table->setStyleSheet("QTableWidget { background-color: white; alternate-background-color: #F8FAFC; border: none; } QHeaderView::section { background-color: #E2E8F0; font-weight: bold; }");
+        
+        table->setStyleSheet(QString("QTableWidget { background-color: %1; alternate-background-color: %2; border: none; color: %3; } QHeaderView::section { background-color: %4; color: %3; font-weight: bold; border: 1px solid %5; padding: 5px; }")
+                             .arg(cardBg, altBg, text, headerBg, border));
         
         for (int i = 0; i < records.size(); ++i) {
             table->setItem(i, 0, new QTableWidgetItem(records[i].getBookingId()));
@@ -374,10 +369,8 @@ void RecordsWindow::loadData()
             QString pdfPath = records[i].getPdfPath();
             if(!pdfPath.isEmpty()) {
                 QPushButton *pdfBtn = new QPushButton("Open");
-                pdfBtn->setStyleSheet("color: #2563EB; font-weight: bold; border: 1px solid #2563EB; border-radius: 4px; padding: 4px;");
-                connect(pdfBtn, &QPushButton::clicked, [pdfPath](){
-                    QDesktopServices::openUrl(QUrl::fromLocalFile(pdfPath));
-                });
+                pdfBtn->setStyleSheet("color: #38BDF8; font-weight: bold; border: 1px solid #38BDF8; border-radius: 4px; padding: 4px;");
+                connect(pdfBtn, &QPushButton::clicked, [pdfPath](){ QDesktopServices::openUrl(QUrl::fromLocalFile(pdfPath)); });
                 table->setCellWidget(i, 4, pdfBtn);
             } else {
                 table->setItem(i, 4, new QTableWidgetItem("No PDF"));
@@ -394,24 +387,18 @@ void RecordsWindow::loadData()
             
             QPushButton *changeBtn = new QPushButton("Edit");
             changeBtn->setStyleSheet("background-color: #3B82F6; color: white; font-weight: bold; border-radius: 4px; padding: 4px;");
-            
             QPushButton *deleteBtn = new QPushButton("Delete");
             deleteBtn->setStyleSheet("background-color: #64748B; color: white; font-weight: bold; border-radius: 4px; padding: 4px;");
-            
             QPushButton *approveBtn = new QPushButton("Approve");
             approveBtn->setStyleSheet("background-color: #10B981; color: white; font-weight: bold; border-radius: 4px; padding: 4px;");
-
             QPushButton *rejectBtn = new QPushButton("Reject");
             rejectBtn->setStyleSheet("background-color: #EF4444; color: white; font-weight: bold; border-radius: 4px; padding: 4px;");
-
             QPushButton *deanAppBtn = new QPushButton("Dean Apprv");
             deanAppBtn->setStyleSheet("background-color: #0284C7; color: white; font-weight: bold; border-radius: 4px; padding: 4px;");
-
             QPushButton *depHeadAppBtn = new QPushButton("Dep Head");
             depHeadAppBtn->setStyleSheet("background-color: #0D9488; color: white; font-weight: bold; border-radius: 4px; padding: 4px;");
-            
             QPushButton *printBtn = new QPushButton("🖨 Print");
-            printBtn->setStyleSheet("background-color: #0F172A; color: white; font-weight: bold; border-radius: 4px; padding: 4px;");
+            printBtn->setStyleSheet(QString("background-color: %1; color: %2; font-weight: bold; border-radius: 4px; padding: 4px;").arg(isDark?"#F8FAFC":"#0F172A", isDark?"#0F172A":"#F8FAFC"));
             
             actLayout->addWidget(changeBtn, 0, 0);
             actLayout->addWidget(deleteBtn, 1, 0);
@@ -433,7 +420,6 @@ void RecordsWindow::loadData()
                 else statusCombo->setStyleSheet("color: black; background-color: #F59E0B; font-weight: bold; padding: 4px; border-radius: 4px;");
             };
             updateComboColor();
-            
             connect(statusCombo, &QComboBox::currentTextChanged, [this, id = records[i].getId(), updateComboColor](const QString &text){
                 dbManager->updateRecordStatus(id, text);
                 updateComboColor();
@@ -448,7 +434,7 @@ void RecordsWindow::loadData()
             
             QLineEdit *remarkInput = new QLineEdit(records[i].getAdminRemarks());
             remarkInput->setPlaceholderText("Type admin remarks...");
-            remarkInput->setStyleSheet("padding: 4px; border: 1px solid #CBD5E1; border-radius: 4px; font-size: 13px;");
+            remarkInput->setStyleSheet(QString("padding: 4px; border: 1px solid %1; border-radius: 4px; font-size: 13px; background-color: %2; color: %3;").arg(border, altBg, text));
             
             QPushButton *saveRemBtn = new QPushButton("Save");
             saveRemBtn->setStyleSheet("background-color: #475569; color: white; border-radius: 4px; padding: 4px 10px; font-weight: bold;");
@@ -462,90 +448,16 @@ void RecordsWindow::loadData()
                 QMessageBox::information(this, "Saved", "Admin remarks saved successfully.");
             });
 
-            connect(changeBtn, &QPushButton::clicked, [this, record = records[i]]() {
-                emit editRequested(record);
-                this->accept(); 
-            });
-            
+            connect(changeBtn, &QPushButton::clicked, [this, record = records[i]]() { emit editRequested(record); this->accept(); });
             connect(deleteBtn, &QPushButton::clicked, [this, id = records[i].getId()]() {
                 if (QMessageBox::question(this, "Confirm", "Permanently delete this record without passcode?") == QMessageBox::Yes) {
-                    if(dbManager->deleteRecord(id)) {
-                        QMessageBox::information(this, "Deleted", "Record deleted successfully!");
-                        loadData(); 
-                        emit databaseUpdated(); 
-                    }
+                    dbManager->deleteRecord(id); loadData(); emit databaseUpdated(); 
                 }
             });
-
-            connect(approveBtn, &QPushButton::clicked, [this, record = records[i], statusCombo]() {
-                bool ok;
-                QString recommendation = QInputDialog::getMultiLineText(this, "Admin Recommendation", "Enter Admin Recommendation for this approval (Optional):", "", &ok);
-                if (!ok) return;
-
-                dbManager->updateRecordStatus(record.getId(), "Approve");
-                statusCombo->setCurrentText("Approve"); 
-
-                QString studentEmail = record.getEmail();
-                if (studentEmail.trimmed().isEmpty()) {
-                    QMessageBox::warning(this, "Missing Email", "No email address found for this booking.");
-                    return;
-                }
-                QString subject = "Booking Approved - " + record.getBookingId();
-                QString body = "Dear " + record.getName() + ",\n\nYour booking ID " + record.getBookingId() + " has been APPROVED.\n\n";
-                if (!recommendation.trimmed().isEmpty()) body += ">> ADMIN NOTES:\n" + recommendation + "\n\n";
-                
-                QString link = QString("mailto:%1?subject=%2&body=%3").arg(studentEmail).arg(QString(QUrl::toPercentEncoding(subject))).arg(QString(QUrl::toPercentEncoding(body)));
-                QDesktopServices::openUrl(QUrl(link, QUrl::TolerantMode));
-            });
-
-            connect(rejectBtn, &QPushButton::clicked, [this, record = records[i], statusCombo]() {
-                bool ok;
-                QString recommendation = QInputDialog::getMultiLineText(this, "Admin Recommendation", "Enter reason for rejection (Optional):", "", &ok);
-                if (!ok) return;
-
-                dbManager->updateRecordStatus(record.getId(), "Reject");
-                statusCombo->setCurrentText("Reject"); 
-
-                QString studentEmail = record.getEmail();
-                if (studentEmail.trimmed().isEmpty()) {
-                    QMessageBox::warning(this, "Missing Email", "No email address found for this booking.");
-                    return;
-                }
-                QString subject = "Booking Rejected - " + record.getBookingId();
-                QString body = "Dear " + record.getName() + ",\n\nYour booking ID " + record.getBookingId() + " has been REJECTED.\n\n";
-                if (!recommendation.trimmed().isEmpty()) body += ">> REASON:\n" + recommendation + "\n\n";
-                
-                QString link = QString("mailto:%1?subject=%2&body=%3").arg(studentEmail).arg(QString(QUrl::toPercentEncoding(subject))).arg(QString(QUrl::toPercentEncoding(body)));
-                QDesktopServices::openUrl(QUrl(link, QUrl::TolerantMode));
-            });
-
-            connect(deanAppBtn, &QPushButton::clicked, [this, record = records[i]]() {
-                QSettings settings("StudentWorkshopApp", "AdminSettings");
-                QString deanEmail = settings.value("dean_email", "").toString();
-                if (deanEmail.isEmpty()) { QMessageBox::warning(this, "Error", "Dean's Email is not configured in Settings."); return; }
-                QString subject = "Approval Request - " + record.getBookingId();
-                QString body = "Dear Dean,\nPlease review booking ID: " + record.getBookingId();
-                QString link = QString("mailto:%1?subject=%2&body=%3").arg(deanEmail).arg(QString(QUrl::toPercentEncoding(subject))).arg(QString(QUrl::toPercentEncoding(body)));
-                QDesktopServices::openUrl(QUrl(link, QUrl::TolerantMode));
-            });
-
-            connect(depHeadAppBtn, &QPushButton::clicked, [this, record = records[i]]() {
-                QSettings settings("StudentWorkshopApp", "AdminSettings");
-                QString depHeadEmail = settings.value("dep_head_email", "").toString();
-                if (depHeadEmail.isEmpty()) { QMessageBox::warning(this, "Error", "Department Head's Email is not configured."); return; }
-                QString subject = "Approval Request - " + record.getBookingId();
-                QString body = "Dear Department Head,\nPlease review booking ID: " + record.getBookingId();
-                QString link = QString("mailto:%1?subject=%2&body=%3").arg(depHeadEmail).arg(QString(QUrl::toPercentEncoding(subject))).arg(QString(QUrl::toPercentEncoding(body)));
-                QDesktopServices::openUrl(QUrl(link, QUrl::TolerantMode));
-            });
-            
-            connect(printBtn, &QPushButton::clicked, [this, record = records[i]]() {
-                printSingleRecord(record);
-            });
+            connect(printBtn, &QPushButton::clicked, [this, record = records[i]]() { printSingleRecord(record); });
         }
         
         table->resizeRowsToContents(); 
-        
         int totalHeight = table->horizontalHeader()->height() + 2;
         for (int i = 0; i < table->rowCount(); ++i) { totalHeight += table->rowHeight(i); }
         table->setMinimumHeight(totalHeight + 10);

@@ -19,6 +19,7 @@
 #include <QGraphicsDropShadowEffect>
 #include <QMap>
 #include <QLineEdit>
+#include <QSettings>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -34,6 +35,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     setupDynamicUI();
     
+    // ආරම්භයේදීම Theme එක Load කිරීම
+    bool isDark = QSettings("StudentWorkshopApp", "ThemeSettings").value("darkMode", false).toBool();
+    applyTheme(isDark);
+    
     connect(ui->backBtn, &QPushButton::clicked, this, &MainWindow::goBack);
     connect(ui->viewRecordsBtn, &QPushButton::clicked, this, &MainWindow::showRecordsWindow);
     connect(ui->calendar, &QCalendarWidget::clicked, this, &MainWindow::dateClicked);
@@ -41,6 +46,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->submitBtn, &QPushButton::clicked, this, &MainWindow::submitData);
     connect(ui->updateBtn, &QPushButton::clicked, this, &MainWindow::updateData);
     connect(ui->deleteBtn, &QPushButton::clicked, this, &MainWindow::deleteData);
+    connect(ui->systemSettingsBtn, &QPushButton::clicked, this, &MainWindow::openSystemSettings);
     
     connect(ui->browsePdfBtn, &QPushButton::clicked, this, [this](){
         QString filePath = QFileDialog::getOpenFileName(this, "Select PDF File", "", "PDF Documents (*.pdf)");
@@ -60,32 +66,19 @@ void MainWindow::setupDynamicUI()
 {
     QString logoPath = QCoreApplication::applicationDirPath() + "/assets/logo.png";
     QPixmap logoPix(logoPath);
-    
     if (!logoPix.isNull()) {
         ui->logoLabel->setPixmap(logoPix.scaled(120, 120, Qt::KeepAspectRatio, Qt::SmoothTransformation));
         ui->logoLabel->setText(""); 
-        ui->logoLabel->setStyleSheet("background: transparent; border: none;");
     } else {
-        ui->logoLabel->setStyleSheet("background-color: #E2E8F0; color: #64748B; font-weight: bold; border-radius: 60px; border: 2px dashed #CBD5E1;");
+        ui->logoLabel->setText("[ LOGO ]");
     }
 
     ui->gridLayout->setAlignment(Qt::AlignCenter); 
     ui->gridLayout->setHorizontalSpacing(30);      
     ui->gridLayout->setVerticalSpacing(30);        
 
-    QStringList workshops = {"Automotive", "Robotics", "Mechanical", "Painting", "Welding"};
-    for(int i = 0; i < workshops.size(); i++) {
-        ui->gridLayout->addWidget(createCard(workshops[i]), 0, i);
-    }
-
-    QStringList labs = {"Microscope", "Chemistry", "Coding", "Test Tubes", "Circuitry"};
-    for(int i = 0; i < labs.size(); i++) {
-        ui->gridLayout->addWidget(createCard(labs[i]), 1, i);
-    }
-
     QStandardItemModel *timeModel = new QStandardItemModel(4, 1, this);
     QStringList timeSlotsList = {"8.30 am - 10.30 am", "10.30 am - 12.30 pm", "1.30 pm - 3.30 pm", "3.30 pm - 5.30 pm"};
-    
     for (int i = 0; i < timeSlotsList.size(); ++i) {
         QStandardItem *item = new QStandardItem(timeSlotsList[i]);
         item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
@@ -97,8 +90,6 @@ void MainWindow::setupDynamicUI()
     QLineEdit *timeLineEdit = new QLineEdit(this);
     timeLineEdit->setReadOnly(true);
     timeLineEdit->setPlaceholderText("Select time slots...");
-    timeLineEdit->setStyleSheet("background: transparent; border: none; color: #0F172A; padding: 0px 5px; font-size: 14px;");
-    
     ui->timeSlotInput->setLineEdit(timeLineEdit);
     
     connect(timeModel, &QStandardItemModel::itemChanged, this, &MainWindow::updateTimeSlotDisplayText);
@@ -109,11 +100,206 @@ void MainWindow::setupDynamicUI()
     ui->timeSlotInput->setView(listView);
 }
 
+// --- දෝෂය නිවැරදි කළ Theme ශ්‍රිතය ---
+void MainWindow::applyTheme(bool isDark)
+{
+    QString bg = isDark ? "#0B1120" : "#F4F7FC";
+    QString cardBg = isDark ? "#1E293B" : "#FFFFFF";
+    QString text = isDark ? "#F8FAFC" : "#0F172A";
+    QString subText = isDark ? "#94A3B8" : "#5B6A7A";
+    QString border = isDark ? "#334155" : "#CBD5E1";
+    QString inputBg = isDark ? "#0F172A" : "#FFFFFF";
+    QString btnBg = isDark ? "#38BDF8" : "#2563EB";
+    QString btnText = isDark ? "#0B1120" : "#FFFFFF";
+
+    this->setStyleSheet(QString("QMainWindow { background-color: %1; }").arg(bg));
+
+    ui->logoLabel->setStyleSheet(QString("background-color: %1; color: %2; font-weight: bold; border-radius: 60px; border: 2px dashed %3;").arg(isDark?"#1E293B":"#E2E8F0", subText, border));
+    ui->headerLabel->setStyleSheet(QString("font-size: 28px; font-weight: 800; color: %1; font-family: 'Segoe UI', Arial; letter-spacing: 1px; margin-top: 10px;").arg(isDark ? "#38BDF8" : "#112A46"));
+    ui->subHeaderLabel->setStyleSheet(QString("font-size: 14px; color: %1; margin-bottom: 20px;").arg(subText));
+    ui->formHeader->setStyleSheet(QString("font-size: 16px; font-weight: bold; color: %1; margin-top: 15px; margin-bottom: 15px; text-transform: uppercase;").arg(isDark ? "#38BDF8" : text));
+
+    QString labelStyle = QString("font-size: 12px; font-weight: bold; color: %1;").arg(text);
+    ui->label->setStyleSheet(labelStyle);
+    ui->label_2->setStyleSheet(labelStyle);
+    ui->label_3->setStyleSheet(labelStyle);
+    // ui->label_4 (Date එකට අදාළ Label එක) මෙතැනින් ඉවත් කර ඇත
+    ui->label_5->setStyleSheet(labelStyle);
+    ui->label_6->setStyleSheet(labelStyle);
+    ui->label_email->setStyleSheet(labelStyle);
+    ui->label_pdf->setStyleSheet(labelStyle);
+
+    QString inputStyle = QString("padding: 0px 10px; min-height: 38px; border: 1px solid %1; border-radius: 6px; font-size: 14px; background-color: %2; color: %3;").arg(border, inputBg, text);
+    ui->nameInput->setStyleSheet(inputStyle);
+    ui->indexInput->setStyleSheet(inputStyle);
+    ui->deptInput->setStyleSheet(inputStyle);
+    ui->emailInput->setStyleSheet(inputStyle);
+    ui->pdfInput->setStyleSheet(inputStyle);
+    ui->timeSlotInput->setStyleSheet("QComboBox { " + inputStyle + "}");
+    ui->timeSlotInput->lineEdit()->setStyleSheet(QString("background: transparent; border: none; color: %1; padding: 0px 5px; font-size: 14px;").arg(text));
+    
+    ui->descriptionInput->setStyleSheet(QString("border: 1px solid %1; border-radius: 6px; padding: 10px; font-size: 14px; background-color: %2; color: %3;").arg(border, inputBg, text));
+
+    ui->infoCard->setStyleSheet(QString("QFrame { background-color: %1; border-radius: 10px; border: 1px solid %2; margin-top: 15px; }").arg(cardBg, border));
+    ui->selectedNameLabel->setStyleSheet(QString("font-size: 18px; font-weight: 800; color: %1; border: none;").arg(text));
+    ui->selectedDescLabel->setStyleSheet(QString("font-size: 13px; color: %1; border: none;").arg(subText));
+    
+    ui->systemSettingsBtn->setStyleSheet(QString("background-color: %1; color: %2; padding: 8px 15px; border-radius: 6px; font-weight: bold;").arg(isDark?"#334155":"#E2E8F0", text));
+    ui->backBtn->setStyleSheet(QString("background-color: %1; color: %2; padding: 10px 15px; border-radius: 5px; font-weight: bold; font-size: 13px;").arg(isDark?"#334155":"#E2E8F0", text));
+    ui->viewRecordsBtn->setStyleSheet(QString("background-color: %1; color: %2; padding: 10px 15px; border-radius: 5px; font-weight: bold; font-size: 13px;").arg(btnBg, btnText));
+    
+    ui->browsePdfBtn->setStyleSheet("background-color: #64748B; color: white; padding: 0px 20px; min-height: 38px; border-radius: 6px; font-weight: bold; font-size: 13px;");
+    
+    ui->submitBtn->setStyleSheet(QString("background-color: %1; color: %2; padding: 0px; min-height: 45px; border-radius: 6px; font-weight: bold; font-size: 14px;").arg(btnBg, btnText));
+    ui->updateBtn->setStyleSheet("background-color: #D97706; color: white; padding: 0px; min-height: 45px; border-radius: 6px; font-weight: bold; font-size: 14px;");
+    ui->deleteBtn->setStyleSheet("background-color: #DC2626; color: white; padding: 0px; min-height: 45px; border-radius: 6px; font-weight: bold; font-size: 14px;");
+
+    QString calStyle = isDark ? 
+        "CustomCalendarWidget QWidget { alternate-background-color: #1E293B; border: none; font-size: 13px; color: #F8FAFC; background-color: #0B1120; }"
+        "CustomCalendarWidget QToolButton { color: #F8FAFC; }"
+        "CustomCalendarWidget QAbstractItemView { selection-background-color: #38BDF8; selection-color: #0B1120; background-color: #0B1120; color: #F8FAFC; border: 1px solid #334155; }" :
+        "CustomCalendarWidget QWidget { alternate-background-color: #F1F5F9; border: none; font-size: 13px; }";
+    ui->calendar->setStyleSheet(calStyle);
+
+    drawCards(isDark);
+    updateCalendarHighlights(); 
+}
+// ------------------------------------------------
+
+void MainWindow::drawCards(bool isDark)
+{
+    QLayoutItem *child;
+    while ((child = ui->gridLayout->takeAt(0)) != nullptr) {
+        if (child->widget()) child->widget()->deleteLater();
+        delete child;
+    }
+    
+    QStringList workshops = {"Automotive", "Robotics", "Mechanical", "Painting", "Welding"};
+    for(int i = 0; i < workshops.size(); i++) {
+        ui->gridLayout->addWidget(createCard(workshops[i], isDark), 0, i);
+    }
+
+    QStringList labs = {"Microscope", "Chemistry", "Coding", "Test Tubes", "Circuitry"};
+    for(int i = 0; i < labs.size(); i++) {
+        ui->gridLayout->addWidget(createCard(labs[i], isDark), 1, i);
+    }
+}
+
+QWidget* MainWindow::createCard(const QString &title, bool isDark)
+{
+    QFrame *card = new QFrame(this);
+    card->setFixedSize(210, 310);
+    
+    QString cardBg = isDark ? "#1E293B" : "#FFFFFF";
+    QString cardHoverBg = isDark ? "#334155" : "#FAFCFF";
+    QString cardHoverBorder = isDark ? "#38BDF8" : "#93C5FD";
+    QString text = isDark ? "#F8FAFC" : "#0F172A";
+    QString btnBg1 = isDark ? "#0284C7" : "#3B82F6";
+    QString btnBg2 = isDark ? "#0369A1" : "#2563EB";
+
+    card->setStyleSheet(QString(
+        "QFrame { background-color: %1; border-radius: 16px; border: 2px solid transparent; }"
+        "QFrame:hover { border: 2px solid %2; background-color: %3; }"
+    ).arg(cardBg, cardHoverBorder, cardHoverBg));
+
+    QGraphicsDropShadowEffect *shadow = new QGraphicsDropShadowEffect(card);
+    shadow->setBlurRadius(25);
+    shadow->setXOffset(0);
+    shadow->setYOffset(8);
+    shadow->setColor(isDark ? QColor(0, 0, 0, 150) : QColor(0, 0, 0, 25)); 
+    card->setGraphicsEffect(shadow);
+    
+    QVBoxLayout *layout = new QVBoxLayout(card);
+    layout->setContentsMargins(15, 20, 15, 20); 
+    layout->setSpacing(8);
+    layout->setAlignment(Qt::AlignTop | Qt::AlignHCenter);
+    
+    QLabel *imgBox = new QLabel(card);
+    imgBox->setFixedSize(170, 140);
+    imgBox->setAlignment(Qt::AlignCenter);
+    
+    QString imgName = title.toLower() + ".png"; 
+    QString imgPath = QCoreApplication::applicationDirPath() + "/assets/" + imgName;
+    QPixmap pix(imgPath);
+    if (!pix.isNull()) {
+        imgBox->setPixmap(pix.scaled(170, 140, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        imgBox->setStyleSheet("background-color: transparent; border: none;");
+    } else {
+        imgBox->setStyleSheet(QString("background-color: %1; border-radius: 12px; color: %2; font-weight: bold; border: 1px dashed %3;").arg(isDark?"#0F172A":"#F1F5F9", isDark?"#94A3B8":"#64748B", isDark?"#334155":"#CBD5E1"));
+        imgBox->setText("[ Image ]\n" + title);
+    }
+    
+    QLabel *nameTag = new QLabel(title, card);
+    nameTag->setAlignment(Qt::AlignCenter);
+    nameTag->setStyleSheet(QString("font-size: 17px; font-weight: bold; color: %1; border: none; font-family: 'Segoe UI', Arial;").arg(text));
+
+    QPushButton *btn = new QPushButton("   SELECT\n   THIS WORKSHOP", card);
+    btn->setFixedSize(170, 48);
+    btn->setStyleSheet(QString(
+        "QPushButton { background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 %1, stop:1 %2); color: white; border-radius: 24px; font-size: 11px; font-weight: bold; text-align: left; padding-left: 20px; border: none; }"
+    ).arg(btnBg1, btnBg2));
+    
+    QLabel *arrowIcon = new QLabel(">", btn);
+    arrowIcon->setStyleSheet("color: white; font-weight: bold; font-size: 16px; background: transparent; border: none;");
+    arrowIcon->setGeometry(15, 13, 20, 20);
+
+    connect(btn, &QPushButton::clicked, [this, title](){
+        openSecondInterface(title);
+    });
+
+    layout->addWidget(imgBox);
+    layout->addWidget(nameTag);
+    layout->addSpacerItem(new QSpacerItem(20, 10, QSizePolicy::Minimum, QSizePolicy::Expanding)); 
+    layout->addWidget(btn);
+    
+    return card;
+}
+
+void MainWindow::openSystemSettings()
+{
+    bool ok;
+    QString enteredCode = QInputDialog::getText(this, "Authentication", "Enter System Passcode:", QLineEdit::Password, "", &ok);
+    if (!ok) return;
+    
+    if (enteredCode != "000000") {
+        QMessageBox::critical(this, "Access Denied", "Incorrect System Passcode!");
+        return;
+    }
+
+    QDialog dialog(this);
+    dialog.setWindowTitle("System Settings");
+    dialog.setMinimumWidth(350);
+    
+    bool isDark = QSettings("StudentWorkshopApp", "ThemeSettings").value("darkMode", false).toBool();
+    dialog.setStyleSheet(isDark ? "QDialog { background-color: #1E293B; color: #F8FAFC; }" : "QDialog { background-color: #FFFFFF; color: #0F172A; }");
+
+    QVBoxLayout layout(&dialog);
+    layout.setSpacing(25);
+    layout.setContentsMargins(25, 25, 25, 25);
+
+    QLabel *lbl = new QLabel("UI Theme Appearance:", &dialog);
+    lbl->setStyleSheet(isDark ? "color: #F8FAFC; font-weight: bold; font-size: 15px;" : "color: #0F172A; font-weight: bold; font-size: 15px;");
+    layout.addWidget(lbl);
+
+    QPushButton *toggleBtn = new QPushButton(isDark ? "🌙 SWITCH TO LIGHT MODE" : "☀ SWITCH TO DARK MODE", &dialog);
+    toggleBtn->setStyleSheet(isDark ? "background-color: #F59E0B; color: #0F172A; font-weight: bold; padding: 15px; border-radius: 6px; font-size: 14px;" 
+                                    : "background-color: #0F172A; color: #F8FAFC; font-weight: bold; padding: 15px; border-radius: 6px; font-size: 14px;");
+    layout.addWidget(toggleBtn);
+
+    connect(toggleBtn, &QPushButton::clicked, [&]() {
+        bool currentDark = QSettings("StudentWorkshopApp", "ThemeSettings").value("darkMode", false).toBool();
+        QSettings("StudentWorkshopApp", "ThemeSettings").setValue("darkMode", !currentDark);
+        this->applyTheme(!currentDark);
+        dialog.accept();
+    });
+
+    dialog.exec();
+}
+
 void MainWindow::updateTimeSlotDisplayText()
 {
     QStringList selected = getSelectedTimeSlotsList();
     QString correctText = selected.isEmpty() ? "Select time slots..." : selected.join(", ");
-    
     ui->timeSlotInput->lineEdit()->blockSignals(true);
     ui->timeSlotInput->lineEdit()->setText(correctText);
     ui->timeSlotInput->lineEdit()->blockSignals(false);
@@ -139,92 +325,6 @@ void MainWindow::onCalendarSelectionChanged()
         }
     }
     updateTimeSlotDisplayText();
-}
-
-QWidget* MainWindow::createCard(const QString &title)
-{
-    QFrame *card = new QFrame(this);
-    card->setFixedSize(210, 310);
-    
-    card->setStyleSheet(
-        "QFrame {"
-        "background-color: #FFFFFF;"
-        "border-radius: 16px;"
-        "border: 2px solid transparent;"
-        "}"
-        "QFrame:hover {"
-        "border: 2px solid #93C5FD;"
-        "background-color: #FAFCFF;"
-        "}"
-    );
-
-    QGraphicsDropShadowEffect *shadow = new QGraphicsDropShadowEffect(card);
-    shadow->setBlurRadius(25);
-    shadow->setXOffset(0);
-    shadow->setYOffset(8);
-    shadow->setColor(QColor(0, 0, 0, 25)); 
-    card->setGraphicsEffect(shadow);
-    
-    QVBoxLayout *layout = new QVBoxLayout(card);
-    layout->setContentsMargins(15, 20, 15, 20); 
-    layout->setSpacing(8);
-    layout->setAlignment(Qt::AlignTop | Qt::AlignHCenter);
-    
-    QLabel *imgBox = new QLabel(card);
-    imgBox->setFixedSize(170, 140);
-    imgBox->setAlignment(Qt::AlignCenter);
-    
-    QString imgName = title.toLower() + ".png"; 
-    QString imgPath = QCoreApplication::applicationDirPath() + "/assets/" + imgName;
-    QPixmap pix(imgPath);
-    
-    if (!pix.isNull()) {
-        imgBox->setPixmap(pix.scaled(170, 140, Qt::KeepAspectRatio, Qt::SmoothTransformation));
-        imgBox->setStyleSheet("background-color: transparent; border: none;");
-    } else {
-        imgBox->setStyleSheet("background-color: #F1F5F9; border-radius: 12px; color: #64748B; font-weight: bold; border: 1px dashed #CBD5E1;");
-        imgBox->setText("[ Image ]\n" + title);
-    }
-    
-    QLabel *nameTag = new QLabel(title, card);
-    nameTag->setAlignment(Qt::AlignCenter);
-    nameTag->setStyleSheet("font-size: 17px; font-weight: bold; color: #0F172A; border: none; font-family: 'Segoe UI', Arial;");
-
-    QPushButton *btn = new QPushButton("   SELECT\n   THIS WORKSHOP", card);
-    btn->setFixedSize(170, 48);
-    btn->setStyleSheet(
-        "QPushButton {"
-        "background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #3B82F6, stop:1 #2563EB);" 
-        "color: white;"
-        "border-radius: 24px;" 
-        "font-size: 11px;"
-        "font-weight: bold;"
-        "text-align: left;"
-        "padding-left: 20px;"
-        "border: none;"
-        "}"
-        "QPushButton:hover {"
-        "background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #2563EB, stop:1 #1D4ED8);" 
-        "}"
-        "QPushButton:pressed {"
-        "background-color: #1E3A8A;"
-        "}"
-    );
-    
-    QLabel *arrowIcon = new QLabel(">", btn);
-    arrowIcon->setStyleSheet("color: white; font-weight: bold; font-size: 16px; background: transparent; border: none;");
-    arrowIcon->setGeometry(15, 13, 20, 20);
-
-    connect(btn, &QPushButton::clicked, [this, title](){
-        openSecondInterface(title);
-    });
-
-    layout->addWidget(imgBox);
-    layout->addWidget(nameTag);
-    layout->addSpacerItem(new QSpacerItem(20, 10, QSizePolicy::Minimum, QSizePolicy::Expanding)); 
-    layout->addWidget(btn);
-    
-    return card;
 }
 
 void MainWindow::openSecondInterface(const QString &category)
@@ -255,7 +355,6 @@ void MainWindow::openSecondInterface(const QString &category)
         {"Test Tubes", "Sample preparation, fluid dynamics, and biochemical experimentation."},
         {"Circuitry", "PCB design, embedded systems, soldering, and analog/digital electronics."}
     };
-    
     ui->selectedDescLabel->setText(descriptions.value(category, "Explore facilities, tools, and scheduled activities."));
 
     QString imgName = category.toLower() + ".png"; 
@@ -264,16 +363,10 @@ void MainWindow::openSecondInterface(const QString &category)
     
     if (!pix.isNull()) {
         ui->selectedImgLabel->setPixmap(pix.scaled(120, 90, Qt::KeepAspectRatio, Qt::SmoothTransformation));
-        ui->selectedImgLabel->setStyleSheet("background-color: transparent; border: none;");
-        ui->selectedImgLabel->setText("");
-    } else {
-        ui->selectedImgLabel->setStyleSheet("background-color: #F1F5F9; border-radius: 8px; color: #64748B; font-weight: bold; border: 1px dashed #CBD5E1;");
-        ui->selectedImgLabel->setText("[ Image ]");
     }
-
+    
     updateCalendarHighlights();
     ui->stackedWidget->setCurrentIndex(1);
-    
     dateClicked(ui->calendar->selectedDate());
 }
 
@@ -285,9 +378,7 @@ void MainWindow::goBack()
 void MainWindow::showRecordsWindow()
 {
     bool ok;
-    QString enteredAdminCode = QInputDialog::getText(this, "Admin Authentication", 
-                                                     "Enter Admin Passcode:", 
-                                                     QLineEdit::Password, "", &ok);
+    QString enteredAdminCode = QInputDialog::getText(this, "Admin Authentication", "Enter Admin Passcode:", QLineEdit::Password, "", &ok);
     if (!ok) return; 
     
     if (enteredAdminCode != "0000000") {
@@ -357,7 +448,6 @@ bool MainWindow::checkPasscode()
     bool ok;
     QString enteredCode = QInputDialog::getText(this, "Authentication", "Enter Passcode:", QLineEdit::Password, "", &ok);
     if (!ok) return false; 
-    
     if (enteredCode != currentRecord.getPasscode()) {
         QMessageBox::critical(this, "Access Denied", "Incorrect Passcode!");
         return false;
@@ -376,11 +466,7 @@ QString MainWindow::savePdfFile(const QString &sourcePath, const QString &bookin
 
     QString destPath = dir.absoluteFilePath(bookingId + ".pdf");
     if (sourcePath == destPath) return destPath;
-
-    if (QFile::exists(destPath)) {
-        QFile::remove(destPath);
-    }
-
+    if (QFile::exists(destPath)) QFile::remove(destPath);
     if (QFile::copy(sourcePath, destPath)) return destPath; 
     return sourcePath; 
 }
@@ -388,14 +474,12 @@ QString MainWindow::savePdfFile(const QString &sourcePath, const QString &bookin
 void MainWindow::submitData()
 {
     QStringList selectedSlots = getSelectedTimeSlotsList();
-
     if(ui->nameInput->text().isEmpty() || ui->indexInput->text().isEmpty() || selectedSlots.isEmpty()) {
         QMessageBox::warning(this, "Input Error", "Name, Index and Time Slot required!");
         return;
     }
 
     QString dateStr = ui->calendar->selectedDate().toString("yyyy-MM-dd");
-    
     if (!dbManager->isTimeSlotAvailable(dateStr, currentCategory, selectedSlots)) {
         QMessageBox::critical(this, "Time Slot Booked", "Selected time slot is already booked!");
         return;
@@ -438,7 +522,6 @@ void MainWindow::updateData()
     if (currentRecord.getId() == -1) {
         QString dateStr = ui->calendar->selectedDate().toString("yyyy-MM-dd");
         QList<StudentRecord> records = dbManager->getRecordsByDateAndCategory(dateStr, currentCategory);
-        
         if (records.isEmpty()) return;
         
         bool ok;
@@ -448,17 +531,10 @@ void MainWindow::updateData()
         StudentRecord foundRecord;
         bool found = false;
         for(const StudentRecord& r : records) {
-            if(r.getPasscode() == enteredCode) {
-                foundRecord = r;
-                found = true;
-                break;
-            }
+            if(r.getPasscode() == enteredCode) { foundRecord = r; found = true; break; }
         }
         
-        if(!found) {
-            QMessageBox::critical(this, "Access Denied", "Incorrect Passcode or no matching booking found!");
-            return;
-        }
+        if(!found) { QMessageBox::critical(this, "Access Denied", "Incorrect Passcode or no matching booking found!"); return; }
         
         loadRecordIntoUI(foundRecord);
         isPasscodeBypassed = true; 
@@ -467,26 +543,15 @@ void MainWindow::updateData()
     }
     
     QStringList selectedSlots = getSelectedTimeSlotsList();
-    if(selectedSlots.isEmpty()) {
-        QMessageBox::warning(this, "Input Error", "Please select at least one time slot!");
-        return;
-    }
-    
-    if(ui->nameInput->text().isEmpty() || ui->indexInput->text().isEmpty()) {
-        QMessageBox::warning(this, "Input Error", "Name and Index are required!");
-        return;
-    }
+    if(selectedSlots.isEmpty()) { QMessageBox::warning(this, "Input Error", "Please select at least one time slot!"); return; }
+    if(ui->nameInput->text().isEmpty() || ui->indexInput->text().isEmpty()) { QMessageBox::warning(this, "Input Error", "Name and Index are required!"); return; }
 
     QString dateStr = ui->calendar->selectedDate().toString("yyyy-MM-dd");
-    
     if (!dbManager->isTimeSlotAvailable(dateStr, currentCategory, selectedSlots, currentRecord.getId())) {
-        QMessageBox::critical(this, "Time Slot Booked", "Time slot taken by another booking!");
-        return;
+        QMessageBox::critical(this, "Time Slot Booked", "Time slot taken by another booking!"); return;
     }
 
-    if (!isPasscodeBypassed) {
-        if (!checkPasscode()) return;
-    }
+    if (!isPasscodeBypassed) { if (!checkPasscode()) return; }
     
     QString securePdfPath = savePdfFile(ui->pdfInput->text(), currentRecord.getBookingId());
     
@@ -513,7 +578,6 @@ void MainWindow::deleteData()
     if (currentRecord.getId() == -1) {
         QString dateStr = ui->calendar->selectedDate().toString("yyyy-MM-dd");
         QList<StudentRecord> records = dbManager->getRecordsByDateAndCategory(dateStr, currentCategory);
-        
         if (records.isEmpty()) return;
         
         bool ok;
@@ -523,41 +587,28 @@ void MainWindow::deleteData()
         StudentRecord foundRecord;
         bool found = false;
         for(const StudentRecord& r : records) {
-            if(r.getPasscode() == enteredCode) {
-                foundRecord = r;
-                found = true;
-                break;
-            }
+            if(r.getPasscode() == enteredCode) { foundRecord = r; found = true; break; }
         }
         
-        if(!found) {
-            QMessageBox::critical(this, "Access Denied", "Incorrect Passcode or no matching booking found!");
-            return;
-        }
+        if(!found) { QMessageBox::critical(this, "Access Denied", "Incorrect Passcode!"); return; }
         
         if (QMessageBox::question(this, "Confirm", "Permanently delete booking ID: " + foundRecord.getBookingId() + "?") == QMessageBox::Yes) {
             if (dbManager->deleteRecord(foundRecord.getId())) {
                 QMessageBox::information(this, "Deleted", "Record deleted successfully!");
                 updateCalendarHighlights();
                 dateClicked(ui->calendar->selectedDate());
-            } else {
-                QMessageBox::critical(this, "Database Error", dbManager->getLastError());
             }
         }
         return;
     }
     
-    if (!isPasscodeBypassed) {
-        if (!checkPasscode()) return;
-    }
+    if (!isPasscodeBypassed) { if (!checkPasscode()) return; }
 
     if (QMessageBox::question(this, "Confirm", "Permanently delete this record?") == QMessageBox::Yes) {
         if (dbManager->deleteRecord(currentRecord.getId())) {
             QMessageBox::information(this, "Deleted", "Record deleted successfully!");
             updateCalendarHighlights();
             dateClicked(ui->calendar->selectedDate());
-        } else {
-            QMessageBox::critical(this, "Database Error", dbManager->getLastError());
         }
     }
 }
@@ -565,7 +616,6 @@ void MainWindow::deleteData()
 void MainWindow::updateCalendarHighlights()
 {
     if (currentCategory.isEmpty()) return;
-
     QTextCharFormat defaultFormat;
     ui->calendar->setDateTextFormat(QDate(), defaultFormat); 
 
@@ -573,7 +623,6 @@ void MainWindow::updateCalendarHighlights()
     QMap<QDate, QMap<QString, int>> dateCounts;
     QList<QDate> bookedDates;
 
-    // දත්ත ගණනය කිරීම
     for (const StudentRecord &r : allRecords) {
         QDate d = QDate::fromString(r.getRecordDate(), "yyyy-MM-dd");
         if (d.isValid()) {
@@ -582,15 +631,15 @@ void MainWindow::updateCalendarHighlights()
         }
     }
 
+    bool isDark = QSettings("StudentWorkshopApp", "ThemeSettings").value("darkMode", false).toBool();
     QTextCharFormat highlightFormat;
-    highlightFormat.setBackground(QColor("#E0F2FE")); // Light Blue background
+    highlightFormat.setBackground(isDark ? QColor("#0284C7") : QColor("#E0F2FE"));
+    highlightFormat.setForeground(isDark ? QColor("#FFFFFF") : QColor("#000000"));
     highlightFormat.setFontWeight(QFont::Bold);
 
     for (const QDate &date : bookedDates) {
         ui->calendar->setDateTextFormat(date, highlightFormat);
     }
-
-    // Custom Calendar එකට ගණනය කළ දත්ත යැවීම
     ui->calendar->setStatusCounts(dateCounts);
 }
 
@@ -598,15 +647,12 @@ void MainWindow::loadRecordIntoUI(const StudentRecord &record)
 {
     currentRecord = record;
     onCalendarSelectionChanged(); 
-
     ui->nameInput->setText(currentRecord.getName());
     ui->indexInput->setText(currentRecord.getIndexNo());
     ui->deptInput->setCurrentText(currentRecord.getDepartment());
     ui->emailInput->setText(currentRecord.getEmail());
     ui->pdfInput->setText(currentRecord.getPdfPath());
-    
     ui->calendar->setSelectedDate(QDate::fromString(currentRecord.getRecordDate(), "yyyy-MM-dd"));
-    
     setTimeSlotsInUI(currentRecord.getTimeSlots());
     ui->descriptionInput->setText(currentRecord.getDescription());
     
