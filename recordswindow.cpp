@@ -18,9 +18,10 @@
 #include <QSettings> 
 #include <QFormLayout> 
 #include <QDialogButtonBox>
-#include <QPrinter>       // Printing සඳහා අලුතින් එක් කළ Headers
+#include <QPrinter>       
 #include <QPrintDialog>
 #include <QTextDocument>
+#include <QTextCharFormat>
 
 RecordsWindow::RecordsWindow(IDatabaseManager *db, const QString &category, QWidget *parent)
     : QDialog(parent), dbManager(db), currentCategory(category)
@@ -39,12 +40,12 @@ void RecordsWindow::setupUI()
 {
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     
+    // --- Top Bar ---
     QHBoxLayout *topBar = new QHBoxLayout();
     
     QLabel *titleLabel = new QLabel("Booking Management: " + currentCategory.toUpper(), this);
     titleLabel->setStyleSheet("font-size: 20px; font-weight: bold; color: #1E293B;");
     
-    // --- Print All බොත්තම ---
     QPushButton *printAllBtn = new QPushButton("🖨 Print All", this);
     printAllBtn->setStyleSheet("background-color: #0F172A; color: white; font-weight: bold; border-radius: 6px; padding: 10px 20px; font-size: 14px;");
     connect(printAllBtn, &QPushButton::clicked, this, &RecordsWindow::printAllRecords);
@@ -59,7 +60,50 @@ void RecordsWindow::setupUI()
     topBar->addWidget(settingsBtn);
     
     mainLayout->addLayout(topBar);
+    // ----------------
+
+    // --- Calendar Section (Full Width Layout) ---
+    QFrame *calFrame = new QFrame(this);
+    calFrame->setStyleSheet("QFrame { background-color: #FFFFFF; border-radius: 10px; border: 1px solid #CBD5E1; margin-bottom: 10px; }");
     
+    QVBoxLayout *calLayout = new QVBoxLayout(calFrame); // සම්පූර්ණ පළල ලබා ගැනීමට QVBoxLayout භාවිතා කර ඇත
+    calLayout->setContentsMargins(15, 15, 15, 15);
+    calLayout->setSpacing(15);
+
+    QHBoxLayout *calTopLayout = new QHBoxLayout();
+    
+    QVBoxLayout *calTextLayout = new QVBoxLayout();
+    QLabel *calTitle = new QLabel("Filter by Booked Date", calFrame);
+    calTitle->setStyleSheet("font-size: 16px; font-weight: bold; color: #1E293B; border: none;");
+    QLabel *calDesc = new QLabel("Select a date on the calendar to view bookings scheduled for that specific date. Highlighted dates indicate existing bookings.", calFrame);
+    calDesc->setStyleSheet("font-size: 13px; color: #475569; border: none;");
+    
+    calTextLayout->addWidget(calTitle);
+    calTextLayout->addWidget(calDesc);
+
+    QPushButton *showAllBtn = new QPushButton("Show All Bookings", calFrame);
+    showAllBtn->setStyleSheet("background-color: #3B82F6; color: white; font-weight: bold; border-radius: 4px; padding: 10px 20px; font-size: 13px;");
+
+    calTopLayout->addLayout(calTextLayout);
+    calTopLayout->addStretch();
+    calTopLayout->addWidget(showAllBtn);
+
+    calendar = new QCalendarWidget(calFrame);
+    // Calendar එකේ පළල (Width) ස්වයංක්‍රීයව වෙනස් වීමට Expanding ලබා දී ඇත
+    calendar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred); 
+    calendar->setMinimumHeight(250); // අවම උස
+    calendar->setStyleSheet("QCalendarWidget QWidget { alternate-background-color: #F1F5F9; border: none; font-size: 13px; }");
+
+    calLayout->addLayout(calTopLayout);
+    calLayout->addWidget(calendar);
+
+    mainLayout->addWidget(calFrame);
+
+    connect(calendar, &QCalendarWidget::clicked, this, &RecordsWindow::filterByDate);
+    connect(showAllBtn, &QPushButton::clicked, this, &RecordsWindow::clearFilter);
+    // ----------------------------------------
+
+    // --- Scroll Area for Tables ---
     QScrollArea *scrollArea = new QScrollArea(this);
     scrollArea->setWidgetResizable(true);
     scrollArea->setStyleSheet("QScrollArea { border: none; background-color: transparent; }");
@@ -72,6 +116,34 @@ void RecordsWindow::setupUI()
     
     scrollArea->setWidget(scrollWidget);
     mainLayout->addWidget(scrollArea);
+}
+
+void RecordsWindow::filterByDate(const QDate &date)
+{
+    filterDate = date;
+    loadData(); 
+}
+
+void RecordsWindow::clearFilter()
+{
+    filterDate = QDate(); 
+    calendar->setSelectedDate(QDate::currentDate()); 
+    loadData();
+}
+
+void RecordsWindow::updateCalendarHighlights()
+{
+    QTextCharFormat defaultFormat;
+    calendar->setDateTextFormat(QDate(), defaultFormat); 
+
+    QList<QDate> bookedDates = dbManager->getBookedDates(currentCategory);
+    QTextCharFormat highlightFormat;
+    highlightFormat.setBackground(QColor("#B3D4FF"));
+    highlightFormat.setFontWeight(QFont::Bold);
+
+    for (const QDate &date : bookedDates) {
+        calendar->setDateTextFormat(date, highlightFormat);
+    }
 }
 
 void RecordsWindow::openSettingsDialog()
@@ -109,7 +181,6 @@ void RecordsWindow::openSettingsDialog()
     }
 }
 
-// --- සියලුම දත්ත Print කිරීමේ ශ්‍රිතය ---
 void RecordsWindow::printAllRecords()
 {
     QList<StudentRecord> records = dbManager->getAllRecordsForCategory(currentCategory);
@@ -119,7 +190,7 @@ void RecordsWindow::printAllRecords()
     }
 
     QPrinter printer(QPrinter::HighResolution);
-    printer.setPageOrientation(QPageLayout::Landscape); // පළලට Print වීමට (Landscape)
+    printer.setPageOrientation(QPageLayout::Landscape); 
     
     QPrintDialog printDialog(&printer, this);
     if (printDialog.exec() == QDialog::Accepted) {
@@ -136,7 +207,6 @@ void RecordsWindow::printAllRecords()
             html += "<td>" + r.getRecordDate() + "</td>";
             html += "<td>" + r.getTimeSlots() + "</td>";
             
-            // Status වර්ණය මාරු කිරීම
             QString statusColor = "#000000";
             if (r.getStatus() == "Approve") statusColor = "green";
             else if (r.getStatus() == "Reject") statusColor = "red";
@@ -155,7 +225,6 @@ void RecordsWindow::printAllRecords()
     }
 }
 
-// --- තනි Record එකක් Print කිරීමේ ශ්‍රිතය ---
 void RecordsWindow::printSingleRecord(const StudentRecord &record)
 {
     QPrinter printer(QPrinter::HighResolution);
@@ -201,19 +270,32 @@ void RecordsWindow::loadData()
     }
 
     QList<StudentRecord> allRecords = dbManager->getAllRecordsForCategory(currentCategory);
-    
+    QList<StudentRecord> recordsToDisplay;
+
+    if (filterDate.isValid()) {
+        for (const StudentRecord &r : allRecords) {
+            if (r.getRecordDate() == filterDate.toString("yyyy-MM-dd")) {
+                recordsToDisplay.append(r);
+            }
+        }
+    } else {
+        recordsToDisplay = allRecords; 
+    }
+
     QMap<QString, QList<StudentRecord>> groupedRecords;
-    for (const StudentRecord &r : allRecords) {
+    for (const StudentRecord &r : recordsToDisplay) {
         QString submittedDate = r.getCreatedAt().left(10); 
         groupedRecords[submittedDate].append(r);
     }
 
     if (groupedRecords.isEmpty()) {
-        QLabel *emptyLabel = new QLabel("No bookings found for this category.", this);
+        QString msg = filterDate.isValid() ? "No bookings found for the selected date." : "No bookings found for this category.";
+        QLabel *emptyLabel = new QLabel(msg, this);
         emptyLabel->setAlignment(Qt::AlignCenter);
         emptyLabel->setStyleSheet("font-size: 16px; color: #64748B; margin-top: 50px;");
         scrollLayout->addWidget(emptyLabel);
         scrollLayout->addStretch();
+        updateCalendarHighlights(); 
         return;
     }
 
@@ -315,7 +397,6 @@ void RecordsWindow::loadData()
             QPushButton *depHeadAppBtn = new QPushButton("Dep Head");
             depHeadAppBtn->setStyleSheet("background-color: #0D9488; color: white; font-weight: bold; border-radius: 4px; padding: 4px;");
             
-            // --- තනි Record එක Print කිරීමේ අලුත් බොත්තම ---
             QPushButton *printBtn = new QPushButton("🖨 Print");
             printBtn->setStyleSheet("background-color: #0F172A; color: white; font-weight: bold; border-radius: 4px; padding: 4px;");
             
@@ -325,7 +406,7 @@ void RecordsWindow::loadData()
             actLayout->addWidget(rejectBtn, 1, 1);
             actLayout->addWidget(deanAppBtn, 0, 2);
             actLayout->addWidget(depHeadAppBtn, 1, 2);
-            actLayout->addWidget(printBtn, 2, 0, 1, 3); // පේළි 3ක් පුරා විහිදෙන සේ යොදා ඇත
+            actLayout->addWidget(printBtn, 2, 0, 1, 3);
             
             table->setCellWidget(i, 8, actionWidget);
             
@@ -367,7 +448,6 @@ void RecordsWindow::loadData()
                 QMessageBox::information(this, "Saved", "Admin remarks saved successfully.");
             });
 
-            // Action Buttons Logic
             connect(changeBtn, &QPushButton::clicked, [this, record = records[i]]() {
                 emit editRequested(record);
                 this->accept(); 
@@ -445,7 +525,6 @@ void RecordsWindow::loadData()
                 QDesktopServices::openUrl(QUrl(link, QUrl::TolerantMode));
             });
             
-            // Print බොත්තම සඳහා සම්බන්ධ කිරීම (Connection)
             connect(printBtn, &QPushButton::clicked, [this, record = records[i]]() {
                 printSingleRecord(record);
             });
@@ -461,5 +540,6 @@ void RecordsWindow::loadData()
         scrollLayout->addWidget(groupBox);
     }
     
+    updateCalendarHighlights(); 
     scrollLayout->addStretch();
 }
