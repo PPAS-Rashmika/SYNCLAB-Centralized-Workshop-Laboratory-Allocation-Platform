@@ -20,6 +20,8 @@
 #include <QMap>
 #include <QLineEdit>
 #include <QSettings>
+#include <QComboBox>
+#include <QFrame>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -35,7 +37,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     setupDynamicUI();
     
-    // ආරම්භයේදීම Theme එක Load කිරීම
     bool isDark = QSettings("StudentWorkshopApp", "ThemeSettings").value("darkMode", false).toBool();
     applyTheme(isDark);
     
@@ -100,7 +101,6 @@ void MainWindow::setupDynamicUI()
     ui->timeSlotInput->setView(listView);
 }
 
-// --- දෝෂය නිවැරදි කළ Theme ශ්‍රිතය ---
 void MainWindow::applyTheme(bool isDark)
 {
     QString bg = isDark ? "#0B1120" : "#F4F7FC";
@@ -123,7 +123,6 @@ void MainWindow::applyTheme(bool isDark)
     ui->label->setStyleSheet(labelStyle);
     ui->label_2->setStyleSheet(labelStyle);
     ui->label_3->setStyleSheet(labelStyle);
-    // ui->label_4 (Date එකට අදාළ Label එක) මෙතැනින් ඉවත් කර ඇත
     ui->label_5->setStyleSheet(labelStyle);
     ui->label_6->setStyleSheet(labelStyle);
     ui->label_email->setStyleSheet(labelStyle);
@@ -154,17 +153,29 @@ void MainWindow::applyTheme(bool isDark)
     ui->updateBtn->setStyleSheet("background-color: #D97706; color: white; padding: 0px; min-height: 45px; border-radius: 6px; font-weight: bold; font-size: 14px;");
     ui->deleteBtn->setStyleSheet("background-color: #DC2626; color: white; padding: 0px; min-height: 45px; border-radius: 6px; font-weight: bold; font-size: 14px;");
 
+    // --- දෝෂය නිවැරදි කර Calendar එකට අදාළව එක්කළ පැහැදිලි වර්ණ රටා ---
     QString calStyle = isDark ? 
-        "CustomCalendarWidget QWidget { alternate-background-color: #1E293B; border: none; font-size: 13px; color: #F8FAFC; background-color: #0B1120; }"
-        "CustomCalendarWidget QToolButton { color: #F8FAFC; }"
-        "CustomCalendarWidget QAbstractItemView { selection-background-color: #38BDF8; selection-color: #0B1120; background-color: #0B1120; color: #F8FAFC; border: 1px solid #334155; }" :
-        "CustomCalendarWidget QWidget { alternate-background-color: #F1F5F9; border: none; font-size: 13px; }";
+        "CustomCalendarWidget { background-color: #0B1120; color: #F8FAFC; }"
+        "CustomCalendarWidget QWidget#qt_calendar_navigationbar { background-color: #1E293B; }"
+        "CustomCalendarWidget QToolButton { color: #F8FAFC; font-weight: bold; background-color: transparent; }"
+        "CustomCalendarWidget QToolButton::hover { background-color: #334155; border-radius: 4px; }"
+        "CustomCalendarWidget QMenu { background-color: #1E293B; color: #F8FAFC; }"
+        "CustomCalendarWidget QSpinBox { background-color: #1E293B; color: #F8FAFC; selection-background-color: #38BDF8; }"
+        "CustomCalendarWidget QAbstractItemView { selection-background-color: #38BDF8; selection-color: #0B1120; background-color: #0B1120; color: #F8FAFC; border: 1px solid #334155; alternate-background-color: #1E293B; font-size: 13px; }"
+        :
+        "CustomCalendarWidget { background-color: #FFFFFF; color: #0F172A; }"
+        "CustomCalendarWidget QWidget#qt_calendar_navigationbar { background-color: #F1F5F9; }"
+        "CustomCalendarWidget QToolButton { color: #0F172A; font-weight: bold; background-color: transparent; }"
+        "CustomCalendarWidget QToolButton::hover { background-color: #E2E8F0; border-radius: 4px; }"
+        "CustomCalendarWidget QMenu { background-color: #FFFFFF; color: #0F172A; }"
+        "CustomCalendarWidget QSpinBox { background-color: #FFFFFF; color: #0F172A; selection-background-color: #3B82F6; }"
+        "CustomCalendarWidget QAbstractItemView { selection-background-color: #3B82F6; selection-color: #FFFFFF; background-color: #FFFFFF; color: #0F172A; border: 1px solid #CBD5E1; alternate-background-color: #F8FAFC; font-size: 13px; }";
+    
     ui->calendar->setStyleSheet(calStyle);
 
     drawCards(isDark);
     updateCalendarHighlights(); 
 }
-// ------------------------------------------------
 
 void MainWindow::drawCards(bool isDark)
 {
@@ -258,7 +269,7 @@ QWidget* MainWindow::createCard(const QString &title, bool isDark)
 void MainWindow::openSystemSettings()
 {
     bool ok;
-    QString enteredCode = QInputDialog::getText(this, "Authentication", "Enter System Passcode:", QLineEdit::Password, "", &ok);
+    QString enteredCode = QInputDialog::getText(this, "System Authentication", "Enter System Passcode:", QLineEdit::Password, "", &ok);
     if (!ok) return;
     
     if (enteredCode != "000000") {
@@ -268,23 +279,55 @@ void MainWindow::openSystemSettings()
 
     QDialog dialog(this);
     dialog.setWindowTitle("System Settings");
-    dialog.setMinimumWidth(350);
+    dialog.setMinimumWidth(400);
     
     bool isDark = QSettings("StudentWorkshopApp", "ThemeSettings").value("darkMode", false).toBool();
-    dialog.setStyleSheet(isDark ? "QDialog { background-color: #1E293B; color: #F8FAFC; }" : "QDialog { background-color: #FFFFFF; color: #0F172A; }");
+    dialog.setStyleSheet(isDark ? "QDialog { background-color: #1E293B; color: #F8FAFC; } QLabel { color: #F8FAFC; font-weight: bold; } QComboBox, QLineEdit { background-color: #0F172A; color: #F8FAFC; padding: 5px; border: 1px solid #334155; border-radius: 4px; }" 
+                                : "QDialog { background-color: #FFFFFF; color: #0F172A; } QLabel { color: #0F172A; font-weight: bold; } QComboBox, QLineEdit { padding: 5px; border: 1px solid #CBD5E1; border-radius: 4px; }");
 
     QVBoxLayout layout(&dialog);
-    layout.setSpacing(25);
+    layout.setSpacing(20);
     layout.setContentsMargins(25, 25, 25, 25);
 
-    QLabel *lbl = new QLabel("UI Theme Appearance:", &dialog);
-    lbl->setStyleSheet(isDark ? "color: #F8FAFC; font-weight: bold; font-size: 15px;" : "color: #0F172A; font-weight: bold; font-size: 15px;");
-    layout.addWidget(lbl);
+    QLabel *lblTheme = new QLabel("UI Theme Appearance:", &dialog);
+    layout.addWidget(lblTheme);
 
     QPushButton *toggleBtn = new QPushButton(isDark ? "🌙 SWITCH TO LIGHT MODE" : "☀ SWITCH TO DARK MODE", &dialog);
-    toggleBtn->setStyleSheet(isDark ? "background-color: #F59E0B; color: #0F172A; font-weight: bold; padding: 15px; border-radius: 6px; font-size: 14px;" 
-                                    : "background-color: #0F172A; color: #F8FAFC; font-weight: bold; padding: 15px; border-radius: 6px; font-size: 14px;");
+    toggleBtn->setStyleSheet(isDark ? "background-color: #F59E0B; color: #0F172A; font-weight: bold; padding: 10px; border-radius: 6px; font-size: 13px;" 
+                                    : "background-color: #0F172A; color: #F8FAFC; font-weight: bold; padding: 10px; border-radius: 6px; font-size: 13px;");
     layout.addWidget(toggleBtn);
+
+    QFrame *line = new QFrame(&dialog);
+    line->setFrameShape(QFrame::HLine);
+    line->setStyleSheet(isDark ? "background-color: #334155;" : "background-color: #CBD5E1;");
+    layout.addWidget(line);
+
+    QLabel *lblPasscode = new QLabel("Change Workshop Admin Passcode:", &dialog);
+    layout.addWidget(lblPasscode);
+
+    QComboBox *workshopCombo = new QComboBox(&dialog);
+    workshopCombo->addItems({"Automotive", "Robotics", "Mechanical", "Painting", "Welding", "Microscope", "Chemistry", "Coding", "Test Tubes", "Circuitry"});
+    layout.addWidget(workshopCombo);
+
+    QLineEdit *newPasscodeEdit = new QLineEdit(&dialog);
+    newPasscodeEdit->setPlaceholderText("Enter new 7-digit passcode...");
+    newPasscodeEdit->setEchoMode(QLineEdit::Password);
+    layout.addWidget(newPasscodeEdit);
+
+    QPushButton *savePassBtn = new QPushButton("Save New Passcode", &dialog);
+    savePassBtn->setStyleSheet("background-color: #10B981; color: white; font-weight: bold; padding: 8px; border-radius: 4px;");
+    layout.addWidget(savePassBtn);
+
+    connect(savePassBtn, &QPushButton::clicked, [&]() {
+        if (newPasscodeEdit->text().trimmed().isEmpty()) {
+            QMessageBox::warning(&dialog, "Error", "Passcode cannot be empty!");
+            return;
+        }
+        QSettings settings("StudentWorkshopApp", "Passcodes");
+        settings.setValue(workshopCombo->currentText() + "_passcode", newPasscodeEdit->text().trimmed());
+        QMessageBox::information(&dialog, "Success", workshopCombo->currentText() + " admin passcode updated successfully!");
+        newPasscodeEdit->clear();
+    });
 
     connect(toggleBtn, &QPushButton::clicked, [&]() {
         bool currentDark = QSettings("StudentWorkshopApp", "ThemeSettings").value("darkMode", false).toBool();
@@ -292,6 +335,11 @@ void MainWindow::openSystemSettings()
         this->applyTheme(!currentDark);
         dialog.accept();
     });
+
+    QPushButton *closeBtn = new QPushButton("Close", &dialog);
+    closeBtn->setStyleSheet("background-color: #64748B; color: white; font-weight: bold; padding: 8px; border-radius: 4px;");
+    connect(closeBtn, &QPushButton::clicked, &dialog, &QDialog::accept);
+    layout.addWidget(closeBtn);
 
     dialog.exec();
 }
@@ -378,10 +426,13 @@ void MainWindow::goBack()
 void MainWindow::showRecordsWindow()
 {
     bool ok;
-    QString enteredAdminCode = QInputDialog::getText(this, "Admin Authentication", "Enter Admin Passcode:", QLineEdit::Password, "", &ok);
+    QString enteredAdminCode = QInputDialog::getText(this, "Admin Authentication", "Enter Admin Passcode for " + currentCategory + ":", QLineEdit::Password, "", &ok);
     if (!ok) return; 
     
-    if (enteredAdminCode != "0000000") {
+    QSettings settings("StudentWorkshopApp", "Passcodes");
+    QString correctPasscode = settings.value(currentCategory + "_passcode", "0000000").toString();
+    
+    if (enteredAdminCode != correctPasscode) {
         QMessageBox::critical(this, "Access Denied", "Incorrect Admin Passcode!");
         return;
     }
@@ -446,7 +497,7 @@ void MainWindow::setTimeSlotsInUI(const QString &timeString)
 bool MainWindow::checkPasscode()
 {
     bool ok;
-    QString enteredCode = QInputDialog::getText(this, "Authentication", "Enter Passcode:", QLineEdit::Password, "", &ok);
+    QString enteredCode = QInputDialog::getText(this, "Authentication", "Enter Booking Passcode:", QLineEdit::Password, "", &ok);
     if (!ok) return false; 
     if (enteredCode != currentRecord.getPasscode()) {
         QMessageBox::critical(this, "Access Denied", "Incorrect Passcode!");
@@ -633,8 +684,9 @@ void MainWindow::updateCalendarHighlights()
 
     bool isDark = QSettings("StudentWorkshopApp", "ThemeSettings").value("darkMode", false).toBool();
     QTextCharFormat highlightFormat;
-    highlightFormat.setBackground(isDark ? QColor("#0284C7") : QColor("#E0F2FE"));
-    highlightFormat.setForeground(isDark ? QColor("#FFFFFF") : QColor("#000000"));
+    // Highlight colors වඩාත් පැහැදිලි වන සේ වෙනස් කර ඇත
+    highlightFormat.setBackground(isDark ? QColor("#0369A1") : QColor("#BAE6FD"));
+    highlightFormat.setForeground(isDark ? QColor("#F8FAFC") : QColor("#0C4A6E"));
     highlightFormat.setFontWeight(QFont::Bold);
 
     for (const QDate &date : bookedDates) {
