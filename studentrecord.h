@@ -21,7 +21,7 @@ private:
     QString passcode;
     QString createdAt;
     QString status; 
-    QString adminRemarks; // අලුතින් එක් කරන ලදී
+    QString adminRemarks;
 
 public:
     StudentRecord();
@@ -41,7 +41,7 @@ public:
     QString getPasscode() const;
     QString getCreatedAt() const;
     QString getStatus() const;
-    QString getAdminRemarks() const; // අලුතින් එක් කරන ලදී
+    QString getAdminRemarks() const;
 
     void setId(int newId);
     void setBookingId(const QString &newBookingId);
@@ -58,7 +58,7 @@ public:
     void setPasscode(const QString &newPasscode);
     void setCreatedAt(const QString &newCreatedAt);
     void setStatus(const QString &newStatus);
-    void setAdminRemarks(const QString &newRemarks); // අලුතින් එක් කරන ලදී
+    void setAdminRemarks(const QString &newRemarks);
 };
 
 #endif // STUDENTRECORD_H

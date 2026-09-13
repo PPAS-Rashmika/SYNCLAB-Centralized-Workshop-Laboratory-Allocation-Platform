@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1150</width>
-    <height>800</height>
+    <width>1200</width>
+    <height>850</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,82 +15,136 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="spacing"><number>0</number></property>
+    <property name="leftMargin"><number>0</number></property>
+    <property name="topMargin"><number>0</number></property>
+    <property name="rightMargin"><number>0</number></property>
+    <property name="bottomMargin"><number>0</number></property>
     <item>
      <widget class="QStackedWidget" name="stackedWidget">
-      <property name="currentIndex">
-       <number>0</number>
-      </property>
+      <property name="currentIndex"><number>0</number></property>
       <widget class="QWidget" name="page1">
-       <layout class="QVBoxLayout" name="verticalLayout_2">
-        <property name="leftMargin"><number>20</number></property>
-        <property name="topMargin"><number>20</number></property>
-        <property name="rightMargin"><number>20</number></property>
-        <property name="bottomMargin"><number>20</number></property>
+       <layout class="QVBoxLayout" name="verticalLayout_page1">
+        <property name="spacing"><number>0</number></property>
+        <property name="leftMargin"><number>0</number></property>
+        <property name="topMargin"><number>0</number></property>
+        <property name="rightMargin"><number>0</number></property>
+        <property name="bottomMargin"><number>0</number></property>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_logo">
-          <item>
-           <spacer name="horizontalSpacer_logo_left">
-            <property name="orientation"><enum>Qt::Horizontal</enum></property>
-           </spacer>
-          </item>
-          <item>
-           <widget class="QLabel" name="logoLabel">
-            <property name="minimumSize">
-             <size><width>120</width><height>120</height></size>
-            </property>
-            <property name="maximumSize">
-             <size><width>120</width><height>120</height></size>
-            </property>
-            <property name="text"><string>[ LOGO ]</string></property>
-            <property name="alignment"><set>Qt::AlignCenter</set></property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="horizontalSpacer_logo_right">
-            <property name="orientation"><enum>Qt::Horizontal</enum></property>
-           </spacer>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <widget class="QLabel" name="headerLabel">
-          <property name="text"><string>WORKSHOPS &amp; LABORATORIES</string></property>
+         <widget class="QLabel" name="bannerLabel">
+          <property name="text"><string>1 S T   I N T E R F A C E</string></property>
           <property name="alignment"><set>Qt::AlignCenter</set></property>
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="subHeaderLabel">
-          <property name="text"><string>Select a workshop below to explore its facilities, manage student bookings, and view technical details.</string></property>
-          <property name="alignment"><set>Qt::AlignCenter</set></property>
-         </widget>
-        </item>
-        <item>
-         <layout class="QGridLayout" name="gridLayout">
-          <property name="spacing"><number>25</number></property>
-         </layout>
-        </item>
-        <item>
-         <spacer name="verticalSpacer">
-          <property name="orientation"><enum>Qt::Vertical</enum></property>
-         </spacer>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="bottomBarLayout">
+         <layout class="QVBoxLayout" name="glassWrapperLayout">
+          <property name="leftMargin"><number>50</number></property>
+          <property name="topMargin"><number>30</number></property>
+          <property name="rightMargin"><number>50</number></property>
+          <property name="bottomMargin"><number>40</number></property>
           <item>
-           <spacer name="bottomSpacer">
-            <property name="orientation"><enum>Qt::Horizontal</enum></property>
-           </spacer>
+           <widget class="QFrame" name="glassPanel">
+            <property name="frameShape"><enum>QFrame::StyledPanel</enum></property>
+            <property name="frameShadow"><enum>QFrame::Raised</enum></property>
+            <layout class="QVBoxLayout" name="verticalLayout_content">
+             <property name="spacing"><number>20</number></property>
+             <property name="leftMargin"><number>30</number></property>
+             <property name="topMargin"><number>30</number></property>
+             <property name="rightMargin"><number>30</number></property>
+             <property name="bottomMargin"><number>30</number></property>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_wHeader">
+               <property name="spacing"><number>15</number></property>
+               <item>
+                <widget class="QFrame" name="line_w1">
+                 <property name="frameShape"><enum>QFrame::HLine</enum></property>
+                 <property name="frameShadow"><enum>QFrame::Plain</enum></property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_workshops">
+                 <property name="text"><string>W O R K S H O P S</string></property>
+                 <property name="alignment"><set>Qt::AlignCenter</set></property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QFrame" name="line_w2">
+                 <property name="frameShape"><enum>QFrame::HLine</enum></property>
+                 <property name="frameShadow"><enum>QFrame::Plain</enum></property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="workshopsLayout">
+               <property name="spacing"><number>20</number></property>
+              </layout>
+             </item>
+             <item>
+              <spacer name="verticalSpacer_mid1">
+               <property name="orientation"><enum>Qt::Vertical</enum></property>
+               <property name="sizeType"><enum>QSizePolicy::Fixed</enum></property>
+               <property name="sizeHint"><size><width>20</width><height>20</height></size></property>
+              </spacer>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_lHeader">
+               <property name="spacing"><number>15</number></property>
+               <item>
+                <widget class="QFrame" name="line_l1">
+                 <property name="frameShape"><enum>QFrame::HLine</enum></property>
+                 <property name="frameShadow"><enum>QFrame::Plain</enum></property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_labs">
+                 <property name="text"><string>L A B O R A T O R I E S</string></property>
+                 <property name="alignment"><set>Qt::AlignCenter</set></property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QFrame" name="line_l2">
+                 <property name="frameShape"><enum>QFrame::HLine</enum></property>
+                 <property name="frameShadow"><enum>QFrame::Plain</enum></property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="labsLayout">
+               <property name="spacing"><number>20</number></property>
+              </layout>
+             </item>
+             <item>
+              <spacer name="verticalSpacer_bottom">
+               <property name="orientation"><enum>Qt::Vertical</enum></property>
+               <property name="sizeType"><enum>QSizePolicy::Expanding</enum></property>
+              </spacer>
+             </item>
+            </layout>
+           </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="systemSettingsBtn">
-            <property name="text"><string>⚙ SYSTEM</string></property>
-            <property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property>
-           </widget>
+           <layout class="QHBoxLayout" name="bottomBarLayout">
+            <item>
+             <spacer name="bottomSpacer">
+              <property name="orientation"><enum>Qt::Horizontal</enum></property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QPushButton" name="systemSettingsBtn">
+              <property name="text"><string>⚙ SYSTEM</string></property>
+              <property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property>
+             </widget>
+            </item>
+           </layout>
           </item>
          </layout>
         </item>
        </layout>
       </widget>
+      
+      <!-- PAGE 2 (Student Info UI) remains the same as before -->
       <widget class="QWidget" name="page2">
        <layout class="QGridLayout" name="gridLayout_2">
         <property name="horizontalSpacing"><number>30</number></property>
@@ -114,9 +168,7 @@
              </widget>
             </item>
             <item>
-             <spacer name="horizontalSpacer">
-              <property name="orientation"><enum>Qt::Horizontal</enum></property>
-             </spacer>
+             <spacer name="horizontalSpacer"><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer>
             </item>
            </layout>
           </item>
@@ -130,39 +182,21 @@
              <property name="bottomMargin"><number>15</number></property>
              <item>
               <widget class="QLabel" name="selectedImgLabel">
-               <property name="minimumSize">
-                <size><width>120</width><height>90</height></size>
-               </property>
-               <property name="maximumSize">
-                <size><width>120</width><height>90</height></size>
-               </property>
+               <property name="minimumSize"><size><width>120</width><height>90</height></size></property>
+               <property name="maximumSize"><size><width>120</width><height>90</height></size></property>
                <property name="alignment"><set>Qt::AlignCenter</set></property>
               </widget>
              </item>
              <item>
               <layout class="QVBoxLayout" name="verticalLayout_text">
-               <item>
-                <widget class="QLabel" name="selectedNameLabel">
-                 <property name="text"><string>Name</string></property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="selectedDescLabel">
-                 <property name="text"><string>Desc</string></property>
-                 <property name="wordWrap"><bool>true</bool></property>
-                 <property name="alignment"><set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set></property>
-                </widget>
-               </item>
+               <item><widget class="QLabel" name="selectedNameLabel"><property name="text"><string>Name</string></property></widget></item>
+               <item><widget class="QLabel" name="selectedDescLabel"><property name="text"><string>Desc</string></property><property name="wordWrap"><bool>true</bool></property><property name="alignment"><set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set></property></widget></item>
               </layout>
              </item>
             </layout>
            </widget>
           </item>
-          <item>
-           <spacer name="verticalSpacer_info">
-            <property name="orientation"><enum>Qt::Vertical</enum></property>
-           </spacer>
-          </item>
+          <item><spacer name="verticalSpacer_info"><property name="orientation"><enum>Qt::Vertical</enum></property></spacer></item>
          </layout>
         </item>
         <item row="0" column="1">
@@ -208,7 +242,7 @@
            </layout>
           </item>
           <item><widget class="QLabel" name="label_5"><property name="text"><string>TIME SLOTS</string></property></widget></item>
-          <item><widget class="QComboBox" name="timeSlotInput"></widget></item>
+          <item><widget class="QComboBox" name="timeSlotInput"/></item>
          </layout>
         </item>
         <item row="2" column="1">

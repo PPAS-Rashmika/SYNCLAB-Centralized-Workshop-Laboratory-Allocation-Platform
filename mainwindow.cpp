@@ -29,6 +29,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     isPasscodeBypassed = false; 
+    this->setWindowIcon(QIcon(QCoreApplication::applicationDirPath() + "/assets/app_icon.png"));
 
     dbManager = new SqliteDatabaseManager("student_data.db");
     if (!dbManager->createTable()) {
@@ -37,7 +38,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     setupDynamicUI();
     
-    bool isDark = QSettings("StudentWorkshopApp", "ThemeSettings").value("darkMode", false).toBool();
+    // Theme එක ස්වයංක්‍රීයව අලංකාර Dark/Glass Theme එකට යොමු වේ
+    bool isDark = QSettings("StudentWorkshopApp", "ThemeSettings").value("darkMode", true).toBool();
     applyTheme(isDark);
     
     connect(ui->backBtn, &QPushButton::clicked, this, &MainWindow::goBack);
@@ -65,25 +67,15 @@ MainWindow::~MainWindow()
 
 void MainWindow::setupDynamicUI()
 {
-    QString logoPath = QCoreApplication::applicationDirPath() + "/assets/logo.png";
-    QPixmap logoPix(logoPath);
-    if (!logoPix.isNull()) {
-        ui->logoLabel->setPixmap(logoPix.scaled(120, 120, Qt::KeepAspectRatio, Qt::SmoothTransformation));
-        ui->logoLabel->setText(""); 
-    } else {
-        ui->logoLabel->setText("[ LOGO ]");
-    }
-
-    ui->gridLayout->setAlignment(Qt::AlignCenter); 
-    ui->gridLayout->setHorizontalSpacing(30);      
-    ui->gridLayout->setVerticalSpacing(30);        
+    ui->workshopsLayout->setAlignment(Qt::AlignCenter);
+    ui->labsLayout->setAlignment(Qt::AlignCenter);
 
     QStandardItemModel *timeModel = new QStandardItemModel(4, 1, this);
     QStringList timeSlotsList = {"8.30 am - 10.30 am", "10.30 am - 12.30 pm", "1.30 pm - 3.30 pm", "3.30 pm - 5.30 pm"};
     for (int i = 0; i < timeSlotsList.size(); ++i) {
         QStandardItem *item = new QStandardItem(timeSlotsList[i]);
         item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
-        item->setData(Qt::Unchecked, Qt::CheckStateRole);
+        item->setCheckState(Qt::CheckState::Unchecked); 
         timeModel->setItem(i, 0, item);
     }
     ui->timeSlotInput->setModel(timeModel);
@@ -103,7 +95,40 @@ void MainWindow::setupDynamicUI()
 
 void MainWindow::applyTheme(bool isDark)
 {
-    QString bg = isDark ? "#0B1120" : "#F4F7FC";
+    // --- 1st Interface (Futuristic Glass Theme) ---
+    if(isDark) {
+        // Space Background
+        ui->page1->setStyleSheet("QWidget#page1 { background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #050B14, stop:0.5 #0F172A, stop:1 #020617); }");
+        
+        // Faked Glassmorphism Panel
+        ui->glassPanel->setStyleSheet(
+            "QFrame#glassPanel {"
+            "background-color: rgba(16, 25, 45, 180);"
+            "border: 1px solid rgba(100, 200, 255, 40);"
+            "border-radius: 20px;"
+            "}"
+        );
+    } else {
+        ui->page1->setStyleSheet("QWidget#page1 { background-color: #F4F8FB; }");
+        ui->glassPanel->setStyleSheet("QFrame#glassPanel { background-color: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 20px; }");
+    }
+
+    ui->bannerLabel->setStyleSheet(QString("background-color: transparent; color: %1; font-size: 16px; font-weight: 800; padding: 15px; letter-spacing: 5px;").arg(isDark ? "#38BDF8" : "#0A306D"));
+
+    QString headerStyle = QString("font-size: 20px; font-weight: 800; color: %1; letter-spacing: 2px; background: transparent;").arg(isDark ? "#F8FAFC" : "#112A46");
+    ui->label_workshops->setStyleSheet(headerStyle);
+    ui->label_labs->setStyleSheet(headerStyle);
+    
+    QString lineStyle = QString("background-color: %1; max-height: 2px;").arg(isDark ? "rgba(255,255,255,50)" : "#D1D5DB");
+    ui->line_w1->setStyleSheet(lineStyle);
+    ui->line_w2->setStyleSheet(lineStyle);
+    ui->line_l1->setStyleSheet(lineStyle);
+    ui->line_l2->setStyleSheet(lineStyle);
+    
+    ui->systemSettingsBtn->setStyleSheet(QString("background-color: %1; color: %2; padding: 8px 15px; border-radius: 6px; font-weight: bold;").arg(isDark?"rgba(255,255,255,20)":"#E2E8F0", isDark?"#F8FAFC":"#0F172A"));
+
+    // --- 2nd Interface (Student Information UI) Styles ---
+    QString bg2 = isDark ? "#0B1120" : "#F4F8FB";
     QString cardBg = isDark ? "#1E293B" : "#FFFFFF";
     QString text = isDark ? "#F8FAFC" : "#0F172A";
     QString subText = isDark ? "#94A3B8" : "#5B6A7A";
@@ -112,11 +137,8 @@ void MainWindow::applyTheme(bool isDark)
     QString btnBg = isDark ? "#38BDF8" : "#2563EB";
     QString btnText = isDark ? "#0B1120" : "#FFFFFF";
 
-    this->setStyleSheet(QString("QMainWindow { background-color: %1; }").arg(bg));
+    ui->page2->setStyleSheet(QString("QWidget#page2 { background-color: %1; }").arg(bg2));
 
-    ui->logoLabel->setStyleSheet(QString("background-color: %1; color: %2; font-weight: bold; border-radius: 60px; border: 2px dashed %3;").arg(isDark?"#1E293B":"#E2E8F0", subText, border));
-    ui->headerLabel->setStyleSheet(QString("font-size: 28px; font-weight: 800; color: %1; font-family: 'Segoe UI', Arial; letter-spacing: 1px; margin-top: 10px;").arg(isDark ? "#38BDF8" : "#112A46"));
-    ui->subHeaderLabel->setStyleSheet(QString("font-size: 14px; color: %1; margin-bottom: 20px;").arg(subText));
     ui->formHeader->setStyleSheet(QString("font-size: 16px; font-weight: bold; color: %1; margin-top: 15px; margin-bottom: 15px; text-transform: uppercase;").arg(isDark ? "#38BDF8" : text));
 
     QString labelStyle = QString("font-size: 12px; font-weight: bold; color: %1;").arg(text);
@@ -143,17 +165,14 @@ void MainWindow::applyTheme(bool isDark)
     ui->selectedNameLabel->setStyleSheet(QString("font-size: 18px; font-weight: 800; color: %1; border: none;").arg(text));
     ui->selectedDescLabel->setStyleSheet(QString("font-size: 13px; color: %1; border: none;").arg(subText));
     
-    ui->systemSettingsBtn->setStyleSheet(QString("background-color: %1; color: %2; padding: 8px 15px; border-radius: 6px; font-weight: bold;").arg(isDark?"#334155":"#E2E8F0", text));
     ui->backBtn->setStyleSheet(QString("background-color: %1; color: %2; padding: 10px 15px; border-radius: 5px; font-weight: bold; font-size: 13px;").arg(isDark?"#334155":"#E2E8F0", text));
     ui->viewRecordsBtn->setStyleSheet(QString("background-color: %1; color: %2; padding: 10px 15px; border-radius: 5px; font-weight: bold; font-size: 13px;").arg(btnBg, btnText));
-    
     ui->browsePdfBtn->setStyleSheet("background-color: #64748B; color: white; padding: 0px 20px; min-height: 38px; border-radius: 6px; font-weight: bold; font-size: 13px;");
     
     ui->submitBtn->setStyleSheet(QString("background-color: %1; color: %2; padding: 0px; min-height: 45px; border-radius: 6px; font-weight: bold; font-size: 14px;").arg(btnBg, btnText));
     ui->updateBtn->setStyleSheet("background-color: #D97706; color: white; padding: 0px; min-height: 45px; border-radius: 6px; font-weight: bold; font-size: 14px;");
     ui->deleteBtn->setStyleSheet("background-color: #DC2626; color: white; padding: 0px; min-height: 45px; border-radius: 6px; font-weight: bold; font-size: 14px;");
 
-    // --- දෝෂය නිවැරදි කර Calendar එකට අදාළව එක්කළ පැහැදිලි වර්ණ රටා ---
     QString calStyle = isDark ? 
         "CustomCalendarWidget { background-color: #0B1120; color: #F8FAFC; }"
         "CustomCalendarWidget QWidget#qt_calendar_navigationbar { background-color: #1E293B; }"
@@ -170,7 +189,6 @@ void MainWindow::applyTheme(bool isDark)
         "CustomCalendarWidget QMenu { background-color: #FFFFFF; color: #0F172A; }"
         "CustomCalendarWidget QSpinBox { background-color: #FFFFFF; color: #0F172A; selection-background-color: #3B82F6; }"
         "CustomCalendarWidget QAbstractItemView { selection-background-color: #3B82F6; selection-color: #FFFFFF; background-color: #FFFFFF; color: #0F172A; border: 1px solid #CBD5E1; alternate-background-color: #F8FAFC; font-size: 13px; }";
-    
     ui->calendar->setStyleSheet(calStyle);
 
     drawCards(isDark);
@@ -180,44 +198,56 @@ void MainWindow::applyTheme(bool isDark)
 void MainWindow::drawCards(bool isDark)
 {
     QLayoutItem *child;
-    while ((child = ui->gridLayout->takeAt(0)) != nullptr) {
+    while ((child = ui->workshopsLayout->takeAt(0)) != nullptr) {
+        if (child->widget()) child->widget()->deleteLater();
+        delete child;
+    }
+    while ((child = ui->labsLayout->takeAt(0)) != nullptr) {
         if (child->widget()) child->widget()->deleteLater();
         delete child;
     }
     
+    // කාඩ්පත්වල Text එක ඡායාරූපයට අනුව වෙනස් කර ඇත (Original ID එක වෙනස් නොකර)
     QStringList workshops = {"Automotive", "Robotics", "Mechanical", "Painting", "Welding"};
+    QStringList wsTitles = {"VEHICLE\nDESIGN", "ROBOTIC\nASSEMBLY", "GENERAL\nMECHANICAL", "SURFACE\nFINISHING", "PRECISION\nWELDING"};
+    QStringList wsSubs = {"AUTOMOTIVE", "AUTOMATION", "HAND TOOLS", "COATING", "METAL FAB"};
+
     for(int i = 0; i < workshops.size(); i++) {
-        ui->gridLayout->addWidget(createCard(workshops[i], isDark), 0, i);
+        ui->workshopsLayout->addWidget(createCard(workshops[i], wsTitles[i], wsSubs[i], isDark));
     }
 
     QStringList labs = {"Microscope", "Chemistry", "Coding", "Test Tubes", "Circuitry"};
+    QStringList labTitles = {"BIO-IMAGING", "CHEMICAL\nANALYSIS", "SOFTWARE\nENGINEERING", "CIRCUIT\nASSEMBLY", "NEURAL\nCOMPUTATION"};
+    QStringList labSubs = {"MICROSCOPY", "LAB-WARE", "CODE & AI", "ELECTRONICS", "DATA SCIENCE"};
+    
     for(int i = 0; i < labs.size(); i++) {
-        ui->gridLayout->addWidget(createCard(labs[i], isDark), 1, i);
+        ui->labsLayout->addWidget(createCard(labs[i], labTitles[i], labSubs[i], isDark));
     }
 }
 
-QWidget* MainWindow::createCard(const QString &title, bool isDark)
+QWidget* MainWindow::createCard(const QString &id, const QString &title, const QString &subtitle, bool isDark)
 {
     QFrame *card = new QFrame(this);
-    card->setFixedSize(210, 310);
+    card->setFixedSize(190, 270); 
     
-    QString cardBg = isDark ? "#1E293B" : "#FFFFFF";
-    QString cardHoverBg = isDark ? "#334155" : "#FAFCFF";
-    QString cardHoverBorder = isDark ? "#38BDF8" : "#93C5FD";
-    QString text = isDark ? "#F8FAFC" : "#0F172A";
-    QString btnBg1 = isDark ? "#0284C7" : "#3B82F6";
-    QString btnBg2 = isDark ? "#0369A1" : "#2563EB";
-
-    card->setStyleSheet(QString(
-        "QFrame { background-color: %1; border-radius: 16px; border: 2px solid transparent; }"
-        "QFrame:hover { border: 2px solid %2; background-color: %3; }"
-    ).arg(cardBg, cardHoverBorder, cardHoverBg));
+    // --- Glassmorphism Effect ---
+    if(isDark) {
+        card->setStyleSheet(
+            "QFrame { background-color: rgba(255, 255, 255, 15); border-radius: 15px; border: 1px solid rgba(255, 255, 255, 40); }"
+            "QFrame:hover { background-color: rgba(255, 255, 255, 30); border: 1px solid rgba(56, 189, 248, 150); }"
+        );
+    } else {
+        card->setStyleSheet(
+            "QFrame { background-color: #FFFFFF; border-radius: 15px; border: 1px solid #CBD5E1; }"
+            "QFrame:hover { border: 1px solid #3B82F6; }"
+        );
+    }
 
     QGraphicsDropShadowEffect *shadow = new QGraphicsDropShadowEffect(card);
-    shadow->setBlurRadius(25);
+    shadow->setBlurRadius(20);
     shadow->setXOffset(0);
-    shadow->setYOffset(8);
-    shadow->setColor(isDark ? QColor(0, 0, 0, 150) : QColor(0, 0, 0, 25)); 
+    shadow->setYOffset(6);
+    shadow->setColor(isDark ? QColor(0, 0, 0, 100) : QColor(148, 163, 184, 40)); 
     card->setGraphicsEffect(shadow);
     
     QVBoxLayout *layout = new QVBoxLayout(card);
@@ -226,42 +256,51 @@ QWidget* MainWindow::createCard(const QString &title, bool isDark)
     layout->setAlignment(Qt::AlignTop | Qt::AlignHCenter);
     
     QLabel *imgBox = new QLabel(card);
-    imgBox->setFixedSize(170, 140);
+    imgBox->setFixedSize(140, 110);
     imgBox->setAlignment(Qt::AlignCenter);
     
-    QString imgName = title.toLower() + ".png"; 
+    // Image Background Gradient
+    QString grad = isDark ? "qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #0284C7, stop:1 #002855)" 
+                          : "qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #2563EB, stop:1 #0284C7)";
+    imgBox->setStyleSheet(QString("background: %1; border-radius: 12px; color: white; border: none;").arg(grad));
+    
+    QString imgName = id.toLower() + ".png"; 
     QString imgPath = QCoreApplication::applicationDirPath() + "/assets/" + imgName;
     QPixmap pix(imgPath);
     if (!pix.isNull()) {
-        imgBox->setPixmap(pix.scaled(170, 140, Qt::KeepAspectRatio, Qt::SmoothTransformation));
-        imgBox->setStyleSheet("background-color: transparent; border: none;");
+        imgBox->setPixmap(pix.scaled(140, 110, Qt::KeepAspectRatio, Qt::SmoothTransformation));
     } else {
-        imgBox->setStyleSheet(QString("background-color: %1; border-radius: 12px; color: %2; font-weight: bold; border: 1px dashed %3;").arg(isDark?"#0F172A":"#F1F5F9", isDark?"#94A3B8":"#64748B", isDark?"#334155":"#CBD5E1"));
-        imgBox->setText("[ Image ]\n" + title);
+        imgBox->setText("[ Image ]\n" + id);
     }
     
     QLabel *nameTag = new QLabel(title, card);
     nameTag->setAlignment(Qt::AlignCenter);
-    nameTag->setStyleSheet(QString("font-size: 17px; font-weight: bold; color: %1; border: none; font-family: 'Segoe UI', Arial;").arg(text));
+    nameTag->setStyleSheet(QString("font-size: 14px; font-weight: bold; color: %1; background: transparent; border: none;").arg(isDark?"#FFFFFF":"#0F172A"));
 
-    QPushButton *btn = new QPushButton("   SELECT\n   THIS WORKSHOP", card);
-    btn->setFixedSize(170, 48);
-    btn->setStyleSheet(QString(
-        "QPushButton { background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 %1, stop:1 %2); color: white; border-radius: 24px; font-size: 11px; font-weight: bold; text-align: left; padding-left: 20px; border: none; }"
-    ).arg(btnBg1, btnBg2));
+    QPushButton *btn = new QPushButton(subtitle, card);
+    btn->setFixedSize(150, 36);
     
-    QLabel *arrowIcon = new QLabel(">", btn);
-    arrowIcon->setStyleSheet("color: white; font-weight: bold; font-size: 16px; background: transparent; border: none;");
-    arrowIcon->setGeometry(15, 13, 20, 20);
+    // Pill Button Style
+    if(isDark) {
+        btn->setStyleSheet(
+            "QPushButton { background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #06B6D4, stop:1 #3B82F6); color: white; border-radius: 18px; font-size: 11px; font-weight: bold; border: 1px solid rgba(255, 255, 255, 50); }"
+            "QPushButton:hover { background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #3B82F6, stop:1 #06B6D4); }"
+        );
+    } else {
+        btn->setStyleSheet(
+            "QPushButton { background-color: #3B82F6; color: white; border-radius: 18px; font-size: 11px; font-weight: bold; border: none; }"
+            "QPushButton:hover { background-color: #2563EB; }"
+        );
+    }
 
-    connect(btn, &QPushButton::clicked, [this, title](){
-        openSecondInterface(title);
+    connect(btn, &QPushButton::clicked, [this, id](){
+        openSecondInterface(id);
     });
 
-    layout->addWidget(imgBox);
-    layout->addWidget(nameTag);
-    layout->addSpacerItem(new QSpacerItem(20, 10, QSizePolicy::Minimum, QSizePolicy::Expanding)); 
-    layout->addWidget(btn);
+    layout->addWidget(imgBox, 0, Qt::AlignHCenter);
+    layout->addWidget(nameTag, 0, Qt::AlignHCenter);
+    layout->addStretch(); 
+    layout->addWidget(btn, 0, Qt::AlignHCenter);
     
     return card;
 }
@@ -281,7 +320,7 @@ void MainWindow::openSystemSettings()
     dialog.setWindowTitle("System Settings");
     dialog.setMinimumWidth(400);
     
-    bool isDark = QSettings("StudentWorkshopApp", "ThemeSettings").value("darkMode", false).toBool();
+    bool isDark = QSettings("StudentWorkshopApp", "ThemeSettings").value("darkMode", true).toBool();
     dialog.setStyleSheet(isDark ? "QDialog { background-color: #1E293B; color: #F8FAFC; } QLabel { color: #F8FAFC; font-weight: bold; } QComboBox, QLineEdit { background-color: #0F172A; color: #F8FAFC; padding: 5px; border: 1px solid #334155; border-radius: 4px; }" 
                                 : "QDialog { background-color: #FFFFFF; color: #0F172A; } QLabel { color: #0F172A; font-weight: bold; } QComboBox, QLineEdit { padding: 5px; border: 1px solid #CBD5E1; border-radius: 4px; }");
 
@@ -292,7 +331,7 @@ void MainWindow::openSystemSettings()
     QLabel *lblTheme = new QLabel("UI Theme Appearance:", &dialog);
     layout.addWidget(lblTheme);
 
-    QPushButton *toggleBtn = new QPushButton(isDark ? "🌙 SWITCH TO LIGHT MODE" : "☀ SWITCH TO DARK MODE", &dialog);
+    QPushButton *toggleBtn = new QPushButton(isDark ? "🌙 SWITCH TO LIGHT MODE" : "✨ SWITCH TO GLASS MODE", &dialog);
     toggleBtn->setStyleSheet(isDark ? "background-color: #F59E0B; color: #0F172A; font-weight: bold; padding: 10px; border-radius: 6px; font-size: 13px;" 
                                     : "background-color: #0F172A; color: #F8FAFC; font-weight: bold; padding: 10px; border-radius: 6px; font-size: 13px;");
     layout.addWidget(toggleBtn);
@@ -330,7 +369,7 @@ void MainWindow::openSystemSettings()
     });
 
     connect(toggleBtn, &QPushButton::clicked, [&]() {
-        bool currentDark = QSettings("StudentWorkshopApp", "ThemeSettings").value("darkMode", false).toBool();
+        bool currentDark = QSettings("StudentWorkshopApp", "ThemeSettings").value("darkMode", true).toBool();
         QSettings("StudentWorkshopApp", "ThemeSettings").setValue("darkMode", !currentDark);
         this->applyTheme(!currentDark);
         dialog.accept();
@@ -365,7 +404,7 @@ void MainWindow::onCalendarSelectionChanged()
         QStandardItem *item = model->item(i);
         if (bookedSlots.contains(item->text())) {
             item->setEnabled(false); 
-            item->setCheckState(Qt::Unchecked);
+            item->setCheckState(Qt::CheckState::Unchecked); 
             item->setForeground(QBrush(Qt::gray)); 
         } else {
             item->setEnabled(true);
@@ -474,7 +513,7 @@ QStringList MainWindow::getSelectedTimeSlotsList()
     QStandardItemModel *model = qobject_cast<QStandardItemModel*>(ui->timeSlotInput->model());
     QStringList selectedSlots;
     for (int i = 0; i < model->rowCount(); ++i) {
-        if (model->item(i)->checkState() == Qt::Checked && model->item(i)->isEnabled()) {
+        if (model->item(i)->checkState() == Qt::CheckState::Checked && model->item(i)->isEnabled()) {
             selectedSlots << model->item(i)->text();
         }
     }
@@ -486,9 +525,9 @@ void MainWindow::setTimeSlotsInUI(const QString &timeString)
     QStandardItemModel *model = qobject_cast<QStandardItemModel*>(ui->timeSlotInput->model());
     for (int i = 0; i < model->rowCount(); ++i) {
         if (!timeString.isEmpty() && timeString.contains(model->item(i)->text()) && model->item(i)->isEnabled()) {
-            model->item(i)->setCheckState(Qt::Checked);
+            model->item(i)->setCheckState(Qt::CheckState::Checked); 
         } else {
-            model->item(i)->setCheckState(Qt::Unchecked);
+            model->item(i)->setCheckState(Qt::CheckState::Unchecked);
         }
     }
     updateTimeSlotDisplayText();
@@ -643,7 +682,7 @@ void MainWindow::deleteData()
         
         if(!found) { QMessageBox::critical(this, "Access Denied", "Incorrect Passcode!"); return; }
         
-        if (QMessageBox::question(this, "Confirm", "Permanently delete booking ID: " + foundRecord.getBookingId() + "?") == QMessageBox::Yes) {
+        if (QMessageBox::question(this, "Confirm", "Permanently delete booking ID: " + foundRecord.getBookingId() + "?") == QMessageBox::StandardButton::Yes) {
             if (dbManager->deleteRecord(foundRecord.getId())) {
                 QMessageBox::information(this, "Deleted", "Record deleted successfully!");
                 updateCalendarHighlights();
@@ -655,7 +694,7 @@ void MainWindow::deleteData()
     
     if (!isPasscodeBypassed) { if (!checkPasscode()) return; }
 
-    if (QMessageBox::question(this, "Confirm", "Permanently delete this record?") == QMessageBox::Yes) {
+    if (QMessageBox::question(this, "Confirm", "Permanently delete this record?") == QMessageBox::StandardButton::Yes) {
         if (dbManager->deleteRecord(currentRecord.getId())) {
             QMessageBox::information(this, "Deleted", "Record deleted successfully!");
             updateCalendarHighlights();
@@ -682,9 +721,8 @@ void MainWindow::updateCalendarHighlights()
         }
     }
 
-    bool isDark = QSettings("StudentWorkshopApp", "ThemeSettings").value("darkMode", false).toBool();
+    bool isDark = QSettings("StudentWorkshopApp", "ThemeSettings").value("darkMode", true).toBool();
     QTextCharFormat highlightFormat;
-    // Highlight colors වඩාත් පැහැදිලි වන සේ වෙනස් කර ඇත
     highlightFormat.setBackground(isDark ? QColor("#0369A1") : QColor("#BAE6FD"));
     highlightFormat.setForeground(isDark ? QColor("#F8FAFC") : QColor("#0C4A6E"));
     highlightFormat.setFontWeight(QFont::Bold);

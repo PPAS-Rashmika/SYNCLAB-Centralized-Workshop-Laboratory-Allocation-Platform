@@ -18,7 +18,7 @@ public:
     virtual bool updateRecord(const StudentRecord &record) = 0;
     virtual bool deleteRecord(int id) = 0;
     virtual bool updateRecordStatus(int id, const QString &status) = 0; 
-    virtual bool updateAdminRemarks(int id, const QString &remarks) = 0; // අලුත් Function එක
+    virtual bool updateAdminRemarks(int id, const QString &remarks) = 0; 
     
     virtual QList<StudentRecord> getRecordsByDateAndCategory(const QString &date, const QString &category) = 0;
     virtual QList<QDate> getBookedDates(const QString &category) = 0;

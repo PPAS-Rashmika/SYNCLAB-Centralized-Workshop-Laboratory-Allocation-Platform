@@ -25,7 +25,7 @@ bool SqliteDatabaseManager::createTable()
                       "category TEXT, name TEXT, index_no TEXT, "
                       "department TEXT, email TEXT, pdf_path TEXT, "
                       "record_date TEXT, time_slot TEXT, description TEXT, "
-                      "passcode TEXT, created_at TEXT, status TEXT, admin_remarks TEXT)"); // admin_remarks අලුතින් එක් කළා
+                      "passcode TEXT, created_at TEXT, status TEXT, admin_remarks TEXT)"); 
 }
 
 bool SqliteDatabaseManager::addRecord(const StudentRecord &record)
@@ -54,7 +54,6 @@ bool SqliteDatabaseManager::addRecord(const StudentRecord &record)
 bool SqliteDatabaseManager::updateRecord(const StudentRecord &record)
 {
     QSqlQuery query;
-    // මෙහි Status සහ Remarks Update නොකරයි. ඒවාට වෙනම ශ්‍රිත ඇත.
     query.prepare("UPDATE records SET name=:name, index_no=:index, department=:dept, email=:email, pdf_path=:pdf, record_date=:date, time_slot=:time, description=:desc WHERE id=:id");
     query.bindValue(":name", record.getName());
     query.bindValue(":index", record.getIndexNo());

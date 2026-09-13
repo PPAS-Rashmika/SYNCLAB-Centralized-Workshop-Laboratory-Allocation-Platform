@@ -97,7 +97,6 @@ void RecordsWindow::setupUI()
     calendar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred); 
     calendar->setMinimumHeight(250); 
     
-    // --- දෝෂය නිවැරදි කර අකුරු පැහැදිලිව පෙනෙන පරිදි සකසන ලද Calendar Stylesheet එක ---
     QString calStyle = isDark ? 
         "CustomCalendarWidget { background-color: #0B1120; color: #F8FAFC; }"
         "CustomCalendarWidget QWidget#qt_calendar_navigationbar { background-color: #1E293B; }"
@@ -162,7 +161,6 @@ void RecordsWindow::updateCalendarHighlights()
 
     bool isDark = QSettings("StudentWorkshopApp", "ThemeSettings").value("darkMode", false).toBool();
     QTextCharFormat highlightFormat;
-    // Highlight colors ද වඩාත් පැහැදිලි වන ලෙස වෙනස් කර ඇත
     highlightFormat.setBackground(isDark ? QColor("#0369A1") : QColor("#BAE6FD"));
     highlightFormat.setForeground(isDark ? QColor("#F8FAFC") : QColor("#0C4A6E"));
     highlightFormat.setFontWeight(QFont::Bold);
@@ -450,7 +448,7 @@ void RecordsWindow::loadData()
 
             connect(changeBtn, &QPushButton::clicked, [this, record = records[i]]() { emit editRequested(record); this->accept(); });
             connect(deleteBtn, &QPushButton::clicked, [this, id = records[i].getId()]() {
-                if (QMessageBox::question(this, "Confirm", "Permanently delete this record without passcode?") == QMessageBox::Yes) {
+                if (QMessageBox::question(this, "Confirm", "Permanently delete this record without passcode?") == QMessageBox::StandardButton::Yes) {
                     dbManager->deleteRecord(id); loadData(); emit databaseUpdated(); 
                 }
             });

@@ -12,12 +12,11 @@ class CustomCalendarWidget : public QCalendarWidget
 public:
     explicit CustomCalendarWidget(QWidget *parent = nullptr);
     
-    // දිනවලට අදාළ දත්ත ප්‍රමාණ ලබාදීම සඳහා
     void setStatusCounts(const QMap<QDate, QMap<QString, int>> &counts);
 
 protected:
-    // Calendar Cell එක ඇතුළේ ඉලක්කම් ඇඳීම (Draw කිරීම)
-    void paintCell(QPainter *painter, const QRect &rect, const QDate &date) const override;
+    // Qt 6 සඳහා QDate අනිවාර්යයෙන් Pass by Value ලෙස ලබා දිය යුතුය
+    void paintCell(QPainter *painter, const QRect &rect, QDate date) const override;
 
 private:
     QMap<QDate, QMap<QString, int>> m_counts;

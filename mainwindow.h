@@ -31,7 +31,7 @@ private slots:
     void onDatabaseUpdatedFromPopup();
     void updateTimeSlotDisplayText();
     void onCalendarSelectionChanged();
-    void openSystemSettings();   // අලුත්: System Settings (Theme) විවෘත කිරීමට
+    void openSystemSettings();
 
 private:
     Ui::MainWindow *ui;
@@ -43,9 +43,11 @@ private:
     bool isPasscodeBypassed; 
 
     void setupDynamicUI();
-    void applyTheme(bool isDark); // අලුත්: Theme එක Apply කිරීමට
-    void drawCards(bool isDark);  // අලුත්: Cards අලුතින් ඇඳීමට
-    QWidget* createCard(const QString &title, bool isDark); // වෙනස් කරන ලදී
+    void applyTheme(bool isDark); 
+    void drawCards(bool isDark);  
+    
+    // --- දෝෂය නිවැරදි කළ ස්ථානය (Parameters 4 ක් සඳහා යාවත්කාලීන කර ඇත) ---
+    QWidget* createCard(const QString &id, const QString &title, const QString &subtitle, bool isDark); 
 
     void updateCalendarHighlights();
     bool checkPasscode();
