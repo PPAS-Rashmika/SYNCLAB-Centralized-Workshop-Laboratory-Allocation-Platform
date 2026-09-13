@@ -27,7 +27,11 @@ RecordsWindow::RecordsWindow(IDatabaseManager *db, const QString &category, QWid
     : QDialog(parent), dbManager(db), currentCategory(category)
 {
     setWindowTitle(category.toUpper() + " - ALL BOOKINGS");
-    resize(1750, 800); 
+    
+    // --- Window එක Minimize සහ Maximize (Full Screen) කිරීමේ පහසුකම එක් කිරීම ---
+    setWindowFlags(Qt::Window | Qt::WindowMinimizeButtonHint | Qt::WindowMaximizeButtonHint | Qt::WindowCloseButtonHint);
+    
+    resize(1500, 800); // ආරම්භක ප්‍රමාණය
     setStyleSheet("QDialog { background-color: #F4F7FC; }");
 
     setupUI();
@@ -85,7 +89,6 @@ void RecordsWindow::setupUI()
     calTopLayout->addStretch();
     calTopLayout->addWidget(showAllBtn);
 
-    // --- මෙහි CustomCalendarWidget භාවිතා කර ඇත ---
     calendar = new CustomCalendarWidget(calFrame);
     calendar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred); 
     calendar->setMinimumHeight(250); 
@@ -153,7 +156,6 @@ void RecordsWindow::updateCalendarHighlights()
         calendar->setDateTextFormat(date, highlightFormat);
     }
 
-    // Custom Calendar එකට දත්ත යැවීම
     calendar->setStatusCounts(dateCounts);
 }
 
@@ -435,7 +437,7 @@ void RecordsWindow::loadData()
             connect(statusCombo, &QComboBox::currentTextChanged, [this, id = records[i].getId(), updateComboColor](const QString &text){
                 dbManager->updateRecordStatus(id, text);
                 updateComboColor();
-                updateCalendarHighlights(); // Status වෙනස් වූ විට Calendar එක Update වීම
+                updateCalendarHighlights(); 
             });
             table->setCellWidget(i, 9, statusCombo);
             
