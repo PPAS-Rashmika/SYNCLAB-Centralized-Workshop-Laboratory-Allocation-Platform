@@ -8,6 +8,7 @@
 #include <QStringList>
 #include "studentrecord.h"
 
+// Abstract Base Class (Interface)
 class IDatabaseManager 
 {
 public:
@@ -22,21 +23,21 @@ public:
     virtual QList<QDate> getBookedDates(const QString &category) = 0;
     virtual bool isTimeSlotAvailable(const QString &date, const QString &category, const QStringList &requestedSlots, int excludeRecordId = -1) = 0;
     virtual QStringList getBookedTimeSlotsStringList(const QString &date, const QString &category, int excludeRecordId = -1) = 0;
-    
-    // නවතම ශ්‍රිතය: Table එකට පෙන්වීම සඳහා සියලුම දත්ත ලබාගැනීමට
     virtual QList<StudentRecord> getAllRecordsForCategory(const QString &category) = 0;
     
     virtual QString getLastError() const = 0;
 };
 
-class SqliteDatabaseManager : public IDatabaseManager
+// අලුතින් සෑදූ MySQL Database Manager පන්තිය
+class MySqlDatabaseManager : public IDatabaseManager
 {
 private:
     QSqlDatabase db;
 
 public:
-    SqliteDatabaseManager(const QString &dbName);
-    ~SqliteDatabaseManager() override;
+    // Host, Database Name, Username, Password ලබා දිය හැක
+    MySqlDatabaseManager(const QString &host, const QString &dbName, const QString &user, const QString &pass);
+    ~MySqlDatabaseManager() override;
 
     bool createTable() override;
     bool addRecord(const StudentRecord &record) override;

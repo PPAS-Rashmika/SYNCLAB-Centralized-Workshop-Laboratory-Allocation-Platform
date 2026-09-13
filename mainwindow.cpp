@@ -17,7 +17,7 @@
 #include <QFileInfo>
 #include <QCoreApplication>
 #include <QGraphicsDropShadowEffect>
-#include <QMap> // QMap භාවිතා කිරීම සඳහා අලුතින් එක් කළ Header එක
+#include <QMap>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -26,9 +26,12 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     isPasscodeBypassed = false; 
 
-    dbManager = new SqliteDatabaseManager("student_data.db");
+    // --- SQLite වෙනුවට XAMPP/MySQL Server වෙත සම්බන්ධ වීම ---
+    // Host: localhost (127.0.0.1) | DB Name: student_workshop_db | Username: root | Password: (empty)
+    dbManager = new MySqlDatabaseManager("127.0.0.1", "student_workshop_db", "root", "");
+    
     if (!dbManager->createTable()) {
-        QMessageBox::critical(this, "DB Error", dbManager->getLastError());
+        QMessageBox::critical(this, "MySQL DB Error", "Could not connect to MySQL Server.\nMake sure XAMPP/WAMP is running!\n\n" + dbManager->getLastError());
     }
 
     setupDynamicUI();
@@ -197,20 +200,13 @@ QWidget* MainWindow::createCard(const QString &title)
     return card;
 }
 
-// -------------------------------------------------------------------------
-// 2nd Interface එක Open කිරීම සහ Top Left Card එක යාවත්කාලීන කිරීම (Update)
-// -------------------------------------------------------------------------
 void MainWindow::openSecondInterface(const QString &category)
 {
     currentCategory = category;
     
-    // මධ්‍යයේ ඇති Form Header එක
     ui->formHeader->setText(category.toUpper() + " - STUDENT INFORMATION");
-    
-    // Top-Left Info Card එකේ Name එක
     ui->selectedNameLabel->setText(category.toUpper() + " WORKSHOP");
 
-    // Workshop Descriptions Map එක
     QMap<QString, QString> descriptions = {
         {"Automotive", "Vehicle systems, maintenance, and automotive engineering technology."},
         {"Robotics", "Automation, robotic arms, and intelligent machine programming."},
@@ -224,10 +220,8 @@ void MainWindow::openSecondInterface(const QString &category)
         {"Circuitry", "PCB design, embedded systems, soldering, and analog/digital electronics."}
     };
     
-    // Top-Left Info Card එකේ Description එක (Map එකෙන් සොයා ගැනීම)
     ui->selectedDescLabel->setText(descriptions.value(category, "Explore facilities, tools, and scheduled activities."));
 
-    // Top-Left Info Card එකේ Image එක Load කිරීම
     QString imgName = category.toLower() + ".png"; 
     QString imgPath = QCoreApplication::applicationDirPath() + "/assets/" + imgName;
     QPixmap pix(imgPath);
@@ -251,7 +245,6 @@ void MainWindow::openSecondInterface(const QString &category)
     updateCalendarHighlights();
     ui->stackedWidget->setCurrentIndex(1);
 }
-// -------------------------------------------------------------------------
 
 void MainWindow::goBack()
 {

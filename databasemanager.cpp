@@ -4,32 +4,46 @@
 #include <QVariant>
 #include <QStringList>
 
-SqliteDatabaseManager::SqliteDatabaseManager(const QString &dbName)
+MySqlDatabaseManager::MySqlDatabaseManager(const QString &host, const QString &dbName, const QString &user, const QString &pass)
 {
-    db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName(dbName);
+    // QMYSQL වෙනුවට කර්මාන්තයේ සම්මත QODBC (Open Database Connectivity) භාවිතා කිරීම
+    db = QSqlDatabase::addDatabase("QODBC");
+
+    // මුලින්ම Database එක (student_workshop_db) නොමැති නම් එය සෑදීමට Server එකට පමණක් Connect වීම
+    QString serverConn = QString("DRIVER={MySQL ODBC 8.0 Unicode Driver};SERVER=%1;PORT=3306;USER=%2;PASSWORD=%3;").arg(host, user, pass);
+    db.setDatabaseName(serverConn);
+
+    if (db.open()) {
+        QSqlQuery query(db);
+        query.exec("CREATE DATABASE IF NOT EXISTS " + dbName);
+        db.close();
+    }
+
+    // ඉන්පසු සාදාගත් නියම Database එකටම Connect වීම
+    QString dbConn = QString("DRIVER={MySQL ODBC 8.0 Unicode Driver};SERVER=%1;PORT=3306;DATABASE=%2;USER=%3;PASSWORD=%4;").arg(host, dbName, user, pass);
+    db.setDatabaseName(dbConn);
     db.open();
 }
 
-SqliteDatabaseManager::~SqliteDatabaseManager()
+MySqlDatabaseManager::~MySqlDatabaseManager()
 {
     if (db.isOpen()) db.close();
 }
 
-bool SqliteDatabaseManager::createTable()
+bool MySqlDatabaseManager::createTable()
 {
-    QSqlQuery query;
+    QSqlQuery query(db);
     return query.exec("CREATE TABLE IF NOT EXISTS records ("
-                      "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-                      "category TEXT, name TEXT, index_no TEXT, "
-                      "department TEXT, email TEXT, pdf_path TEXT, "
-                      "record_date TEXT, time_slot TEXT, description TEXT, "
-                      "passcode TEXT, created_at TEXT)");
+                      "id INT AUTO_INCREMENT PRIMARY KEY, "
+                      "category VARCHAR(100), name VARCHAR(255), index_no VARCHAR(50), "
+                      "department VARCHAR(100), email VARCHAR(255), pdf_path VARCHAR(500), "
+                      "record_date DATE, time_slot VARCHAR(255), description TEXT, "
+                      "passcode VARCHAR(10), created_at VARCHAR(50))");
 }
 
-bool SqliteDatabaseManager::addRecord(const StudentRecord &record)
+bool MySqlDatabaseManager::addRecord(const StudentRecord &record)
 {
-    QSqlQuery query;
+    QSqlQuery query(db);
     query.prepare("INSERT INTO records (category, name, index_no, department, email, pdf_path, record_date, time_slot, description, passcode, created_at) "
                   "VALUES (:category, :name, :index, :dept, :email, :pdf, :date, :time, :desc, :passcode, :created_at)");
     query.bindValue(":category", record.getCategory());
@@ -46,9 +60,9 @@ bool SqliteDatabaseManager::addRecord(const StudentRecord &record)
     return query.exec();
 }
 
-bool SqliteDatabaseManager::updateRecord(const StudentRecord &record)
+bool MySqlDatabaseManager::updateRecord(const StudentRecord &record)
 {
-    QSqlQuery query;
+    QSqlQuery query(db);
     query.prepare("UPDATE records SET name=:name, index_no=:index, department=:dept, email=:email, pdf_path=:pdf, record_date=:date, time_slot=:time, description=:desc WHERE id=:id");
     query.bindValue(":name", record.getName());
     query.bindValue(":index", record.getIndexNo());
@@ -62,18 +76,18 @@ bool SqliteDatabaseManager::updateRecord(const StudentRecord &record)
     return query.exec();
 }
 
-bool SqliteDatabaseManager::deleteRecord(int id)
+bool MySqlDatabaseManager::deleteRecord(int id)
 {
-    QSqlQuery query;
+    QSqlQuery query(db);
     query.prepare("DELETE FROM records WHERE id = :id");
     query.bindValue(":id", id);
     return query.exec();
 }
 
-QList<StudentRecord> SqliteDatabaseManager::getRecordsByDateAndCategory(const QString &date, const QString &category)
+QList<StudentRecord> MySqlDatabaseManager::getRecordsByDateAndCategory(const QString &date, const QString &category)
 {
     QList<StudentRecord> records;
-    QSqlQuery query;
+    QSqlQuery query(db);
     query.prepare("SELECT id, name, index_no, department, email, pdf_path, time_slot, description, passcode, created_at "
                   "FROM records WHERE record_date = :date AND category = :category");
     query.bindValue(":date", date);
@@ -100,12 +114,12 @@ QList<StudentRecord> SqliteDatabaseManager::getRecordsByDateAndCategory(const QS
     return records;
 }
 
-QList<StudentRecord> SqliteDatabaseManager::getAllRecordsForCategory(const QString &category)
+QList<StudentRecord> MySqlDatabaseManager::getAllRecordsForCategory(const QString &category)
 {
     QList<StudentRecord> records;
-    QSqlQuery query;
+    QSqlQuery query(db);
     query.prepare("SELECT id, name, index_no, department, email, pdf_path, record_date, time_slot, description, passcode, created_at "
-                  "FROM records WHERE category = :category ORDER BY created_at DESC");
+                  "FROM records WHERE category = :category ORDER BY id DESC"); 
     query.bindValue(":category", category);
     
     if (query.exec()) {
@@ -117,7 +131,7 @@ QList<StudentRecord> SqliteDatabaseManager::getAllRecordsForCategory(const QStri
             record.setDepartment(query.value(3).toString());
             record.setEmail(query.value(4).toString());
             record.setPdfPath(query.value(5).toString());
-            record.setRecordDate(query.value(6).toString());
+            record.setRecordDate(query.value(6).toString()); 
             record.setTimeSlots(query.value(7).toString());
             record.setDescription(query.value(8).toString());
             record.setPasscode(query.value(9).toString());
@@ -129,10 +143,10 @@ QList<StudentRecord> SqliteDatabaseManager::getAllRecordsForCategory(const QStri
     return records;
 }
 
-QList<QDate> SqliteDatabaseManager::getBookedDates(const QString &category)
+QList<QDate> MySqlDatabaseManager::getBookedDates(const QString &category)
 {
     QList<QDate> dates;
-    QSqlQuery query;
+    QSqlQuery query(db);
     query.prepare("SELECT DISTINCT record_date FROM records WHERE category = :category");
     query.bindValue(":category", category);
     
@@ -145,9 +159,9 @@ QList<QDate> SqliteDatabaseManager::getBookedDates(const QString &category)
     return dates;
 }
 
-bool SqliteDatabaseManager::isTimeSlotAvailable(const QString &date, const QString &category, const QStringList &requestedSlots, int excludeRecordId)
+bool MySqlDatabaseManager::isTimeSlotAvailable(const QString &date, const QString &category, const QStringList &requestedSlots, int excludeRecordId)
 {
-    QSqlQuery query;
+    QSqlQuery query(db);
     query.prepare("SELECT time_slot FROM records WHERE record_date = :date AND category = :category AND id != :id");
     query.bindValue(":date", date);
     query.bindValue(":category", category);
@@ -164,10 +178,10 @@ bool SqliteDatabaseManager::isTimeSlotAvailable(const QString &date, const QStri
     return true;
 }
 
-QStringList SqliteDatabaseManager::getBookedTimeSlotsStringList(const QString &date, const QString &category, int excludeRecordId)
+QStringList MySqlDatabaseManager::getBookedTimeSlotsStringList(const QString &date, const QString &category, int excludeRecordId)
 {
     QStringList bookedList;
-    QSqlQuery query;
+    QSqlQuery query(db);
     query.prepare("SELECT time_slot FROM records WHERE record_date = :date AND category = :category AND id != :id");
     query.bindValue(":date", date);
     query.bindValue(":category", category);
@@ -187,4 +201,4 @@ QStringList SqliteDatabaseManager::getBookedTimeSlotsStringList(const QString &d
     return bookedList;
 }
 
-QString SqliteDatabaseManager::getLastError() const { return db.lastError().text(); }
+QString MySqlDatabaseManager::getLastError() const { return db.lastError().text(); }
