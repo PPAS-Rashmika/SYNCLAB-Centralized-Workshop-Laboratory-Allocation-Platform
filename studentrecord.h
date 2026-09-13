@@ -7,22 +7,28 @@ class StudentRecord
 {
 private:
     int id;
+    QString bookingId;
+    QString workshopId;
     QString category;
     QString name;
     QString indexNo;
     QString department;
-    QString email;       // අලුතින් එක් කරන ලදී
-    QString pdfPath;     // අලුතින් එක් කරන ලදී
+    QString email;
+    QString pdfPath;
     QString recordDate;
     QString timeSlots;
     QString description;
     QString passcode;
     QString createdAt;
+    QString status; 
+    QString adminRemarks; // අලුතින් එක් කරන ලදී
 
 public:
     StudentRecord();
 
     int getId() const;
+    QString getBookingId() const;
+    QString getWorkshopId() const;
     QString getCategory() const;
     QString getName() const;
     QString getIndexNo() const;
@@ -34,8 +40,12 @@ public:
     QString getDescription() const;
     QString getPasscode() const;
     QString getCreatedAt() const;
+    QString getStatus() const;
+    QString getAdminRemarks() const; // අලුතින් එක් කරන ලදී
 
     void setId(int newId);
+    void setBookingId(const QString &newBookingId);
+    void setWorkshopId(const QString &newWorkshopId);
     void setCategory(const QString &newCategory);
     void setName(const QString &newName);
     void setIndexNo(const QString &newIndexNo);
@@ -47,6 +57,8 @@ public:
     void setDescription(const QString &newDescription);
     void setPasscode(const QString &newPasscode);
     void setCreatedAt(const QString &newCreatedAt);
+    void setStatus(const QString &newStatus);
+    void setAdminRemarks(const QString &newRemarks); // අලුතින් එක් කරන ලදී
 };
 
 #endif // STUDENTRECORD_H

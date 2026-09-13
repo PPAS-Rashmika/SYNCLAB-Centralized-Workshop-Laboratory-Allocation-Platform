@@ -26,17 +26,18 @@ private slots:
     void updateData();
     void deleteData();
     void dateClicked(const QDate &date);
-    void updateAvailableTimeSlots(const QDate &date);
     void showRecordsWindow(); 
-    
     void loadRecordForEdit(const StudentRecord &record);
     void onDatabaseUpdatedFromPopup();
+    void updateTimeSlotDisplayText();
+    void onCalendarSelectionChanged();
 
 private:
     Ui::MainWindow *ui;
     IDatabaseManager *dbManager; 
     
     QString currentCategory;
+    QString currentWorkshopId; 
     StudentRecord currentRecord; 
     bool isPasscodeBypassed; 
 
@@ -49,8 +50,7 @@ private:
     void clearUI();
     void loadRecordIntoUI(const StudentRecord &record);
     
-    // නවතම ශ්‍රිතය: PDF ගොනුව Application එක ඇතුළට Copy කරගැනීම සඳහා
-    QString savePdfFile(const QString &sourcePath);
+    QString savePdfFile(const QString &sourcePath, const QString &bookingId);
 };
 
 #endif // MAINWINDOW_H

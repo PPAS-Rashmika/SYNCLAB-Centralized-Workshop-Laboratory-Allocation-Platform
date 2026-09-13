@@ -8,7 +8,6 @@
 #include <QStringList>
 #include "studentrecord.h"
 
-// Abstract Base Class (Interface)
 class IDatabaseManager 
 {
 public:
@@ -18,31 +17,33 @@ public:
     virtual bool addRecord(const StudentRecord &record) = 0;
     virtual bool updateRecord(const StudentRecord &record) = 0;
     virtual bool deleteRecord(int id) = 0;
+    virtual bool updateRecordStatus(int id, const QString &status) = 0; 
+    virtual bool updateAdminRemarks(int id, const QString &remarks) = 0; // අලුත් Function එක
     
     virtual QList<StudentRecord> getRecordsByDateAndCategory(const QString &date, const QString &category) = 0;
     virtual QList<QDate> getBookedDates(const QString &category) = 0;
     virtual bool isTimeSlotAvailable(const QString &date, const QString &category, const QStringList &requestedSlots, int excludeRecordId = -1) = 0;
     virtual QStringList getBookedTimeSlotsStringList(const QString &date, const QString &category, int excludeRecordId = -1) = 0;
     virtual QList<StudentRecord> getAllRecordsForCategory(const QString &category) = 0;
-    
     virtual QString getLastError() const = 0;
 };
 
-// අලුතින් සෑදූ MySQL Database Manager පන්තිය
-class MySqlDatabaseManager : public IDatabaseManager
+class SqliteDatabaseManager : public IDatabaseManager
 {
 private:
     QSqlDatabase db;
 
 public:
-    // Host, Database Name, Username, Password ලබා දිය හැක
-    MySqlDatabaseManager(const QString &host, const QString &dbName, const QString &user, const QString &pass);
-    ~MySqlDatabaseManager() override;
+    SqliteDatabaseManager(const QString &dbName);
+    ~SqliteDatabaseManager() override;
 
     bool createTable() override;
     bool addRecord(const StudentRecord &record) override;
     bool updateRecord(const StudentRecord &record) override;
     bool deleteRecord(int id) override;
+    bool updateRecordStatus(int id, const QString &status) override;
+    bool updateAdminRemarks(int id, const QString &remarks) override;
+    
     QList<StudentRecord> getRecordsByDateAndCategory(const QString &date, const QString &category) override;
     QList<QDate> getBookedDates(const QString &category) override;
     bool isTimeSlotAvailable(const QString &date, const QString &category, const QStringList &requestedSlots, int excludeRecordId = -1) override;

@@ -1,8 +1,10 @@
 #include "studentrecord.h"
 
-StudentRecord::StudentRecord() : id(-1) {}
+StudentRecord::StudentRecord() : id(-1), status("Pending"), adminRemarks("") {} 
 
 int StudentRecord::getId() const { return id; }
+QString StudentRecord::getBookingId() const { return bookingId; }
+QString StudentRecord::getWorkshopId() const { return workshopId; }
 QString StudentRecord::getCategory() const { return category; }
 QString StudentRecord::getName() const { return name; }
 QString StudentRecord::getIndexNo() const { return indexNo; }
@@ -14,8 +16,12 @@ QString StudentRecord::getTimeSlots() const { return timeSlots; }
 QString StudentRecord::getDescription() const { return description; }
 QString StudentRecord::getPasscode() const { return passcode; }
 QString StudentRecord::getCreatedAt() const { return createdAt; }
+QString StudentRecord::getStatus() const { return status; }
+QString StudentRecord::getAdminRemarks() const { return adminRemarks; }
 
 void StudentRecord::setId(int newId) { id = newId; }
+void StudentRecord::setBookingId(const QString &newBookingId) { bookingId = newBookingId; }
+void StudentRecord::setWorkshopId(const QString &newWorkshopId) { workshopId = newWorkshopId; }
 void StudentRecord::setCategory(const QString &newCategory) { category = newCategory; }
 void StudentRecord::setName(const QString &newName) { name = newName; }
 void StudentRecord::setIndexNo(const QString &newIndexNo) { indexNo = newIndexNo; }
@@ -27,3 +33,5 @@ void StudentRecord::setTimeSlots(const QString &newTimeSlots) { timeSlots = newT
 void StudentRecord::setDescription(const QString &newDescription) { description = newDescription; }
 void StudentRecord::setPasscode(const QString &newPasscode) { passcode = newPasscode; }
 void StudentRecord::setCreatedAt(const QString &newCreatedAt) { createdAt = newCreatedAt; }
+void StudentRecord::setStatus(const QString &newStatus) { status = newStatus; }
+void StudentRecord::setAdminRemarks(const QString &newRemarks) { adminRemarks = newRemarks; }

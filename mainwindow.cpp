@@ -18,6 +18,7 @@
 #include <QCoreApplication>
 #include <QGraphicsDropShadowEffect>
 #include <QMap>
+#include <QLineEdit>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -26,12 +27,9 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     isPasscodeBypassed = false; 
 
-    // --- SQLite වෙනුවට XAMPP/MySQL Server වෙත සම්බන්ධ වීම ---
-    // Host: localhost (127.0.0.1) | DB Name: student_workshop_db | Username: root | Password: (empty)
-    dbManager = new MySqlDatabaseManager("127.0.0.1", "student_workshop_db", "root", "");
-    
+    dbManager = new SqliteDatabaseManager("student_data.db");
     if (!dbManager->createTable()) {
-        QMessageBox::critical(this, "MySQL DB Error", "Could not connect to MySQL Server.\nMake sure XAMPP/WAMP is running!\n\n" + dbManager->getLastError());
+        QMessageBox::critical(this, "DB Error", dbManager->getLastError());
     }
 
     setupDynamicUI();
@@ -39,10 +37,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->backBtn, &QPushButton::clicked, this, &MainWindow::goBack);
     connect(ui->viewRecordsBtn, &QPushButton::clicked, this, &MainWindow::showRecordsWindow);
     connect(ui->calendar, &QCalendarWidget::clicked, this, &MainWindow::dateClicked);
+    connect(ui->calendar, &QCalendarWidget::selectionChanged, this, &MainWindow::onCalendarSelectionChanged);
     connect(ui->submitBtn, &QPushButton::clicked, this, &MainWindow::submitData);
     connect(ui->updateBtn, &QPushButton::clicked, this, &MainWindow::updateData);
     connect(ui->deleteBtn, &QPushButton::clicked, this, &MainWindow::deleteData);
-    connect(ui->dateInput, &QDateEdit::dateChanged, this, &MainWindow::updateAvailableTimeSlots);
     
     connect(ui->browsePdfBtn, &QPushButton::clicked, this, [this](){
         QString filePath = QFileDialog::getOpenFileName(this, "Select PDF File", "", "PDF Documents (*.pdf)");
@@ -95,23 +93,53 @@ void MainWindow::setupDynamicUI()
         timeModel->setItem(i, 0, item);
     }
     ui->timeSlotInput->setModel(timeModel);
-    QListView* listView = new QListView(ui->timeSlotInput);
-    ui->timeSlotInput->setView(listView);
-
-    QPushButton *newBookingBtn = new QPushButton("NEW BOOKING", this);
-    newBookingBtn->setStyleSheet("background-color: #10B981; color: white; padding: 15px; border-radius: 5px; font-weight: bold;");
-    ui->actionButtonsLayout->insertWidget(0, newBookingBtn);
     
-    connect(newBookingBtn, &QPushButton::clicked, this, [this](){
-        QDate cd = ui->dateInput->date();
-        currentRecord = StudentRecord();
-        clearUI();
-        ui->dateInput->setDate(cd); 
-        updateAvailableTimeSlots(cd); 
-        ui->submitBtn->show();
-        ui->updateBtn->hide();
-        ui->deleteBtn->hide();
-    });
+    QLineEdit *timeLineEdit = new QLineEdit(this);
+    timeLineEdit->setReadOnly(true);
+    timeLineEdit->setPlaceholderText("Select time slots...");
+    timeLineEdit->setStyleSheet("background: transparent; border: none; color: #0F172A; padding: 0px 5px; font-size: 14px;");
+    
+    ui->timeSlotInput->setLineEdit(timeLineEdit);
+    
+    connect(timeModel, &QStandardItemModel::itemChanged, this, &MainWindow::updateTimeSlotDisplayText);
+    connect(ui->timeSlotInput->lineEdit(), &QLineEdit::textChanged, this, &MainWindow::updateTimeSlotDisplayText);
+    
+    QListView* listView = new QListView(ui->timeSlotInput);
+    listView->setStyleSheet("QListView::item { padding: 8px; font-size: 13px; }");
+    ui->timeSlotInput->setView(listView);
+}
+
+void MainWindow::updateTimeSlotDisplayText()
+{
+    QStringList selected = getSelectedTimeSlotsList();
+    QString correctText = selected.isEmpty() ? "Select time slots..." : selected.join(", ");
+    
+    ui->timeSlotInput->lineEdit()->blockSignals(true);
+    ui->timeSlotInput->lineEdit()->setText(correctText);
+    ui->timeSlotInput->lineEdit()->blockSignals(false);
+}
+
+void MainWindow::onCalendarSelectionChanged()
+{
+    if (currentCategory.isEmpty()) return;
+
+    QString dateStr = ui->calendar->selectedDate().toString("yyyy-MM-dd");
+    // මෙහි currentRecord.getId() ලබාදෙන්නේ අදාළ Record එකට අයිති Times Lock වීම වැළැක්වීමටයි
+    QStringList bookedSlots = dbManager->getBookedTimeSlotsStringList(dateStr, currentCategory, currentRecord.getId());
+    
+    QStandardItemModel *model = qobject_cast<QStandardItemModel*>(ui->timeSlotInput->model());
+    for (int i = 0; i < model->rowCount(); ++i) {
+        QStandardItem *item = model->item(i);
+        if (bookedSlots.contains(item->text())) {
+            item->setEnabled(false); 
+            item->setCheckState(Qt::Unchecked);
+            item->setForeground(QBrush(Qt::gray)); 
+        } else {
+            item->setEnabled(true);
+            item->setForeground(QBrush(Qt::black));
+        }
+    }
+    updateTimeSlotDisplayText();
 }
 
 QWidget* MainWindow::createCard(const QString &title)
@@ -204,6 +232,15 @@ void MainWindow::openSecondInterface(const QString &category)
 {
     currentCategory = category;
     
+    QMap<QString, QString> wsIds = {
+        {"Automotive", "WKS-AUTO-01"}, {"Robotics", "WKS-ROBO-02"},
+        {"Mechanical", "WKS-MECH-03"}, {"Painting", "WKS-PNT-04"},
+        {"Welding", "WKS-WELD-05"},    {"Microscope", "LAB-MICR-06"},
+        {"Chemistry", "LAB-CHEM-07"},  {"Coding", "LAB-CODE-08"},
+        {"Test Tubes", "LAB-TEST-09"}, {"Circuitry", "LAB-CIRC-10"}
+    };
+    currentWorkshopId = wsIds.value(category, "WKS-GEN-00");
+
     ui->formHeader->setText(category.toUpper() + " - STUDENT INFORMATION");
     ui->selectedNameLabel->setText(category.toUpper() + " WORKSHOP");
 
@@ -235,15 +272,10 @@ void MainWindow::openSecondInterface(const QString &category)
         ui->selectedImgLabel->setText("[ Image ]");
     }
 
-    currentRecord = StudentRecord();
-    clearUI();
-    
-    ui->submitBtn->show();
-    ui->updateBtn->hide();
-    ui->deleteBtn->hide();
-    
     updateCalendarHighlights();
     ui->stackedWidget->setCurrentIndex(1);
+    
+    dateClicked(ui->calendar->selectedDate());
 }
 
 void MainWindow::goBack()
@@ -265,45 +297,54 @@ void MainWindow::showRecordsWindow()
     }
 
     RecordsWindow *recordsWin = new RecordsWindow(dbManager, currentCategory, this);
-    
     connect(recordsWin, &RecordsWindow::editRequested, this, &MainWindow::loadRecordForEdit);
     connect(recordsWin, &RecordsWindow::databaseUpdated, this, &MainWindow::onDatabaseUpdatedFromPopup);
-    
     recordsWin->exec(); 
     delete recordsWin;
 }
 
+// ----------------------------------------------------------------------
+// Load Record Logic (යාවත්කාලීන කරන ලදී)
+// ----------------------------------------------------------------------
 void MainWindow::loadRecordForEdit(const StudentRecord &record)
 {
     loadRecordIntoUI(record);
     isPasscodeBypassed = true; 
 }
 
+void MainWindow::loadRecordIntoUI(const StudentRecord &record)
+{
+    currentRecord = record;
+    
+    // --- දෝෂය නිවැරදි කළ ප්‍රධාන ස්ථානය ---
+    // Record එක Load කළ පසු ඒ Record එකට අදාළ Time slots අගුලු හැරීමට
+    // Explicitly Calendar Selection Changed Run කළ යුතුය.
+    onCalendarSelectionChanged(); 
+    // --------------------------------------
+
+    ui->nameInput->setText(currentRecord.getName());
+    ui->indexInput->setText(currentRecord.getIndexNo());
+    ui->deptInput->setCurrentText(currentRecord.getDepartment());
+    ui->emailInput->setText(currentRecord.getEmail());
+    ui->pdfInput->setText(currentRecord.getPdfPath());
+    
+    ui->calendar->setSelectedDate(QDate::fromString(currentRecord.getRecordDate(), "yyyy-MM-dd"));
+    
+    setTimeSlotsInUI(currentRecord.getTimeSlots());
+    ui->descriptionInput->setText(currentRecord.getDescription());
+    
+    ui->submitBtn->hide();
+    ui->updateBtn->show();
+    ui->updateBtn->setText("SAVE CHANGES");
+    ui->deleteBtn->show();
+    ui->deleteBtn->setText("DELETE BOOKING");
+}
+// ----------------------------------------------------------------------
+
 void MainWindow::onDatabaseUpdatedFromPopup()
 {
     updateCalendarHighlights();
-    clearUI();
-}
-
-void MainWindow::updateAvailableTimeSlots(const QDate &date)
-{
-    if (currentCategory.isEmpty()) return;
-
-    QString dateStr = date.toString("yyyy-MM-dd");
-    QStringList bookedSlots = dbManager->getBookedTimeSlotsStringList(dateStr, currentCategory, currentRecord.getId());
-    
-    QStandardItemModel *model = qobject_cast<QStandardItemModel*>(ui->timeSlotInput->model());
-    for (int i = 0; i < model->rowCount(); ++i) {
-        QStandardItem *item = model->item(i);
-        if (bookedSlots.contains(item->text())) {
-            item->setEnabled(false); 
-            item->setCheckState(Qt::Unchecked);
-            item->setForeground(QBrush(Qt::gray)); 
-        } else {
-            item->setEnabled(true);
-            item->setForeground(QBrush(Qt::black));
-        }
-    }
+    dateClicked(ui->calendar->selectedDate()); 
 }
 
 void MainWindow::clearUI()
@@ -313,14 +354,10 @@ void MainWindow::clearUI()
     ui->deptInput->setCurrentIndex(0);
     ui->emailInput->clear();
     ui->pdfInput->clear();
-    
-    QDate currentDate = QDate::currentDate();
-    ui->dateInput->setDate(currentDate);
-    updateAvailableTimeSlots(currentDate);
     setTimeSlotsInUI(""); 
     ui->descriptionInput->clear();
-    
     isPasscodeBypassed = false; 
+    onCalendarSelectionChanged(); 
 }
 
 QStringList MainWindow::getSelectedTimeSlotsList()
@@ -345,6 +382,7 @@ void MainWindow::setTimeSlotsInUI(const QString &timeString)
             model->item(i)->setCheckState(Qt::Unchecked);
         }
     }
+    updateTimeSlotDisplayText();
 }
 
 bool MainWindow::checkPasscode()
@@ -360,30 +398,24 @@ bool MainWindow::checkPasscode()
     return true;
 }
 
-QString MainWindow::savePdfFile(const QString &sourcePath)
+QString MainWindow::savePdfFile(const QString &sourcePath, const QString &bookingId)
 {
     if (sourcePath.isEmpty()) return "";
-
     QString uploadDirPath = QCoreApplication::applicationDirPath() + "/uploads/pdfs";
-    
-    if (sourcePath.startsWith(uploadDirPath)) {
-        return sourcePath;
-    }
+    if (sourcePath.startsWith(uploadDirPath)) return sourcePath;
 
     QDir dir(uploadDirPath);
-    if (!dir.exists()) {
-        dir.mkpath("."); 
+    if (!dir.exists()) dir.mkpath("."); 
+
+    QString destPath = dir.absoluteFilePath(bookingId + ".pdf");
+    if (sourcePath == destPath) return destPath;
+
+    if (QFile::exists(destPath)) {
+        QFile::remove(destPath);
     }
 
-    QFileInfo fileInfo(sourcePath);
-    QString uniqueFileName = QString::number(QDateTime::currentMSecsSinceEpoch()) + "_" + fileInfo.fileName();
-    QString destPath = dir.absoluteFilePath(uniqueFileName);
-
-    if (QFile::copy(sourcePath, destPath)) {
-        return destPath; 
-    } else {
-        return sourcePath; 
-    }
+    if (QFile::copy(sourcePath, destPath)) return destPath; 
+    return sourcePath; 
 }
 
 void MainWindow::submitData()
@@ -395,50 +427,96 @@ void MainWindow::submitData()
         return;
     }
 
-    QString dateStr = ui->dateInput->date().toString("yyyy-MM-dd");
+    QString dateStr = ui->calendar->selectedDate().toString("yyyy-MM-dd");
     
     if (!dbManager->isTimeSlotAvailable(dateStr, currentCategory, selectedSlots)) {
         QMessageBox::critical(this, "Time Slot Booked", "Selected time slot is already booked!");
         return;
     }
 
-    QString securePdfPath = savePdfFile(ui->pdfInput->text());
-
+    QString bkgId = "BKG-" + QDateTime::currentDateTime().toString("yyMMddHH") + QString::number(QRandomGenerator::global()->bounded(100, 999));
+    QString securePdfPath = savePdfFile(ui->pdfInput->text(), bkgId);
     QString pinStr = QString::number(QRandomGenerator::global()->bounded(1000, 10000));
     QString finalTimeStr = selectedSlots.join(", ");
     QString currentTimestamp = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm AP");
 
     StudentRecord newRecord;
+    newRecord.setBookingId(bkgId);
+    newRecord.setWorkshopId(currentWorkshopId);
     newRecord.setCategory(currentCategory);
     newRecord.setName(ui->nameInput->text());
     newRecord.setIndexNo(ui->indexInput->text());
     newRecord.setDepartment(ui->deptInput->currentText());
     newRecord.setEmail(ui->emailInput->text());
     newRecord.setPdfPath(securePdfPath); 
-    newRecord.setRecordDate(dateStr);
+    newRecord.setRecordDate(dateStr); 
     newRecord.setTimeSlots(finalTimeStr);
     newRecord.setDescription(ui->descriptionInput->toPlainText());
     newRecord.setPasscode(pinStr);
     newRecord.setCreatedAt(currentTimestamp);
+    newRecord.setStatus("Pending"); 
 
     if (dbManager->addRecord(newRecord)) {
-        QMessageBox::information(this, "Success", QString("Data saved!\nYour Passcode is: %1").arg(pinStr));
+        QMessageBox::information(this, "Success", QString("Data saved!\nBooking ID: %1\nPasscode: %2").arg(bkgId, pinStr));
         updateCalendarHighlights();
         currentRecord = StudentRecord();
-        clearUI();
+        dateClicked(ui->calendar->selectedDate()); 
     } else {
         QMessageBox::critical(this, "Database Error", dbManager->getLastError());
     }
 }
 
+// ----------------------------------------------------------------------
+// Update Logic (යාවත්කාලීන කරන ලදී)
+// ----------------------------------------------------------------------
 void MainWindow::updateData()
 {
-    if (currentRecord.getId() == -1) return;
+    // Record එකක් Load කර නැති විට (Passcode විමසා Load කිරීම)
+    if (currentRecord.getId() == -1) {
+        QString dateStr = ui->calendar->selectedDate().toString("yyyy-MM-dd");
+        QList<StudentRecord> records = dbManager->getRecordsByDateAndCategory(dateStr, currentCategory);
+        
+        if (records.isEmpty()) return;
+        
+        bool ok;
+        QString enteredCode = QInputDialog::getText(this, "Authentication", "Enter your Booking Passcode to Update:", QLineEdit::Password, "", &ok);
+        if (!ok || enteredCode.isEmpty()) return;
+        
+        StudentRecord foundRecord;
+        bool found = false;
+        for(const StudentRecord& r : records) {
+            if(r.getPasscode() == enteredCode) {
+                foundRecord = r;
+                found = true;
+                break;
+            }
+        }
+        
+        if(!found) {
+            QMessageBox::critical(this, "Access Denied", "Incorrect Passcode or no matching booking found!");
+            return;
+        }
+        
+        loadRecordIntoUI(foundRecord);
+        isPasscodeBypassed = true; 
+        QMessageBox::information(this, "Authenticated", "Booking loaded successfully.\nYou can now make changes and click 'SAVE CHANGES'.");
+        return;
+    }
     
+    // Record එක Load කර ඇති විට (තොරතුරු Save කිරීම)
     QStringList selectedSlots = getSelectedTimeSlotsList();
-    if(selectedSlots.isEmpty()) return;
+    if(selectedSlots.isEmpty()) {
+        // --- දෝෂය නිවැරදි කළ ස්ථානය: Time slot නොමැති නම් Alert කිරීම ---
+        QMessageBox::warning(this, "Input Error", "Please select at least one time slot!");
+        return;
+    }
+    
+    if(ui->nameInput->text().isEmpty() || ui->indexInput->text().isEmpty()) {
+        QMessageBox::warning(this, "Input Error", "Name and Index are required!");
+        return;
+    }
 
-    QString dateStr = ui->dateInput->date().toString("yyyy-MM-dd");
+    QString dateStr = ui->calendar->selectedDate().toString("yyyy-MM-dd");
     
     if (!dbManager->isTimeSlotAvailable(dateStr, currentCategory, selectedSlots, currentRecord.getId())) {
         QMessageBox::critical(this, "Time Slot Booked", "Time slot taken by another booking!");
@@ -449,7 +527,7 @@ void MainWindow::updateData()
         if (!checkPasscode()) return;
     }
     
-    QString securePdfPath = savePdfFile(ui->pdfInput->text());
+    QString securePdfPath = savePdfFile(ui->pdfInput->text(), currentRecord.getBookingId());
     
     currentRecord.setName(ui->nameInput->text());
     currentRecord.setIndexNo(ui->indexInput->text());
@@ -463,16 +541,57 @@ void MainWindow::updateData()
     if (dbManager->updateRecord(currentRecord)) {
         QMessageBox::information(this, "Updated", "Record updated successfully!");
         updateCalendarHighlights();
-        openSecondInterface(currentCategory);
+        dateClicked(ui->calendar->selectedDate()); 
     } else {
         QMessageBox::critical(this, "Database Error", dbManager->getLastError());
     }
 }
+// ----------------------------------------------------------------------
 
+// ----------------------------------------------------------------------
+// Delete Logic (යාවත්කාලීන කරන ලදී)
+// ----------------------------------------------------------------------
 void MainWindow::deleteData()
 {
-    if (currentRecord.getId() == -1) return;
+    // Record එකක් Load කර නැති විට (Passcode විමසා Delete කිරීම)
+    if (currentRecord.getId() == -1) {
+        QString dateStr = ui->calendar->selectedDate().toString("yyyy-MM-dd");
+        QList<StudentRecord> records = dbManager->getRecordsByDateAndCategory(dateStr, currentCategory);
+        
+        if (records.isEmpty()) return;
+        
+        bool ok;
+        QString enteredCode = QInputDialog::getText(this, "Authentication", "Enter your Booking Passcode to Delete:", QLineEdit::Password, "", &ok);
+        if (!ok || enteredCode.isEmpty()) return;
+        
+        StudentRecord foundRecord;
+        bool found = false;
+        for(const StudentRecord& r : records) {
+            if(r.getPasscode() == enteredCode) {
+                foundRecord = r;
+                found = true;
+                break;
+            }
+        }
+        
+        if(!found) {
+            QMessageBox::critical(this, "Access Denied", "Incorrect Passcode or no matching booking found!");
+            return;
+        }
+        
+        if (QMessageBox::question(this, "Confirm", "Permanently delete booking ID: " + foundRecord.getBookingId() + "?") == QMessageBox::Yes) {
+            if (dbManager->deleteRecord(foundRecord.getId())) {
+                QMessageBox::information(this, "Deleted", "Record deleted successfully!");
+                updateCalendarHighlights();
+                dateClicked(ui->calendar->selectedDate());
+            } else {
+                QMessageBox::critical(this, "Database Error", dbManager->getLastError());
+            }
+        }
+        return;
+    }
     
+    // Record එක Load කර ඇති විට (කෙලින්ම Delete කිරීම)
     if (!isPasscodeBypassed) {
         if (!checkPasscode()) return;
     }
@@ -481,12 +600,13 @@ void MainWindow::deleteData()
         if (dbManager->deleteRecord(currentRecord.getId())) {
             QMessageBox::information(this, "Deleted", "Record deleted successfully!");
             updateCalendarHighlights();
-            openSecondInterface(currentCategory);
+            dateClicked(ui->calendar->selectedDate());
         } else {
             QMessageBox::critical(this, "Database Error", dbManager->getLastError());
         }
     }
 }
+// ----------------------------------------------------------------------
 
 void MainWindow::updateCalendarHighlights()
 {
@@ -503,59 +623,25 @@ void MainWindow::updateCalendarHighlights()
     }
 }
 
-void MainWindow::loadRecordIntoUI(const StudentRecord &record)
-{
-    currentRecord = record;
-    ui->nameInput->setText(currentRecord.getName());
-    ui->indexInput->setText(currentRecord.getIndexNo());
-    ui->deptInput->setCurrentText(currentRecord.getDepartment());
-    ui->emailInput->setText(currentRecord.getEmail());
-    ui->pdfInput->setText(currentRecord.getPdfPath());
-    ui->dateInput->setDate(QDate::fromString(currentRecord.getRecordDate(), "yyyy-MM-dd"));
-    updateAvailableTimeSlots(ui->dateInput->date()); 
-    setTimeSlotsInUI(currentRecord.getTimeSlots());
-    ui->descriptionInput->setText(currentRecord.getDescription());
-    
-    ui->submitBtn->hide();
-    ui->updateBtn->show();
-    ui->deleteBtn->show();
-}
-
 void MainWindow::dateClicked(const QDate &date)
 {
     isPasscodeBypassed = false; 
+    currentRecord = StudentRecord(); 
+    clearUI(); 
     
     QString dateStr = date.toString("yyyy-MM-dd");
     QList<StudentRecord> records = dbManager->getRecordsByDateAndCategory(dateStr, currentCategory);
     
-    if(records.isEmpty()) {
-        currentRecord = StudentRecord();
-        clearUI();
-        ui->dateInput->setDate(date);
-        ui->submitBtn->show();
+    ui->submitBtn->show();
+    ui->submitBtn->setText("SUBMIT"); 
+    
+    if (records.isEmpty()) {
         ui->updateBtn->hide();
         ui->deleteBtn->hide();
-    } 
-    else if (records.size() == 1) {
-        loadRecordIntoUI(records.first());
-        QMessageBox::information(this, "Booking Loaded", "One booking exists for this date.\n(Click 'NEW BOOKING' to add another)");
-    } 
-    else {
-        QStringList items;
-        for (const StudentRecord &rec : records) {
-            items << QString("%1 (%2)").arg(rec.getName(), rec.getTimeSlots());
-        }
-        bool ok;
-        QString selectedItem = QInputDialog::getItem(this, "Multiple Bookings", "Select a booking to view/edit:", items, 0, false, &ok);
-        
-        if (ok && !selectedItem.isEmpty()) {
-            int index = items.indexOf(selectedItem);
-            loadRecordIntoUI(records[index]);
-            QMessageBox::information(this, "Booking Loaded", "Booking loaded successfully.");
-        } else {
-            currentRecord = StudentRecord();
-            clearUI();
-            ui->dateInput->setDate(date);
-        }
+    } else {
+        ui->updateBtn->show();
+        ui->updateBtn->setText("UPDATE BOOKING");
+        ui->deleteBtn->show();
+        ui->deleteBtn->setText("DELETE BOOKING");
     }
 }

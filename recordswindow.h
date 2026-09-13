@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QTableWidget>
+#include <QVBoxLayout>
 #include "databasemanager.h"
 #include "studentrecord.h"
 
@@ -13,13 +14,17 @@ public:
     explicit RecordsWindow(IDatabaseManager *db, const QString &category, QWidget *parent = nullptr);
     ~RecordsWindow();
 
-// MainWindow එක සමඟ සම්බන්ධ වීමට Signals
 signals:
     void editRequested(const StudentRecord &record);
     void databaseUpdated();
 
+private slots:
+    void openSettingsDialog(); 
+    void printAllRecords(); // සියල්ල Print කිරීම සඳහා
+    void printSingleRecord(const StudentRecord &record); // තනි Record එකක් Print කිරීම සඳහා
+
 private:
-    QTableWidget *recordsTable;
+    QVBoxLayout *scrollLayout; 
     IDatabaseManager *dbManager;
     QString currentCategory;
 
