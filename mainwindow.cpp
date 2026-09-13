@@ -38,7 +38,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     setupDynamicUI();
     
-    // Theme එක ස්වයංක්‍රීයව අලංකාර Dark/Glass Theme එකට යොමු වේ
     bool isDark = QSettings("StudentWorkshopApp", "ThemeSettings").value("darkMode", true).toBool();
     applyTheme(isDark);
     
@@ -95,12 +94,21 @@ void MainWindow::setupDynamicUI()
 
 void MainWindow::applyTheme(bool isDark)
 {
-    // --- 1st Interface (Futuristic Glass Theme) ---
+    // --- Wallpaper ගබඩාව පරීක්ෂා කිරීම ---
+    QString wallpaperPath = QSettings("StudentWorkshopApp", "ThemeSettings").value("customWallpaper", "").toString();
+
+    // 1st Interface Background සකස් කිරීම (Wallpaper එකක් ඇත්නම් එය යොදයි)
+    if (!wallpaperPath.isEmpty() && QFile::exists(wallpaperPath)) {
+        ui->page1->setStyleSheet(QString("QWidget#page1 { border-image: url('%1') 0 0 0 0 stretch stretch; }").arg(wallpaperPath));
+    } else {
+        if(isDark) {
+            ui->page1->setStyleSheet("QWidget#page1 { background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #050B14, stop:0.5 #0F172A, stop:1 #020617); }");
+        } else {
+            ui->page1->setStyleSheet("QWidget#page1 { background-color: #F4F8FB; }");
+        }
+    }
+
     if(isDark) {
-        // Space Background
-        ui->page1->setStyleSheet("QWidget#page1 { background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #050B14, stop:0.5 #0F172A, stop:1 #020617); }");
-        
-        // Faked Glassmorphism Panel
         ui->glassPanel->setStyleSheet(
             "QFrame#glassPanel {"
             "background-color: rgba(16, 25, 45, 180);"
@@ -109,8 +117,7 @@ void MainWindow::applyTheme(bool isDark)
             "}"
         );
     } else {
-        ui->page1->setStyleSheet("QWidget#page1 { background-color: #F4F8FB; }");
-        ui->glassPanel->setStyleSheet("QFrame#glassPanel { background-color: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 20px; }");
+        ui->glassPanel->setStyleSheet("QFrame#glassPanel { background-color: rgba(255, 255, 255, 200); border: 1px solid #CBD5E1; border-radius: 20px; }");
     }
 
     ui->bannerLabel->setStyleSheet(QString("background-color: transparent; color: %1; font-size: 16px; font-weight: 800; padding: 15px; letter-spacing: 5px;").arg(isDark ? "#38BDF8" : "#0A306D"));
@@ -127,7 +134,7 @@ void MainWindow::applyTheme(bool isDark)
     
     ui->systemSettingsBtn->setStyleSheet(QString("background-color: %1; color: %2; padding: 8px 15px; border-radius: 6px; font-weight: bold;").arg(isDark?"rgba(255,255,255,20)":"#E2E8F0", isDark?"#F8FAFC":"#0F172A"));
 
-    // --- 2nd Interface (Student Information UI) Styles ---
+    // --- 2nd Interface Styles ---
     QString bg2 = isDark ? "#0B1120" : "#F4F8FB";
     QString cardBg = isDark ? "#1E293B" : "#FFFFFF";
     QString text = isDark ? "#F8FAFC" : "#0F172A";
@@ -207,7 +214,6 @@ void MainWindow::drawCards(bool isDark)
         delete child;
     }
     
-    // කාඩ්පත්වල Text එක ඡායාරූපයට අනුව වෙනස් කර ඇත (Original ID එක වෙනස් නොකර)
     QStringList workshops = {"Automotive", "Robotics", "Mechanical", "Painting", "Welding"};
     QStringList wsTitles = {"VEHICLE\nDESIGN", "ROBOTIC\nASSEMBLY", "GENERAL\nMECHANICAL", "SURFACE\nFINISHING", "PRECISION\nWELDING"};
     QStringList wsSubs = {"AUTOMOTIVE", "AUTOMATION", "HAND TOOLS", "COATING", "METAL FAB"};
@@ -230,7 +236,6 @@ QWidget* MainWindow::createCard(const QString &id, const QString &title, const Q
     QFrame *card = new QFrame(this);
     card->setFixedSize(190, 270); 
     
-    // --- Glassmorphism Effect ---
     if(isDark) {
         card->setStyleSheet(
             "QFrame { background-color: rgba(255, 255, 255, 15); border-radius: 15px; border: 1px solid rgba(255, 255, 255, 40); }"
@@ -238,7 +243,7 @@ QWidget* MainWindow::createCard(const QString &id, const QString &title, const Q
         );
     } else {
         card->setStyleSheet(
-            "QFrame { background-color: #FFFFFF; border-radius: 15px; border: 1px solid #CBD5E1; }"
+            "QFrame { background-color: rgba(255, 255, 255, 200); border-radius: 15px; border: 1px solid #CBD5E1; }"
             "QFrame:hover { border: 1px solid #3B82F6; }"
         );
     }
@@ -259,7 +264,6 @@ QWidget* MainWindow::createCard(const QString &id, const QString &title, const Q
     imgBox->setFixedSize(140, 110);
     imgBox->setAlignment(Qt::AlignCenter);
     
-    // Image Background Gradient
     QString grad = isDark ? "qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #0284C7, stop:1 #002855)" 
                           : "qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #2563EB, stop:1 #0284C7)";
     imgBox->setStyleSheet(QString("background: %1; border-radius: 12px; color: white; border: none;").arg(grad));
@@ -280,7 +284,6 @@ QWidget* MainWindow::createCard(const QString &id, const QString &title, const Q
     QPushButton *btn = new QPushButton(subtitle, card);
     btn->setFixedSize(150, 36);
     
-    // Pill Button Style
     if(isDark) {
         btn->setStyleSheet(
             "QPushButton { background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #06B6D4, stop:1 #3B82F6); color: white; border-radius: 18px; font-size: 11px; font-weight: bold; border: 1px solid rgba(255, 255, 255, 50); }"
@@ -318,16 +321,17 @@ void MainWindow::openSystemSettings()
 
     QDialog dialog(this);
     dialog.setWindowTitle("System Settings");
-    dialog.setMinimumWidth(400);
+    dialog.setMinimumWidth(450); // Width මදක් විශාල කර ඇත
     
     bool isDark = QSettings("StudentWorkshopApp", "ThemeSettings").value("darkMode", true).toBool();
     dialog.setStyleSheet(isDark ? "QDialog { background-color: #1E293B; color: #F8FAFC; } QLabel { color: #F8FAFC; font-weight: bold; } QComboBox, QLineEdit { background-color: #0F172A; color: #F8FAFC; padding: 5px; border: 1px solid #334155; border-radius: 4px; }" 
                                 : "QDialog { background-color: #FFFFFF; color: #0F172A; } QLabel { color: #0F172A; font-weight: bold; } QComboBox, QLineEdit { padding: 5px; border: 1px solid #CBD5E1; border-radius: 4px; }");
 
     QVBoxLayout layout(&dialog);
-    layout.setSpacing(20);
+    layout.setSpacing(15);
     layout.setContentsMargins(25, 25, 25, 25);
 
+    // --- 1. Theme මාරු කිරීම ---
     QLabel *lblTheme = new QLabel("UI Theme Appearance:", &dialog);
     layout.addWidget(lblTheme);
 
@@ -336,11 +340,55 @@ void MainWindow::openSystemSettings()
                                     : "background-color: #0F172A; color: #F8FAFC; font-weight: bold; padding: 10px; border-radius: 6px; font-size: 13px;");
     layout.addWidget(toggleBtn);
 
-    QFrame *line = new QFrame(&dialog);
-    line->setFrameShape(QFrame::HLine);
-    line->setStyleSheet(isDark ? "background-color: #334155;" : "background-color: #CBD5E1;");
-    layout.addWidget(line);
+    QFrame *line1 = new QFrame(&dialog);
+    line1->setFrameShape(QFrame::HLine);
+    line1->setStyleSheet(isDark ? "background-color: #334155;" : "background-color: #CBD5E1;");
+    layout.addWidget(line1);
 
+    // --- 2. අලුතින් එක් කළ Wallpaper සැකසුම ---
+    QLabel *lblWall = new QLabel("1st Interface Custom Wallpaper:", &dialog);
+    layout.addWidget(lblWall);
+
+    QHBoxLayout *wallLayout = new QHBoxLayout();
+    QLineEdit *wallPathEdit = new QLineEdit(&dialog);
+    wallPathEdit->setReadOnly(true);
+    QString currentWall = QSettings("StudentWorkshopApp", "ThemeSettings").value("customWallpaper", "").toString();
+    wallPathEdit->setText(currentWall.isEmpty() ? "Default Background" : currentWall);
+    
+    QPushButton *browseWallBtn = new QPushButton("Browse", &dialog);
+    browseWallBtn->setStyleSheet("background-color: #3B82F6; color: white; font-weight: bold; padding: 6px 12px; border-radius: 4px;");
+    
+    QPushButton *clearWallBtn = new QPushButton("Clear", &dialog);
+    clearWallBtn->setStyleSheet("background-color: #EF4444; color: white; font-weight: bold; padding: 6px 12px; border-radius: 4px;");
+
+    wallLayout->addWidget(wallPathEdit);
+    wallLayout->addWidget(browseWallBtn);
+    wallLayout->addWidget(clearWallBtn);
+    layout.addLayout(wallLayout);
+
+    connect(browseWallBtn, &QPushButton::clicked, [&]() {
+        QString filePath = QFileDialog::getOpenFileName(&dialog, "Select Wallpaper", "", "Images (*.png *.jpg *.jpeg)");
+        if (!filePath.isEmpty()) {
+            wallPathEdit->setText(filePath);
+            QSettings("StudentWorkshopApp", "ThemeSettings").setValue("customWallpaper", filePath);
+            bool currentDark = QSettings("StudentWorkshopApp", "ThemeSettings").value("darkMode", true).toBool();
+            this->applyTheme(currentDark); // තෝරාගත් වහාම Wallpaper එක වෙනස් වේ
+        }
+    });
+
+    connect(clearWallBtn, &QPushButton::clicked, [&]() {
+        wallPathEdit->setText("Default Background");
+        QSettings("StudentWorkshopApp", "ThemeSettings").setValue("customWallpaper", "");
+        bool currentDark = QSettings("StudentWorkshopApp", "ThemeSettings").value("darkMode", true).toBool();
+        this->applyTheme(currentDark); // තෝරාගත් වහාම Default එකට මාරු වේ
+    });
+
+    QFrame *line2 = new QFrame(&dialog);
+    line2->setFrameShape(QFrame::HLine);
+    line2->setStyleSheet(isDark ? "background-color: #334155;" : "background-color: #CBD5E1;");
+    layout.addWidget(line2);
+
+    // --- 3. Passcode වෙනස් කිරීම ---
     QLabel *lblPasscode = new QLabel("Change Workshop Admin Passcode:", &dialog);
     layout.addWidget(lblPasscode);
 
