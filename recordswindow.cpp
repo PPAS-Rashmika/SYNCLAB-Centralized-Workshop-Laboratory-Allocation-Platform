@@ -40,7 +40,6 @@ void RecordsWindow::setupUI()
 {
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     
-    // --- Top Bar ---
     QHBoxLayout *topBar = new QHBoxLayout();
     
     QLabel *titleLabel = new QLabel("Booking Management: " + currentCategory.toUpper(), this);
@@ -60,13 +59,11 @@ void RecordsWindow::setupUI()
     topBar->addWidget(settingsBtn);
     
     mainLayout->addLayout(topBar);
-    // ----------------
 
-    // --- Calendar Section (Full Width Layout) ---
     QFrame *calFrame = new QFrame(this);
     calFrame->setStyleSheet("QFrame { background-color: #FFFFFF; border-radius: 10px; border: 1px solid #CBD5E1; margin-bottom: 10px; }");
     
-    QVBoxLayout *calLayout = new QVBoxLayout(calFrame); // සම්පූර්ණ පළල ලබා ගැනීමට QVBoxLayout භාවිතා කර ඇත
+    QVBoxLayout *calLayout = new QVBoxLayout(calFrame);
     calLayout->setContentsMargins(15, 15, 15, 15);
     calLayout->setSpacing(15);
 
@@ -75,7 +72,7 @@ void RecordsWindow::setupUI()
     QVBoxLayout *calTextLayout = new QVBoxLayout();
     QLabel *calTitle = new QLabel("Filter by Booked Date", calFrame);
     calTitle->setStyleSheet("font-size: 16px; font-weight: bold; color: #1E293B; border: none;");
-    QLabel *calDesc = new QLabel("Select a date on the calendar to view bookings scheduled for that specific date. Highlighted dates indicate existing bookings.", calFrame);
+    QLabel *calDesc = new QLabel("Select a date on the calendar to view bookings. The numbers below each date represent Approved (Green), Pending (Orange), and Rejected (Red) bookings.", calFrame);
     calDesc->setStyleSheet("font-size: 13px; color: #475569; border: none;");
     
     calTextLayout->addWidget(calTitle);
@@ -88,11 +85,11 @@ void RecordsWindow::setupUI()
     calTopLayout->addStretch();
     calTopLayout->addWidget(showAllBtn);
 
-    calendar = new QCalendarWidget(calFrame);
-    // Calendar එකේ පළල (Width) ස්වයංක්‍රීයව වෙනස් වීමට Expanding ලබා දී ඇත
+    // --- මෙහි CustomCalendarWidget භාවිතා කර ඇත ---
+    calendar = new CustomCalendarWidget(calFrame);
     calendar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred); 
-    calendar->setMinimumHeight(250); // අවම උස
-    calendar->setStyleSheet("QCalendarWidget QWidget { alternate-background-color: #F1F5F9; border: none; font-size: 13px; }");
+    calendar->setMinimumHeight(250); 
+    calendar->setStyleSheet("CustomCalendarWidget QWidget { alternate-background-color: #F1F5F9; border: none; font-size: 13px; }");
 
     calLayout->addLayout(calTopLayout);
     calLayout->addWidget(calendar);
@@ -101,9 +98,7 @@ void RecordsWindow::setupUI()
 
     connect(calendar, &QCalendarWidget::clicked, this, &RecordsWindow::filterByDate);
     connect(showAllBtn, &QPushButton::clicked, this, &RecordsWindow::clearFilter);
-    // ----------------------------------------
 
-    // --- Scroll Area for Tables ---
     QScrollArea *scrollArea = new QScrollArea(this);
     scrollArea->setWidgetResizable(true);
     scrollArea->setStyleSheet("QScrollArea { border: none; background-color: transparent; }");
@@ -133,17 +128,33 @@ void RecordsWindow::clearFilter()
 
 void RecordsWindow::updateCalendarHighlights()
 {
+    if (currentCategory.isEmpty()) return;
+
     QTextCharFormat defaultFormat;
     calendar->setDateTextFormat(QDate(), defaultFormat); 
 
-    QList<QDate> bookedDates = dbManager->getBookedDates(currentCategory);
+    QList<StudentRecord> allRecords = dbManager->getAllRecordsForCategory(currentCategory);
+    QMap<QDate, QMap<QString, int>> dateCounts;
+    QList<QDate> bookedDates;
+
+    for (const StudentRecord &r : allRecords) {
+        QDate d = QDate::fromString(r.getRecordDate(), "yyyy-MM-dd");
+        if (d.isValid()) {
+            if (!bookedDates.contains(d)) bookedDates.append(d);
+            dateCounts[d][r.getStatus()]++;
+        }
+    }
+
     QTextCharFormat highlightFormat;
-    highlightFormat.setBackground(QColor("#B3D4FF"));
+    highlightFormat.setBackground(QColor("#E0F2FE"));
     highlightFormat.setFontWeight(QFont::Bold);
 
     for (const QDate &date : bookedDates) {
         calendar->setDateTextFormat(date, highlightFormat);
     }
+
+    // Custom Calendar එකට දත්ත යැවීම
+    calendar->setStatusCounts(dateCounts);
 }
 
 void RecordsWindow::openSettingsDialog()
@@ -424,6 +435,7 @@ void RecordsWindow::loadData()
             connect(statusCombo, &QComboBox::currentTextChanged, [this, id = records[i].getId(), updateComboColor](const QString &text){
                 dbManager->updateRecordStatus(id, text);
                 updateComboColor();
+                updateCalendarHighlights(); // Status වෙනස් වූ විට Calendar එක Update වීම
             });
             table->setCellWidget(i, 9, statusCombo);
             

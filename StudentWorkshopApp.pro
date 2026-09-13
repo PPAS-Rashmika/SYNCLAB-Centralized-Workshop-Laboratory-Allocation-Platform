@@ -7,6 +7,7 @@ TARGET = StudentWorkshopApp
 TEMPLATE = app
 
 SOURCES += \
+    customcalendarwidget.cpp \
     databasemanager.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -14,6 +15,7 @@ SOURCES += \
     studentrecord.cpp
 
 HEADERS += \
+    customcalendarwidget.h \
     databasemanager.h \
     mainwindow.h \
     recordswindow.h \

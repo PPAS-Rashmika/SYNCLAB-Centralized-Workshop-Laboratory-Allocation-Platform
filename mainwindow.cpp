@@ -124,7 +124,6 @@ void MainWindow::onCalendarSelectionChanged()
     if (currentCategory.isEmpty()) return;
 
     QString dateStr = ui->calendar->selectedDate().toString("yyyy-MM-dd");
-    // මෙහි currentRecord.getId() ලබාදෙන්නේ අදාළ Record එකට අයිති Times Lock වීම වැළැක්වීමටයි
     QStringList bookedSlots = dbManager->getBookedTimeSlotsStringList(dateStr, currentCategory, currentRecord.getId());
     
     QStandardItemModel *model = qobject_cast<QStandardItemModel*>(ui->timeSlotInput->model());
@@ -303,43 +302,11 @@ void MainWindow::showRecordsWindow()
     delete recordsWin;
 }
 
-// ----------------------------------------------------------------------
-// Load Record Logic (යාවත්කාලීන කරන ලදී)
-// ----------------------------------------------------------------------
 void MainWindow::loadRecordForEdit(const StudentRecord &record)
 {
     loadRecordIntoUI(record);
     isPasscodeBypassed = true; 
 }
-
-void MainWindow::loadRecordIntoUI(const StudentRecord &record)
-{
-    currentRecord = record;
-    
-    // --- දෝෂය නිවැරදි කළ ප්‍රධාන ස්ථානය ---
-    // Record එක Load කළ පසු ඒ Record එකට අදාළ Time slots අගුලු හැරීමට
-    // Explicitly Calendar Selection Changed Run කළ යුතුය.
-    onCalendarSelectionChanged(); 
-    // --------------------------------------
-
-    ui->nameInput->setText(currentRecord.getName());
-    ui->indexInput->setText(currentRecord.getIndexNo());
-    ui->deptInput->setCurrentText(currentRecord.getDepartment());
-    ui->emailInput->setText(currentRecord.getEmail());
-    ui->pdfInput->setText(currentRecord.getPdfPath());
-    
-    ui->calendar->setSelectedDate(QDate::fromString(currentRecord.getRecordDate(), "yyyy-MM-dd"));
-    
-    setTimeSlotsInUI(currentRecord.getTimeSlots());
-    ui->descriptionInput->setText(currentRecord.getDescription());
-    
-    ui->submitBtn->hide();
-    ui->updateBtn->show();
-    ui->updateBtn->setText("SAVE CHANGES");
-    ui->deleteBtn->show();
-    ui->deleteBtn->setText("DELETE BOOKING");
-}
-// ----------------------------------------------------------------------
 
 void MainWindow::onDatabaseUpdatedFromPopup()
 {
@@ -466,12 +433,8 @@ void MainWindow::submitData()
     }
 }
 
-// ----------------------------------------------------------------------
-// Update Logic (යාවත්කාලීන කරන ලදී)
-// ----------------------------------------------------------------------
 void MainWindow::updateData()
 {
-    // Record එකක් Load කර නැති විට (Passcode විමසා Load කිරීම)
     if (currentRecord.getId() == -1) {
         QString dateStr = ui->calendar->selectedDate().toString("yyyy-MM-dd");
         QList<StudentRecord> records = dbManager->getRecordsByDateAndCategory(dateStr, currentCategory);
@@ -503,10 +466,8 @@ void MainWindow::updateData()
         return;
     }
     
-    // Record එක Load කර ඇති විට (තොරතුරු Save කිරීම)
     QStringList selectedSlots = getSelectedTimeSlotsList();
     if(selectedSlots.isEmpty()) {
-        // --- දෝෂය නිවැරදි කළ ස්ථානය: Time slot නොමැති නම් Alert කිරීම ---
         QMessageBox::warning(this, "Input Error", "Please select at least one time slot!");
         return;
     }
@@ -546,14 +507,9 @@ void MainWindow::updateData()
         QMessageBox::critical(this, "Database Error", dbManager->getLastError());
     }
 }
-// ----------------------------------------------------------------------
 
-// ----------------------------------------------------------------------
-// Delete Logic (යාවත්කාලීන කරන ලදී)
-// ----------------------------------------------------------------------
 void MainWindow::deleteData()
 {
-    // Record එකක් Load කර නැති විට (Passcode විමසා Delete කිරීම)
     if (currentRecord.getId() == -1) {
         QString dateStr = ui->calendar->selectedDate().toString("yyyy-MM-dd");
         QList<StudentRecord> records = dbManager->getRecordsByDateAndCategory(dateStr, currentCategory);
@@ -591,7 +547,6 @@ void MainWindow::deleteData()
         return;
     }
     
-    // Record එක Load කර ඇති විට (කෙලින්ම Delete කිරීම)
     if (!isPasscodeBypassed) {
         if (!checkPasscode()) return;
     }
@@ -606,21 +561,60 @@ void MainWindow::deleteData()
         }
     }
 }
-// ----------------------------------------------------------------------
 
 void MainWindow::updateCalendarHighlights()
 {
+    if (currentCategory.isEmpty()) return;
+
     QTextCharFormat defaultFormat;
     ui->calendar->setDateTextFormat(QDate(), defaultFormat); 
 
-    QList<QDate> bookedDates = dbManager->getBookedDates(currentCategory);
+    QList<StudentRecord> allRecords = dbManager->getAllRecordsForCategory(currentCategory);
+    QMap<QDate, QMap<QString, int>> dateCounts;
+    QList<QDate> bookedDates;
+
+    // දත්ත ගණනය කිරීම
+    for (const StudentRecord &r : allRecords) {
+        QDate d = QDate::fromString(r.getRecordDate(), "yyyy-MM-dd");
+        if (d.isValid()) {
+            if (!bookedDates.contains(d)) bookedDates.append(d);
+            dateCounts[d][r.getStatus()]++;
+        }
+    }
+
     QTextCharFormat highlightFormat;
-    highlightFormat.setBackground(QColor("#B3D4FF"));
+    highlightFormat.setBackground(QColor("#E0F2FE")); // Light Blue background
     highlightFormat.setFontWeight(QFont::Bold);
 
     for (const QDate &date : bookedDates) {
         ui->calendar->setDateTextFormat(date, highlightFormat);
     }
+
+    // Custom Calendar එකට ගණනය කළ දත්ත යැවීම
+    ui->calendar->setStatusCounts(dateCounts);
+}
+
+void MainWindow::loadRecordIntoUI(const StudentRecord &record)
+{
+    currentRecord = record;
+    onCalendarSelectionChanged(); 
+
+    ui->nameInput->setText(currentRecord.getName());
+    ui->indexInput->setText(currentRecord.getIndexNo());
+    ui->deptInput->setCurrentText(currentRecord.getDepartment());
+    ui->emailInput->setText(currentRecord.getEmail());
+    ui->pdfInput->setText(currentRecord.getPdfPath());
+    
+    ui->calendar->setSelectedDate(QDate::fromString(currentRecord.getRecordDate(), "yyyy-MM-dd"));
+    
+    setTimeSlotsInUI(currentRecord.getTimeSlots());
+    ui->descriptionInput->setText(currentRecord.getDescription());
+    
+    ui->submitBtn->hide();
+    ui->updateBtn->show();
+    ui->updateBtn->setText("SAVE CHANGES");
+    ui->deleteBtn->show();
+    ui->deleteBtn->setText("DELETE BOOKING");
 }
 
 void MainWindow::dateClicked(const QDate &date)

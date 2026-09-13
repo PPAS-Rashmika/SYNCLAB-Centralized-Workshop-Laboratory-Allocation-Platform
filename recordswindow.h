@@ -4,7 +4,7 @@
 #include <QDialog>
 #include <QTableWidget>
 #include <QVBoxLayout>
-#include <QCalendarWidget>
+#include "customcalendarwidget.h" // අලුතින් එක් කරන ලදී
 #include <QDate>
 #include "databasemanager.h"
 #include "studentrecord.h"
@@ -24,17 +24,17 @@ private slots:
     void openSettingsDialog(); 
     void printAllRecords(); 
     void printSingleRecord(const StudentRecord &record); 
-    void filterByDate(const QDate &date); // Calendar දිනයක් Click කළ විට Filter කිරීමට
-    void clearFilter();                   // Filter එක ඉවත් කර සියල්ල බැලීමට
+    void filterByDate(const QDate &date); 
+    void clearFilter();                   
 
 private:
     QVBoxLayout *scrollLayout; 
     IDatabaseManager *dbManager;
     QString currentCategory;
     
-    QCalendarWidget *calendar; // අලුතින් එක් කළ Calendar එක
-    QDate filterDate;          // තෝරාගත් දිනය රඳවා ගැනීමට
-    void updateCalendarHighlights(); // Calendar එකේ Booked Dates Highlight කිරීමට
+    CustomCalendarWidget *calendar; // Custom Component එක භාවිතා කර ඇත
+    QDate filterDate;          
+    void updateCalendarHighlights(); 
 
     void setupUI();
     void loadData();
