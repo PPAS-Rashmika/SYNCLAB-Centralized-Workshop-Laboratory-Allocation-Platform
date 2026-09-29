@@ -5,6 +5,7 @@
 #include <QPalette>
 #include <QTextCharFormat>
 
+// Constructor: fixes the look of the calendar once, when it is created.
 CustomCalendarWidget::CustomCalendarWidget(QWidget *parent) : QCalendarWidget(parent)
 {
     setVerticalHeaderFormat(QCalendarWidget::NoVerticalHeader);
@@ -15,26 +16,33 @@ CustomCalendarWidget::CustomCalendarWidget(QWidget *parent) : QCalendarWidget(pa
     setAccessibleName(tr("Booking calendar"));
 }
 
+// Stores new counts and asks Qt to redraw every day cell.
 void CustomCalendarWidget::setStatusCounts(const QMap<QDate, QMap<QString, int>> &counts)
 {
-    m_counts = counts;
+    statusCounts = counts;
     updateCells();
 }
 
+// Qt calls this once for every day cell that needs drawing.
 void CustomCalendarWidget::paintCell(QPainter *painter, const QRect &rect, QDate date) const
 {
-    const auto counts = m_counts.value(date);
+    const auto counts = statusCounts.value(date);
     const int approved = counts.value("Approve");
     const int pending = counts.value("Pending");
     const int rejected = counts.value("Reject");
+
+    // Nothing to add, or the cell is too small for a badge: draw the plain day.
     if (approved + pending + rejected == 0 || rect.height() < 28) {
         QCalendarWidget::paintCell(painter, rect, date);
         return;
     }
 
+    // save() and restore() make sure our drawing does not leak into other cells.
     painter->save();
     painter->setClipRect(rect);
     const int badgeHeight = qMin(14, rect.height() / 3);
+
+    // Work out the background colour the cell should already have.
     const auto *view = findChild<QAbstractItemView *>("qt_calendar_calendarview");
     const QPalette colors = view ? view->palette() : palette();
     QBrush background = colors.base();
@@ -47,14 +55,16 @@ void CustomCalendarWidget::paintCell(QPainter *painter, const QRect &rect, QDate
 
     // Reserve a separate strip so status counts never cover the day number.
     QCalendarWidget::paintCell(painter, rect.adjusted(0, 0, 0, -badgeHeight - 2), date);
+
     QFont badgeFont = painter->font();
     badgeFont.setPixelSize(qMax(8, badgeHeight - 3));
     badgeFont.setBold(true);
     painter->setFont(badgeFont);
     painter->setRenderHint(QPainter::Antialiasing, true);
 
+    // The three badges sit side by side along the bottom of the cell.
     const int values[] = {approved, pending, rejected};
-    const QString prefixes[] = {QStringLiteral("A"), QStringLiteral("P"), QStringLiteral("R")};
+    const QString prefixes[] = {"A", "P", "R"};
     const QColor fills[] = {QColor("#166534"), QColor("#92400E"), QColor("#B91C1C")};
     const int columnWidth = rect.width() / 3;
     for (int column = 0; column < 3; ++column) {
@@ -62,8 +72,9 @@ void CustomCalendarWidget::paintCell(QPainter *painter, const QRect &rect, QDate
             continue;
         const QRect badge(rect.left() + column * columnWidth + 1, rect.bottom() - badgeHeight,
                           columnWidth - 2, badgeHeight);
+        // Very large numbers are shortened so the text still fits.
         const QString value =
-            values[column] > 99 ? QStringLiteral("99+") : QString::number(values[column]);
+            values[column] > 99 ? QString("99+") : QString::number(values[column]);
         QString label = prefixes[column] + value;
         if (painter->fontMetrics().horizontalAdvance(label) > badge.width() - 2)
             label = value;

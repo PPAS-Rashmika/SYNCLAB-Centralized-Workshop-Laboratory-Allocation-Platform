@@ -1,45 +1,29 @@
 #ifndef WORKSHOPCATALOG_H
 #define WORKSHOPCATALOG_H
 
+#include <QPixmap>
+#include <QSize>
+#include <QString>
 #include <QStringList>
 
-inline QStringList workshopCategories()
-{
-    return {"Biochemistry",
-            "Electronics",
-            "Computer",
-            "Advanced Material",
-            "Geotechnical",
-            "Surveying",
-            "Concrete",
-            "Physics",
-            "Drawing Office",
-            "Manufacturing",
-            "Environment and Water Resources Laboratory",
-            "Highway Laboratory",
-            "Structures Laboratory",
-            "Electrical Machines & Communications Laboratory",
-            "Measurement Laboratory"};
-}
+// ---------------------------------------------------------------------------
+// Information about the workshops this program offers.
+// These are plain functions and not a class, because there is no data to
+// store. They only return fixed information about the workshops.
+// ---------------------------------------------------------------------------
 
-inline QString workshopTitle(const QString &category)
-{
-    return category == "Drawing Office" || category.endsWith(" Laboratory") ? category
-                                                                            : category + " Lab";
-}
+// The names of all workshops, in the order they appear on the home page.
+QStringList workshopCategories();
 
-inline QString workshopDepartment(const QString &category)
-{
-    const int index = workshopCategories().indexOf(category);
-    if (index < 0)
-        return {};
-    if (index < 4)
-        return "Department of Nano Science Technology";
-    if (index < 7 || (index >= 10 && index <= 12))
-        return "Department of Construction Technology";
-    if (index >= 13)
-        return "Department of Electrotechnology";
-    return "Department of Mechanical and Manufacturing Technology";
-}
+// The heading shown for a workshop, for example "Physics Lab".
+QString workshopTitle(const QString &category);
 
-#endif
+// The department that runs the workshop.
+QString workshopDepartment(const QString &category);
+
+// The picture shown on a workshop card.
+// It uses assets/<workshop>.png when that file exists. Otherwise it draws a
+// simple coloured badge with the initials of the workshop.
+QPixmap workshopImage(const QString &category, const QSize &size);
+
+#endif // WORKSHOPCATALOG_H

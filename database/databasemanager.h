@@ -4,28 +4,22 @@
 #include <QSqlDatabase>
 #include "idatabasemanager.h"
 
-// Inheritance: this class implements IDatabaseManager using SQLite.
-// Encapsulation: only this class can use its private connection and error.
+// Inheritance: this class inherits the IDatabaseManager interface and provides
+// the real SQLite implementation of every function the interface declares.
+// Encapsulation: the connection, its name and the last error are all private,
+// so no other class can change them by accident.
 class SqliteDatabaseManager : public IDatabaseManager
 {
-  private:
-    QSqlDatabase db;
-    QString connectionName;
-    QString lastError;
-
-    bool ensureOpen();
-    bool beginWrite();
-    bool commitWrite();
-    void rollbackWrite();
-    bool validateRecord(const StudentRecord &record);
-
-    Q_DISABLE_COPY(SqliteDatabaseManager)
-
   public:
-    SqliteDatabaseManager(const QString &dbName);
+    // Constructor: opens the SQLite database file.
+    explicit SqliteDatabaseManager(const QString &dbName);
+    // Destructor: closes the connection.
     ~SqliteDatabaseManager() override;
 
+    // The functions below override the pure virtual functions of IDatabaseManager.
+
     bool createTable() override;
+
     bool addRecord(const StudentRecord &record) override;
     bool updateRecord(const StudentRecord &record) override;
     bool deleteRecord(int id) override;
@@ -41,6 +35,16 @@ class SqliteDatabaseManager : public IDatabaseManager
                                              int excludeRecordId = -1) override;
     QList<StudentRecord> getAllRecordsForCategory(const QString &category) override;
     QString getLastError() const override;
+
+  private:
+    QSqlDatabase db;        // the open SQLite connection
+    QString connectionName; // the unique name Qt requires for each connection
+    QString lastError;      // the message shown to the user when something fails
+
+    bool ensureOpen();                                 // check the connection is usable
+    bool beginWrite();                                 // start a transaction
+    bool commitWrite();                                // save the transaction
+    bool validateRecord(const StudentRecord &record);  // check one booking before saving
 };
 
 #endif // DATABASEMANAGER_H

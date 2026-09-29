@@ -18,6 +18,8 @@ bool validOptionalEmail(const QString &email)
 }
 } // namespace
 
+// Constructor: shows the two saved addresses and lets the administrator
+// change them.
 AdminSettingsDialog::AdminSettingsDialog(QWidget *parent)
     : QDialog(parent), ui(new Ui::AdminSettingsDialog)
 {
@@ -41,6 +43,7 @@ AdminSettingsDialog::AdminSettingsDialog(QWidget *parent)
         const QString dean = ui->deanEmailInput->text().trimmed();
         const QString head = ui->depHeadEmailInput->text().trimmed();
         if (!validOptionalEmail(dean) || !validOptionalEmail(head)) {
+            // Move the cursor to whichever field is wrong.
             auto *invalid = !validOptionalEmail(dean) ? ui->deanEmailInput : ui->depHeadEmailInput;
             CustomAlertDialog(tr("Check email address"),
                               tr("Enter one valid email address in each field, or leave it blank."),
@@ -54,7 +57,7 @@ AdminSettingsDialog::AdminSettingsDialog(QWidget *parent)
                            "AdminSettings");
         settings.setValue("dean_email", dean);
         settings.setValue("dep_head_email", head);
-        settings.sync();
+        settings.sync(); // write to disk now so we can check it worked
         if (settings.status() != QSettings::NoError) {
             CustomAlertDialog(tr("Settings not saved"), tr("Unable to save email settings."),
                               CustomAlertDialog::Error, this)
@@ -65,6 +68,8 @@ AdminSettingsDialog::AdminSettingsDialog(QWidget *parent)
     });
     connect(ui->cancelBtn, &QPushButton::clicked, this, &QDialog::reject);
 }
+
+// Destructor
 AdminSettingsDialog::~AdminSettingsDialog()
 {
     delete ui;

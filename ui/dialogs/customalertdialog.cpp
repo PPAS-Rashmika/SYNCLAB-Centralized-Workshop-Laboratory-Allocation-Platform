@@ -4,6 +4,7 @@
 
 #include <QResizeEvent>
 
+// Constructor: builds the dialog and colours it for the kind of message.
 CustomAlertDialog::CustomAlertDialog(const QString &title, const QString &message, AlertType type,
                                      QWidget *parent)
     : QDialog(parent), ui(new Ui::CustomAlertDialog)
@@ -13,10 +14,13 @@ CustomAlertDialog::CustomAlertDialog(const QString &title, const QString &messag
     ui->titleLbl->setText(title);
     ui->titleLbl->setWordWrap(true);
     ui->messageLbl->setText(message);
+    // Let the user select and copy the message, which matters for error text.
     ui->messageLbl->setTextInteractionFlags(Qt::TextSelectableByMouse |
                                             Qt::TextSelectableByKeyboard);
+    // Only a question gets a Cancel button.
     ui->cancelBtn->setVisible(type == Question);
 
+    // Blue for information, amber for a warning, red for an error.
     QString accent = "#2563EB";
     if (type == Warning)
         accent = "#92400E";
@@ -38,11 +42,14 @@ CustomAlertDialog::CustomAlertDialog(const QString &title, const QString &messag
     connect(ui->okBtn, &QPushButton::clicked, this, &QDialog::accept);
     connect(ui->cancelBtn, &QPushButton::clicked, this, &QDialog::reject);
 }
+
+// Destructor
 CustomAlertDialog::~CustomAlertDialog()
 {
     delete ui;
 }
 
+// Keeps the message readable when the dialog is made wider or narrower.
 void CustomAlertDialog::resizeEvent(QResizeEvent *event)
 {
     QDialog::resizeEvent(event);

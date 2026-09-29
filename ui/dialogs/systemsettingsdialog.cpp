@@ -8,6 +8,8 @@
 #include <QImageReader>
 #include <QSettings>
 
+// Constructor: builds the settings dialog for the theme, the background
+// picture and the administrator passcodes.
 SystemSettingsDialog::SystemSettingsDialog(QWidget *parent)
     : QDialog(parent), ui(new Ui::SystemSettingsDialog)
 {
@@ -20,6 +22,7 @@ SystemSettingsDialog::SystemSettingsDialog(QWidget *parent)
                           .toBool();
     ui->toggleThemeBtn->setText(dark ? tr("Switch to light mode") : tr("Switch to dark mode"));
     ui->groupBox->setTitle(tr("Administrator passcodes"));
+    // One entry per workshop, plus one for the master passcode.
     for (const QString &category : workshopCategories())
         ui->workshopCombo->addItem(category, category);
     ui->workshopCombo->addItem(tr("System administrator"), "__master__");
@@ -35,13 +38,17 @@ SystemSettingsDialog::SystemSettingsDialog(QWidget *parent)
     ui->toggleThemeBtn->setAutoDefault(false);
     ui->changeWallpaperBtn->setAutoDefault(false);
     ui->savePasscodeBtn->setAutoDefault(false);
+    // The Save button only works once the new passcode is at least 4 characters.
     connect(ui->newPasscodeInput, &QLineEdit::textChanged, this, [this](const QString &value) {
         ui->savePasscodeBtn->setEnabled(value.trimmed().size() >= 4);
     });
+    // Changing the workshop clears the box so a passcode is never saved to the
+    // wrong workshop by mistake.
     connect(ui->workshopCombo, &QComboBox::currentIndexChanged, this,
             [this]() { ui->newPasscodeInput->clear(); });
     connect(ui->newPasscodeInput, &QLineEdit::returnPressed, ui->savePasscodeBtn,
             &QPushButton::click);
+    // Flip the saved theme, then tell MainWindow to repaint itself.
     connect(ui->toggleThemeBtn, &QPushButton::clicked, this, [this, dark]() {
         QSettings settings(QSettings::defaultFormat(), QSettings::UserScope, "StudentWorkshopApp",
                            "ThemeSettings");
@@ -56,6 +63,7 @@ SystemSettingsDialog::SystemSettingsDialog(QWidget *parent)
         emit themeChanged();
         accept();
     });
+    // Pick a background picture and make sure Qt can really read it before saving it.
     connect(ui->changeWallpaperBtn, &QPushButton::clicked, this, [this]() {
         const QString path = QFileDialog::getOpenFileName(
             this, tr("Select background wallpaper"), QString(), tr("Images (*.png *.jpg *.jpeg)"));
@@ -71,6 +79,7 @@ SystemSettingsDialog::SystemSettingsDialog(QWidget *parent)
         }
         emit wallpaperChanged(path);
     });
+    // Save the new passcode for the chosen workshop, or for the system administrator.
     connect(ui->savePasscodeBtn, &QPushButton::clicked, this, [this]() {
         const QString code = ui->newPasscodeInput->text().trimmed();
         if (code.size() < 4)

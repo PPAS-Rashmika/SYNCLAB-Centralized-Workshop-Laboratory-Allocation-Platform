@@ -1,12 +1,11 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMainWindow>
 #include <QDate>
-#include <QStringList>
 #include <QFrame>
 #include <QList>
-#include <QTableWidget>
+#include <QMainWindow>
+#include <QStringList>
 #include "databasemanager.h"
 #include "studentrecord.h"
 
@@ -22,101 +21,133 @@ class Page4;
 } // namespace Ui
 QT_END_NAMESPACE
 
-// UI controller. Its methods are grouped into files by responsibility.
+class QPushButton;
+class QResizeEvent;
+
+// This is the controller class of the whole program.
+// One window holds the five pages, and every button on those pages is
+// connected to one of the slot functions listed below.
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
   public:
+    // Constructor: builds the window and opens the SQLite database.
     explicit MainWindow(QWidget *parent = nullptr, const QString &databasePath = QString());
+    // Destructor: closes the database and frees the pages.
     ~MainWindow();
 
   private slots:
+    // ---- Moving between pages ----
+    void startNewBooking();
+    void startEditBookingFlow();
+    void cancelCurrentFlow();
+    void onNextClicked();
     void openSecondInterface(const QString &category);
-    void goBackTo0();
+    void onNextTo3Clicked();
     void goBackTo1();
     void goBackTo2();
-    void onNextTo3Clicked();
-    void onNextClicked();
+    void goBackFromAdmin();
+
+    // ---- Date and time page ----
+    void onCalendarSelectionChanged();
+    void onTimeSlotClicked();
+
+    // ---- Booking form page ----
     void submitData();
     void updateData();
     void deleteData();
-    void dateClicked(const QDate &date);
     void loadRecordForEdit(const StudentRecord &record);
-    void onCalendarSelectionChanged();
-    void onTimeSlotClicked();
-    void openSystemSettings();
+
+    // ---- Administrator page ----
     void showRecordsWindow();
     void loadAdminData();
     void adminFilterByDate(const QDate &date);
     void adminClearFilter();
+    void refreshAdminActions();
     void updateAdminCalendarHighlights();
+    void composeStatusEmail(const QString &status);
     void openAdminEmailSettings();
     void printAllRecords();
-    void printSingleRecord(const StudentRecord &record);
-    void goBackFromAdmin();
 
-    // Booking workflow state and navigation.
-    void startNewBooking();
-    void startEditBookingFlow();
-    void cancelCurrentFlow();
+    // ---- Settings ----
+    void openSystemSettings();
 
   private:
+    // Called automatically by Qt whenever the window size changes.
     void resizeEvent(QResizeEvent *event) override;
-    void arrangeCards();
+
+    // ---- First setup ----
+    void setupDynamicUI();
+    void applyTheme(bool darkMode);
+    void showDatabaseError();
     void resetFlow();
+
+    // ---- Workshop cards ----
+    void drawCards();
+    QWidget *createCard(const QString &id, const QString &title, const QString &subtitle);
+    void selectCard(const QString &category);
+    void arrangeCards();
+
+    // ---- Time slots ----
+    QStringList getSelectedTimeSlotsList();
+    void setTimeSlotsInUI(const QString &timeString);
+    void updateCalendarHighlights();
+
+    // ---- Booking form ----
+    void clearUI();
+    void setFormButtonsMode(bool isEditMode);
+    void loadRecordIntoUI(const StudentRecord &record);
     StudentRecord readFormRecord();
     bool validateForm();
-    void showDatabaseError();
-    void refreshAdminActions();
-    void composeStatusEmail(const QString &status);
-    QString m_dataDirectory;
-    bool m_isDark = false;
-    bool m_databaseReady = false;
-    int m_cardColumns = 0;
-    Ui::MainWindow *ui;
-    Ui::Page0 *ui0;
-    Ui::Page1 *ui1;
-    Ui::Page2 *ui2;
-    Ui::Page3 *ui3;
-    Ui::Page4 *ui4;
+    bool checkPasscode();
+    QString savePdfFile(const QString &sourcePath, const QString &allocationKey);
 
+    // ---- The five pages built by Qt Designer ----
+    Ui::MainWindow *ui; // the outer window
+    Ui::Page0 *ui0;     // welcome page
+    Ui::Page1 *ui1;     // choose a workshop
+    Ui::Page2 *ui2;     // choose a date and time slots
+    Ui::Page3 *ui3;     // fill in the booking form
+    Ui::Page4 *ui4;     // administrator page
     QWidget *page0Widget = nullptr;
     QWidget *page1Widget = nullptr;
     QWidget *page2Widget = nullptr;
     QWidget *page3Widget = nullptr;
     QWidget *page4Widget = nullptr;
 
-    // The interface allows runtime polymorphism; the object is a SqliteDatabaseManager.
-    IDatabaseManager *dbManager;
-    QString currentCategory;
-    QString currentWorkshopId;
+    // ---- Database ----
+    // Polymorphism: the pointer type is the base interface, but the object it
+    // points to is the SQLite derived class. The window never needs to know
+    // which database is being used, it just calls the interface functions.
+    IDatabaseManager *dbManager = nullptr;
+    bool databaseReady = false;
+    QString dataDirectory; // folder that holds the database file and the PDF uploads
+
+    // ---- What the user is doing right now ----
+    QString currentCategory;   // the workshop being booked
+    QString currentWorkshopId; // kept in the record so old data still matches
     StudentRecord currentRecord;
-    bool isPasscodeBypassed;
-    bool isAdminEditMode;
-    bool isStudentEditFlow; // Booking workflow state and navigation.
+    bool isPasscodeBypassed = false; // true once the allocation key has been accepted
+    bool isAdminEditMode = false;    // true when the administrator opened the form
+    bool isStudentEditFlow = false;  // true when a student opened their own booking
 
-    QString m_selectedCategory;
-    QList<QFrame *> m_cardFrames;
-    QDate adminFilterDate;
+    // ---- Workshop cards on page 1 ----
+    QList<QFrame *> cardFrames;
+    QString selectedCategory;
+    int cardColumns = 0;
 
-    void setupDynamicUI();
-    void applyTheme(bool isDark);
-    void drawCards(bool isDark);
-    QWidget *createCard(const QString &id, const QString &title, const QString &subtitle,
-                        bool isDark);
-    void selectCard(const QString &category, QFrame *cardFrame);
+    // ---- Time slot buttons on page 2 ----
+    // These two lists always line up: timeSlotValues[i] is the text of
+    // timeSlotButtons[i]. That saves reading the value back from each button.
+    QList<QPushButton *> timeSlotButtons;
+    QStringList timeSlotValues;
 
-    void updateCalendarHighlights();
-    bool checkPasscode();
-    QStringList getSelectedTimeSlotsList();
-    void setTimeSlotsInUI(const QString &timeString);
-    void clearUI();
-    void loadRecordIntoUI(const StudentRecord &record);
-    QString savePdfFile(const QString &sourcePath, const QString &allocationKey);
+    // ---- Administrator page ----
+    QDate adminFilterDate; // invalid date means "show every booking"
 
-    // Booking workflow state and navigation.
-    void setFormButtonsMode(bool isEditMode);
+    // ---- Appearance ----
+    bool isDarkTheme = false;
 };
 
 #endif // MAINWINDOW_H

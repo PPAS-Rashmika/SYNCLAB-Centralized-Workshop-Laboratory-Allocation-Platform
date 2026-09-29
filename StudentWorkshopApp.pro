@@ -1,10 +1,17 @@
 # Open this file in Qt Creator and select a Qt 6 Desktop kit.
+#
+# Qt modules the program needs:
+#   core, gui, widgets - the windows, buttons, tables and calendars
+#   sql                - the SQLite database
+#   printsupport       - the administrator's "Print list" button
 QT += core gui widgets sql printsupport
 lessThan(QT_MAJOR_VERSION, 6): error("This project requires Qt 6 or newer.")
 CONFIG += c++17
 TEMPLATE = app
 TARGET = StudentWorkshopApp
 
+# Every folder is listed here so that a source file can write
+# #include "studentrecord.h" instead of a long relative path.
 INCLUDEPATH += \
     $$PWD/ui \
     $$PWD/ui/dialogs \
@@ -14,28 +21,23 @@ INCLUDEPATH += \
     $$PWD/logic \
     $$PWD/utilities
 
+# The .cpp files that are compiled into the program.
 SOURCES += \
     main.cpp \
     ui/mainwindow.cpp \
-    ui/mainwindow_design.cpp \
-    ui/mainwindow_navigation.cpp \
-    ui/mainwindow_calendar.cpp \
-    ui/mainwindow_booking.cpp \
-    ui/mainwindow_admin.cpp \
     ui/dialogs/customalertdialog.cpp \
     ui/dialogs/custominputdialog.cpp \
     ui/dialogs/adminsettingsdialog.cpp \
     ui/dialogs/systemsettingsdialog.cpp \
     ui/dialogs/dialogtheme.cpp \
     ui/widgets/customcalendarwidget.cpp \
-    models/studentrecord.cpp \
     database/databasemanager.cpp \
-    database/databasewrite.cpp \
-    database/databasequeries.cpp \
     logic/bookingrules.cpp \
-    utilities/apphelpers.cpp \
-    utilities/attachmentstorage.cpp
+    utilities/workshopcatalog.cpp \
+    utilities/filestorage.cpp
 
+# The .h files. They are listed so that Qt Creator shows them in the project
+# tree and so that the moc tool can find the classes that use signals and slots.
 HEADERS += \
     ui/mainwindow.h \
     ui/dialogs/customdialogs.h \
@@ -48,12 +50,12 @@ HEADERS += \
     models/studentrecord.h \
     database/idatabasemanager.h \
     database/databasemanager.h \
-    database/databasehelpers.h \
     logic/bookingrules.h \
-    utilities/apphelpers.h \
-    utilities/attachmentstorage.h \
-    utilities/workshopcatalog.h
+    utilities/workshopcatalog.h \
+    utilities/filestorage.h
 
+# The screens drawn in Qt Designer. The uic tool turns each one into a
+# ui_<name>.h file that the program includes.
 FORMS += \
     ui/forms/mainwindow.ui \
     ui/forms/page0.ui \
@@ -66,10 +68,11 @@ FORMS += \
     ui/forms/adminsettingsdialog.ui \
     ui/forms/systemsettingsdialog.ui
 
+# Files kept with the project but not compiled. The SQL files are for reference;
+# the program creates its own tables when it first runs. CODE_GUIDE.md explains
+# the whole project.
 DISTFILES += \
-    README.md \
     CODE_GUIDE.md \
-    TESTING.md \
     sql/schema.sql \
     sql/sample_data.sql \
     sql/queries.sql

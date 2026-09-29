@@ -7,12 +7,15 @@
 #include <QStringList>
 #include "studentrecord.h"
 
-// Abstraction: this interface lists the database operations used by the UI.
-// Each '= 0' function must be implemented by a concrete database class.
-// Calling an override through this interface is runtime polymorphism.
+// This is the base class (an interface) for every database the program can use.
+// Each function marked '= 0' is a pure virtual function: the base class only
+// declares what must be done, and the derived class decides how to do it.
+// The UI keeps a pointer of this type, so calling one of these functions runs
+// the version in the derived class. That is runtime polymorphism.
 class IDatabaseManager
 {
   public:
+    // A virtual destructor so deleting through a base pointer is safe.
     virtual ~IDatabaseManager() {}
 
     virtual bool createTable() = 0;

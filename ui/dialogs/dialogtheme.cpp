@@ -4,8 +4,10 @@
 #include <QPushButton>
 #include <QSettings>
 
+// Reads the saved theme once and styles a dialog to match the main window.
 void applyDialogTheme(QDialog *dialog, const QString &accent)
 {
+    // QSettings reads the small configuration file the program writes to.
     const bool dark = QSettings(QSettings::defaultFormat(), QSettings::UserScope,
                                 "StudentWorkshopApp", "ThemeSettings")
                           .value("darkMode", false)
