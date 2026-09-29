@@ -13,6 +13,8 @@ CREATE TABLE IF NOT EXISTS records (
     index_no TEXT,
     department TEXT,
     email TEXT,
+    supervisor_name TEXT,
+    project_name TEXT,
     record_date TEXT,
     time_slot TEXT,
     description TEXT,

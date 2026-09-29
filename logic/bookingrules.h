@@ -16,7 +16,7 @@ class BookingRules
 {
   public:
     // Which part of the form is wrong. None means the booking is valid.
-    enum class Field { None, Name, Index, Department, Email, Schedule };
+    enum class Field { None, Name, Index, Department, Email, Supervisor, Project, Schedule };
 
     // Checks a booking and returns the first field that is wrong.
     static Field validate(const StudentRecord &record, bool departmentSelected);

@@ -14,7 +14,7 @@ WHERE record_date = '2030-01-12'
 ORDER BY category, id;
 
 -- 3. Bookings waiting for an administrator's decision.
-SELECT passcode, category, name, record_date, time_slot, description
+SELECT passcode, category, name, supervisor_name, project_name, record_date, time_slot, description
 FROM records
 WHERE lower(trim(COALESCE(status, 'Pending'))) = 'pending'
 ORDER BY record_date, id;

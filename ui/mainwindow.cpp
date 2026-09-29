@@ -221,6 +221,8 @@ void MainWindow::setupDynamicUI()
     ui3->nameInput->setMaxLength(160);
     ui3->indexInput->setMaxLength(80);
     ui3->emailInput->setMaxLength(254);
+    ui3->supervisorInput->setMaxLength(160);
+    ui3->projectInput->setMaxLength(200);
     ui3->descriptionInput->setAcceptRichText(false);
     ui3->summaryDateLbl->setWordWrap(true);
     ui3->summaryTimeLbl->setWordWrap(true);
@@ -564,6 +566,7 @@ void MainWindow::cancelCurrentFlow()
     const bool hasDraft =
         isStudentEditFlow || isAdminEditMode || !ui3->nameInput->text().isEmpty() ||
         !ui3->indexInput->text().isEmpty() || !ui3->emailInput->text().isEmpty() ||
+        !ui3->supervisorInput->text().isEmpty() || !ui3->projectInput->text().isEmpty() ||
         !ui3->descriptionInput->toPlainText().isEmpty();
     if (hasDraft &&
         CustomAlertDialog("Discard changes", "Leave this booking and discard unsaved changes?",
@@ -751,6 +754,8 @@ void MainWindow::clearUI()
     ui3->indexInput->clear();
     ui3->deptInput->setCurrentIndex(0);
     ui3->emailInput->clear();
+    ui3->supervisorInput->clear();
+    ui3->projectInput->clear();
     ui3->descriptionInput->clear();
     setTimeSlotsInUI(QString());
 }
@@ -780,6 +785,8 @@ void MainWindow::loadRecordIntoUI(const StudentRecord &record)
     ui3->deptInput->setCurrentIndex(0);
     ui3->deptInput->setCurrentText(record.getDepartment());
     ui3->emailInput->setText(record.getEmail());
+    ui3->supervisorInput->setText(record.getSupervisorName());
+    ui3->projectInput->setText(record.getProjectName());
     ui3->descriptionInput->setPlainText(record.getDescription());
     ui3->summaryDateLbl->setText(workshopTitle(currentCategory) + "  |  " +
                                  date.toString("dddd, d MMMM yyyy"));
@@ -809,6 +816,8 @@ StudentRecord MainWindow::readFormRecord()
     record.setIndexNo(ui3->indexInput->text().trimmed());
     record.setDepartment(ui3->deptInput->currentText());
     record.setEmail(ui3->emailInput->text().trimmed());
+    record.setSupervisorName(ui3->supervisorInput->text().trimmed());
+    record.setProjectName(ui3->projectInput->text().trimmed());
     record.setCategory(currentCategory);
     record.setWorkshopId(currentWorkshopId);
     record.setRecordDate(ui2->calendar->selectedDate().toString(Qt::ISODate));
@@ -842,6 +851,12 @@ bool MainWindow::validateForm()
         break;
     case BookingRules::Field::Email:
         ui3->emailInput->setFocus();
+        break;
+    case BookingRules::Field::Supervisor:
+        ui3->supervisorInput->setFocus();
+        break;
+    case BookingRules::Field::Project:
+        ui3->projectInput->setFocus();
         break;
     case BookingRules::Field::Schedule:
         ui->stackedWidget->setCurrentIndex(2);

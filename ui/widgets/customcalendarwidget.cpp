@@ -14,6 +14,17 @@ CustomCalendarWidget::CustomCalendarWidget(QWidget *parent) : QCalendarWidget(pa
     setGridVisible(false);
     setMinimumSize(320, 240);
     setAccessibleName(tr("Booking calendar"));
+
+    // The day bar is the strip of weekday names above the dates. Qt paints it
+    // with the "header text format", so changing that format recolours the bar.
+    // Qt always draws the Saturday and Sunday names in red, so the bar stays a
+    // light colour to keep those two names readable. Change these three lines
+    // to use a different colour.
+    QTextCharFormat dayBar;
+    dayBar.setBackground(QColor("#DBEAFE")); // light blue strip above the dates
+    dayBar.setForeground(QColor("#1E40AF")); // dark blue weekday names
+    dayBar.setFontWeight(QFont::Bold);
+    setHeaderTextFormat(dayBar);
 }
 
 // Stores new counts and asks Qt to redraw every day cell.

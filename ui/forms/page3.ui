@@ -258,6 +258,64 @@
          </property>
         </widget>
        </item>
+       <item row="8" column="0">
+        <widget class="QLabel" name="label_supervisor">
+         <property name="buddy">
+          <cstring>supervisorInput</cstring>
+         </property>
+         <property name="textFormat">
+          <enum>Qt::PlainText</enum>
+         </property>
+         <property name="text">
+          <string>&amp;Supervisor name *</string>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">color: #0F172A; font-weight: bold; font-size: 13px;</string>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="0">
+        <widget class="QLineEdit" name="supervisorInput">
+         <property name="maxLength">
+          <number>254</number>
+         </property>
+         <property name="clearButtonEnabled">
+          <bool>true</bool>
+         </property>
+         <property name="placeholderText">
+          <string>Enter the name of your supervisor</string>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="0">
+        <widget class="QLabel" name="label_project">
+         <property name="buddy">
+          <cstring>projectInput</cstring>
+         </property>
+         <property name="textFormat">
+          <enum>Qt::PlainText</enum>
+         </property>
+         <property name="text">
+          <string>&amp;Project name *</string>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">color: #0F172A; font-weight: bold; font-size: 13px;</string>
+         </property>
+        </widget>
+       </item>
+       <item row="11" column="0">
+        <widget class="QLineEdit" name="projectInput">
+         <property name="maxLength">
+          <number>254</number>
+         </property>
+         <property name="clearButtonEnabled">
+          <bool>true</bool>
+         </property>
+         <property name="placeholderText">
+          <string>Enter the title of your project</string>
+         </property>
+        </widget>
+       </item>
        <item row="0" column="1">
         <widget class="QLabel" name="label_6">
          <property name="buddy">
@@ -274,7 +332,7 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="1" rowspan="7">
+       <item row="1" column="1" rowspan="11">
         <widget class="QTextEdit" name="descriptionInput">
          <property name="minimumSize">
           <size>
@@ -381,6 +439,8 @@
   <tabstop>indexInput</tabstop>
   <tabstop>deptInput</tabstop>
   <tabstop>emailInput</tabstop>
+  <tabstop>supervisorInput</tabstop>
+  <tabstop>projectInput</tabstop>
   <tabstop>descriptionInput</tabstop>
   <tabstop>submitBtn</tabstop>
   <tabstop>updateBtn</tabstop>

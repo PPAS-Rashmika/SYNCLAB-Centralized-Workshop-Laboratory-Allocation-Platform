@@ -25,6 +25,14 @@ BookingRules::Field BookingRules::validate(const StudentRecord &record, bool dep
         return Field::Email;
     }
 
+    // The supervisor and the project are both compulsory.
+    if (record.getSupervisorName().trimmed().isEmpty()) {
+        return Field::Supervisor;
+    }
+    if (record.getProjectName().trimmed().isEmpty()) {
+        return Field::Project;
+    }
+
     // The booking needs a workshop, a date that has not already passed, and at
     // least one time slot.
     const QDate date = QDate::fromString(record.getRecordDate(), Qt::ISODate);
@@ -47,6 +55,10 @@ QString BookingRules::validationMessage(Field field)
         return "Select your department.";
     case Field::Email:
         return "Enter a valid email address.";
+    case Field::Supervisor:
+        return "Enter your supervisor's name.";
+    case Field::Project:
+        return "Enter your project name.";
     case Field::Schedule:
         return "Choose a current or future date and at least one available time slot.";
     case Field::None:

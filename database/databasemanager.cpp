@@ -46,10 +46,11 @@ bool validDate(const QString &value)
 }
 
 // The columns every SELECT below asks for.
-// Important: this order must match the value(0)..value(13) order in readRecord().
+// Important: this order must match the value(0)..value(15) order in readRecord().
 const QString recordColumns =
     "id, workshop_id, name, index_no, department, email, "
-    "record_date, time_slot, description, passcode, created_at, status, admin_remarks, category";
+    "record_date, time_slot, description, passcode, created_at, status, admin_remarks, category, "
+    "supervisor_name, project_name";
 
 // Turn one SQL row into a StudentRecord object.
 StudentRecord readRecord(const QSqlQuery &query)
@@ -69,6 +70,8 @@ StudentRecord readRecord(const QSqlQuery &query)
     record.setStatus(query.value(11).toString());
     record.setAdminRemarks(query.value(12).toString());
     record.setCategory(query.value(13).toString());
+    record.setSupervisorName(query.value(14).toString());
+    record.setProjectName(query.value(15).toString());
     return record;
 }
 } // namespace
@@ -141,8 +144,10 @@ bool SqliteDatabaseManager::validateRecord(const StudentRecord &record)
         return false;
     }
     if (record.getName().trimmed().isEmpty() || record.getIndexNo().trimmed().isEmpty() ||
-        record.getDepartment().trimmed().isEmpty()) {
-        lastError = "Name, index number, and department are required.";
+        record.getDepartment().trimmed().isEmpty() ||
+        record.getSupervisorName().trimmed().isEmpty() ||
+        record.getProjectName().trimmed().isEmpty()) {
+        lastError = "Name, index number, department, supervisor, and project name are required.";
         return false;
     }
 
@@ -173,7 +178,8 @@ bool SqliteDatabaseManager::createTable()
     if (!query.exec("CREATE TABLE IF NOT EXISTS records ("
                     "id INTEGER PRIMARY KEY AUTOINCREMENT, "
                     "workshop_id TEXT, category TEXT, name TEXT, index_no TEXT, "
-                    "department TEXT, email TEXT, record_date TEXT, time_slot TEXT, "
+                    "department TEXT, email TEXT, supervisor_name TEXT, project_name TEXT, "
+                    "record_date TEXT, time_slot TEXT, "
                     "description TEXT, passcode TEXT, created_at TEXT, "
                     "status TEXT DEFAULT 'Pending', admin_remarks TEXT)")) {
         lastError = query.lastError().text();
@@ -200,9 +206,9 @@ bool SqliteDatabaseManager::createTable()
 
     // Add every column that an older database file is missing.
     const QStringList textColumns = {"workshop_id", "category", "name", "index_no",
-                                     "department", "email", "record_date", "time_slot",
-                                     "description", "passcode", "created_at", "status",
-                                     "admin_remarks"};
+                                     "department", "email", "supervisor_name", "project_name",
+                                     "record_date", "time_slot", "description", "passcode",
+                                     "created_at", "status", "admin_remarks"};
     for (const QString &column : textColumns) {
         if (columns.contains(column))
             continue;
@@ -282,9 +288,11 @@ bool SqliteDatabaseManager::addRecord(const StudentRecord &record)
 
     // INSERT the new row.
     query.prepare("INSERT INTO records (workshop_id, category, name, index_no, "
-                  "department, email, record_date, time_slot, description, "
+                  "department, email, supervisor_name, project_name, "
+                  "record_date, time_slot, description, "
                   "passcode, created_at, status, admin_remarks) "
                   "VALUES (:w_id, :category, :name, :index, :dept, :email, "
+                  ":supervisor, :project, "
                   ":date, :time, :desc, :passcode, :created_at, :status, :remarks)");
     query.bindValue(":w_id", record.getWorkshopId());
     query.bindValue(":category", record.getCategory());
@@ -292,6 +300,8 @@ bool SqliteDatabaseManager::addRecord(const StudentRecord &record)
     query.bindValue(":index", record.getIndexNo().trimmed());
     query.bindValue(":dept", record.getDepartment().trimmed());
     query.bindValue(":email", record.getEmail().trimmed());
+    query.bindValue(":supervisor", record.getSupervisorName().trimmed());
+    query.bindValue(":project", record.getProjectName().trimmed());
     query.bindValue(":date", record.getRecordDate());
     query.bindValue(":time", splitSlots(record.getTimeSlots()).join(", "));
     query.bindValue(":desc", record.getDescription());
@@ -351,7 +361,8 @@ bool SqliteDatabaseManager::updateRecord(const StudentRecord &record)
 
     // UPDATE the existing row.
     query.prepare("UPDATE records SET workshop_id=:workshop, category=:category, name=:name, "
-                  "index_no=:index, department=:dept, email=:email, record_date=:date, "
+                  "index_no=:index, department=:dept, email=:email, "
+                  "supervisor_name=:supervisor, project_name=:project, record_date=:date, "
                   "time_slot=:time, description=:desc, status=:status WHERE id=:id");
     query.bindValue(":workshop", record.getWorkshopId());
     query.bindValue(":category", record.getCategory());
@@ -359,6 +370,8 @@ bool SqliteDatabaseManager::updateRecord(const StudentRecord &record)
     query.bindValue(":index", record.getIndexNo().trimmed());
     query.bindValue(":dept", record.getDepartment().trimmed());
     query.bindValue(":email", record.getEmail().trimmed());
+    query.bindValue(":supervisor", record.getSupervisorName().trimmed());
+    query.bindValue(":project", record.getProjectName().trimmed());
     query.bindValue(":date", record.getRecordDate());
     query.bindValue(":time", splitSlots(record.getTimeSlots()).join(", "));
     query.bindValue(":desc", record.getDescription());
