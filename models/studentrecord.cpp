@@ -7,10 +7,6 @@ int StudentRecord::getId() const
 {
     return id;
 }
-QString StudentRecord::getBookingId() const
-{
-    return bookingId;
-}
 QString StudentRecord::getWorkshopId() const
 {
     return workshopId;
@@ -71,10 +67,6 @@ QString StudentRecord::getAdminRemarks() const
 void StudentRecord::setId(int newId)
 {
     id = newId;
-}
-void StudentRecord::setBookingId(const QString &newBookingId)
-{
-    bookingId = newBookingId;
 }
 void StudentRecord::setWorkshopId(const QString &newWorkshopId)
 {

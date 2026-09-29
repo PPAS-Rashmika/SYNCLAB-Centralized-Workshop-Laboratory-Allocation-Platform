@@ -11,7 +11,7 @@ namespace
 {
 // Column order matches readRecord() below.
 const QString recordColumns = QStringLiteral(
-    "id, booking_id, workshop_id, name, index_no, department, email, pdf_path, "
+    "id, workshop_id, name, index_no, department, email, pdf_path, "
     "record_date, time_slot, description, passcode, created_at, status, admin_remarks, category");
 
 // Convert one SQL row into the C++ booking model.
@@ -19,21 +19,20 @@ StudentRecord readRecord(const QSqlQuery &query)
 {
     StudentRecord record;
     record.setId(query.value(0).toInt());
-    record.setBookingId(query.value(1).toString());
-    record.setWorkshopId(query.value(2).toString());
-    record.setName(query.value(3).toString());
-    record.setIndexNo(query.value(4).toString());
-    record.setDepartment(query.value(5).toString());
-    record.setEmail(query.value(6).toString());
-    record.setPdfPath(query.value(7).toString());
-    record.setRecordDate(query.value(8).toString());
-    record.setTimeSlots(query.value(9).toString());
-    record.setDescription(query.value(10).toString());
-    record.setPasscode(query.value(11).toString());
-    record.setCreatedAt(query.value(12).toString());
-    record.setStatus(query.value(13).toString());
-    record.setAdminRemarks(query.value(14).toString());
-    record.setCategory(query.value(15).toString());
+    record.setWorkshopId(query.value(1).toString());
+    record.setName(query.value(2).toString());
+    record.setIndexNo(query.value(3).toString());
+    record.setDepartment(query.value(4).toString());
+    record.setEmail(query.value(5).toString());
+    record.setPdfPath(query.value(6).toString());
+    record.setRecordDate(query.value(7).toString());
+    record.setTimeSlots(query.value(8).toString());
+    record.setDescription(query.value(9).toString());
+    record.setPasscode(query.value(10).toString());
+    record.setCreatedAt(query.value(11).toString());
+    record.setStatus(query.value(12).toString());
+    record.setAdminRemarks(query.value(13).toString());
+    record.setCategory(query.value(14).toString());
     return record;
 }
 } // namespace

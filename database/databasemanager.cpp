@@ -110,7 +110,7 @@ bool SqliteDatabaseManager::createTable()
     if (!query.exec(QStringLiteral(
             "CREATE TABLE IF NOT EXISTS records ("
             "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-            "booking_id TEXT, workshop_id TEXT, category TEXT, name TEXT, index_no TEXT, "
+            "workshop_id TEXT, category TEXT, name TEXT, index_no TEXT, "
             "department TEXT, email TEXT, pdf_path TEXT, record_date TEXT, time_slot TEXT, "
             "description TEXT, passcode TEXT, created_at TEXT, status TEXT DEFAULT 'Pending', "
             "admin_remarks TEXT)"))) {
@@ -136,7 +136,7 @@ bool SqliteDatabaseManager::createTable()
         rollbackWrite();
         return false;
     }
-    const QStringList textColumns = {"booking_id",  "workshop_id", "category",     "name",
+    const QStringList textColumns = {"workshop_id", "category",     "name",
                                      "index_no",    "department",  "email",        "pdf_path",
                                      "record_date", "time_slot",   "description",  "passcode",
                                      "created_at",  "status",      "admin_remarks"};

@@ -113,7 +113,7 @@ class MainWindow : public QMainWindow
     void setTimeSlotsInUI(const QString &timeString);
     void clearUI();
     void loadRecordIntoUI(const StudentRecord &record);
-    QString savePdfFile(const QString &sourcePath, const QString &bookingId);
+    QString savePdfFile(const QString &sourcePath, const QString &allocationKey);
 
     // Booking workflow state and navigation.
     void setFormButtonsMode(bool isEditMode);

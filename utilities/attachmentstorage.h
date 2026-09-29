@@ -7,7 +7,7 @@
 class AttachmentStorage
 {
   public:
-    static QString savePdf(const QString &sourcePath, const QString &bookingId,
+    static QString savePdf(const QString &sourcePath, const QString &allocationKey,
                            const QString &dataDirectory, QString &error);
 };
 

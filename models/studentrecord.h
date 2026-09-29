@@ -9,7 +9,6 @@ class StudentRecord
 {
   private:
     int id;
-    QString bookingId;
     QString workshopId;
     QString category;
     QString name;
@@ -29,7 +28,6 @@ class StudentRecord
     StudentRecord();
 
     int getId() const;
-    QString getBookingId() const;
     QString getWorkshopId() const;
     QString getCategory() const;
     QString getName() const;
@@ -46,7 +44,6 @@ class StudentRecord
     QString getAdminRemarks() const;
 
     void setId(int newId);
-    void setBookingId(const QString &newBookingId);
     void setWorkshopId(const QString &newWorkshopId);
     void setCategory(const QString &newCategory);
     void setName(const QString &newName);

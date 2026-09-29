@@ -6,7 +6,7 @@
 #include <QRegularExpression>
 #include <QSaveFile>
 
-QString AttachmentStorage::savePdf(const QString &sourcePath, const QString &bookingId,
+QString AttachmentStorage::savePdf(const QString &sourcePath, const QString &allocationKey,
                                    const QString &dataDirectory, QString &error)
 {
     error.clear();
@@ -24,7 +24,7 @@ QString AttachmentStorage::savePdf(const QString &sourcePath, const QString &boo
         error = "The attachment folder could not be created.";
         return {};
     }
-    QString safeName = bookingId;
+    QString safeName = allocationKey;
     safeName.replace(QRegularExpression("[^A-Za-z0-9_-]"), "_");
     const QString destination = QDir(folder).filePath(safeName + "-" + token().left(12) + ".pdf");
     QSaveFile output(destination);

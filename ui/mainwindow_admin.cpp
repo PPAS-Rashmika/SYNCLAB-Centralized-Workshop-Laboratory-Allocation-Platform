@@ -219,7 +219,7 @@ void MainWindow::composeStatusEmail(const QString &status)
                            "Dear " + record.getName() + ",\n\nYour booking for " +
                                workshopTitle(currentCategory) + " on " + record.getRecordDate() +
                                " is " + (pending ? "pending approval." : "rejected.") + "\nTime: " +
-                               record.getTimeSlots() + "\nBooking ID: " + record.getBookingId() +
+                               record.getTimeSlots() + "\nAllocation key: " + record.getPasscode() +
                                "\nRemarks: " + record.getAdminRemarks());
         if (pending) {
             QSettings settings(QSettings::defaultFormat(), QSettings::UserScope,

@@ -7,7 +7,6 @@ BEGIN IMMEDIATE;
 
 CREATE TABLE IF NOT EXISTS records (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    booking_id TEXT,
     workshop_id TEXT,
     category TEXT,
     name TEXT,
@@ -30,6 +29,6 @@ CREATE INDEX IF NOT EXISTS records_category_date
 COMMIT;
 
 -- Dates use ISO text: YYYY-MM-DD. Multiple time slots use comma-separated text.
--- The existing application validates required fields and booking IDs in C++.
+-- The existing application validates required fields and allocation keys in C++.
 -- Its transaction checks prevent overlapping active bookings.
 -- The schema is retained to preserve the application's current behavior.

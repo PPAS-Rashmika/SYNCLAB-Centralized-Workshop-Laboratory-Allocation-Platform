@@ -1,8 +1,8 @@
 #include "bookingrules.h"
-#include "apphelpers.h"
 
 #include <QDate>
 #include <QDateTime>
+#include <QRandomGenerator>
 #include <QRegularExpression>
 
 BookingRules::Field BookingRules::validate(const StudentRecord &record, bool departmentSelected)
@@ -51,9 +51,9 @@ QString BookingRules::validationMessage(Field field)
 
 void BookingRules::prepareNewBooking(StudentRecord &record)
 {
-    // A new booking receives its own public ID, allocation key, and creation date.
-    record.setBookingId("BKG-" + token());
-    record.setPasscode(token().left(16));
+    // A new booking receives its own 4-digit allocation key and creation date.
+    const int key = QRandomGenerator::global()->bounded(10000);
+    record.setPasscode(QString::number(key).rightJustified(4, QChar('0')));
     record.setCreatedAt(QDateTime::currentDateTime().toString(Qt::ISODate));
     record.setStatus("Pending");
 }

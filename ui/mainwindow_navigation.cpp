@@ -59,13 +59,13 @@ void MainWindow::startEditBookingFlow()
     if (matches.size() > 1) {
         CustomInputDialog identity(
             "Confirm booking",
-            "This older key matches multiple bookings.\nEnter your booking ID or student index:",
+            "This allocation key matches multiple bookings.\nEnter your student index:",
             this);
         if (identity.exec() != QDialog::Accepted)
             return;
         const QString identifier = identity.getInput();
         for (auto it = matches.begin(); it != matches.end();)
-            if (it->getBookingId() != identifier && it->getIndexNo() != identifier)
+            if (it->getIndexNo() != identifier)
                 it = matches.erase(it);
             else
                 ++it;

@@ -15,15 +15,15 @@ bool SqliteDatabaseManager::addRecord(const StudentRecord &record)
     if (!ensureOpen() || !validateRecord(record))
         return false;
     const QString status = canonicalStatus(record.getStatus());
-    if (record.getBookingId().trimmed().isEmpty() || status.isEmpty()) {
-        lastError = QStringLiteral("A booking ID and a valid booking status are required.");
+    if (record.getPasscode().trimmed().isEmpty() || status.isEmpty()) {
+        lastError = QStringLiteral("An allocation key and a valid booking status are required.");
         return false;
     }
     if (!beginWrite())
         return false;
     QSqlQuery query(db);
-    query.prepare(QStringLiteral("SELECT id FROM records WHERE booking_id = :booking_id LIMIT 1"));
-    query.bindValue(":booking_id", record.getBookingId());
+    query.prepare(QStringLiteral("SELECT id FROM records WHERE passcode = :passcode LIMIT 1"));
+    query.bindValue(":passcode", record.getPasscode());
     if (!query.exec()) {
         lastError = query.lastError().text();
         rollbackWrite();
@@ -33,7 +33,7 @@ bool SqliteDatabaseManager::addRecord(const StudentRecord &record)
     query.finish();
     if (duplicate) {
         lastError =
-            QStringLiteral("This booking ID already exists. Please submit the booking again.");
+            QStringLiteral("This allocation key already exists. Please submit the booking again.");
         rollbackWrite();
         return false;
     }
@@ -43,12 +43,11 @@ bool SqliteDatabaseManager::addRecord(const StudentRecord &record)
         return false;
     }
     query.prepare(
-        QStringLiteral("INSERT INTO records (booking_id, workshop_id, category, name, index_no, "
+        QStringLiteral("INSERT INTO records (workshop_id, category, name, index_no, "
                        "department, email, pdf_path, record_date, time_slot, description, "
                        "passcode, created_at, status, admin_remarks) "
-                       "VALUES (:b_id, :w_id, :category, :name, :index, :dept, :email, :pdf, "
+                       "VALUES (:w_id, :category, :name, :index, :dept, :email, :pdf, "
                        ":date, :time, :desc, :passcode, :created_at, :status, :remarks)"));
-    query.bindValue(":b_id", record.getBookingId());
     query.bindValue(":w_id", record.getWorkshopId());
     query.bindValue(":category", record.getCategory());
     query.bindValue(":name", record.getName().trimmed());

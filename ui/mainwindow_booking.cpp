@@ -116,11 +116,11 @@ bool MainWindow::validateForm()
     return false;
 }
 
-QString MainWindow::savePdfFile(const QString &sourcePath, const QString &bookingId)
+QString MainWindow::savePdfFile(const QString &sourcePath, const QString &allocationKey)
 {
     QString error;
     const QString savedPath =
-        AttachmentStorage::savePdf(sourcePath, bookingId, m_dataDirectory, error);
+        AttachmentStorage::savePdf(sourcePath, allocationKey, m_dataDirectory, error);
     if (!error.isEmpty()) {
         CustomAlertDialog("Attachment unavailable", error, CustomAlertDialog::Error, this).exec();
     }
@@ -134,7 +134,7 @@ void MainWindow::submitData()
     StudentRecord record = readFormRecord();
     BookingRules::prepareNewBooking(record);
     const QString source = ui3->pdfInput->text();
-    const QString pdf = savePdfFile(source, record.getBookingId());
+    const QString pdf = savePdfFile(source, record.getPasscode());
     if (!source.isEmpty() && pdf.isEmpty())
         return;
     record.setPdfPath(pdf);
@@ -146,7 +146,7 @@ void MainWindow::submitData()
     }
     CustomAlertDialog("Booking saved",
                       "Your booking is pending approval.\n\nAllocation key: " +
-                          record.getPasscode() + "\nBooking ID: " + record.getBookingId() +
+                          record.getPasscode() +
                           "\n\nKeep your allocation key to edit this booking.\n" +
                           workshopTitle(currentCategory) + "\n" + record.getRecordDate() + "\n" +
                           record.getTimeSlots(),
@@ -163,7 +163,7 @@ void MainWindow::updateData()
     StudentRecord updated = readFormRecord();
     BookingRules::prepareUpdatedBooking(updated, isStudentEditFlow);
     const QString source = ui3->pdfInput->text();
-    const QString pdf = savePdfFile(source, updated.getBookingId());
+    const QString pdf = savePdfFile(source, updated.getPasscode());
     if (!source.isEmpty() && pdf.isEmpty())
         return;
     updated.setPdfPath(pdf);
