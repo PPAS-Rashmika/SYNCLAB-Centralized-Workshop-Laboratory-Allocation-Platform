@@ -32,6 +32,16 @@ class SqliteDatabaseManager : public IDatabaseManager
 {
 private:
     QSqlDatabase db;
+    QString connectionName;
+    QString lastError;
+
+    bool ensureOpen();
+    bool beginWrite();
+    bool commitWrite();
+    void rollbackWrite();
+    bool validateRecord(const StudentRecord &record);
+
+    Q_DISABLE_COPY(SqliteDatabaseManager)
 
 public:
     SqliteDatabaseManager(const QString &dbName);
