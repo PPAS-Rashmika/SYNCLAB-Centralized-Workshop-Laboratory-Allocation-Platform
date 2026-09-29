@@ -49,6 +49,28 @@ CustomAlertDialog::~CustomAlertDialog()
     delete ui;
 }
 
+// Turns the message into rich text and draws every copy of "text" as a badge,
+// so the student's allocation key stands out in the booking-saved message.
+// The message is escaped first, because a workshop name such as "Electrical
+// Machines & Communications Laboratory" contains an ampersand that rich text
+// would otherwise read as the start of a special character.
+void CustomAlertDialog::highlightText(const QString &text)
+{
+    if (text.isEmpty())
+        return;
+    const QString escapedText = text.toHtmlEscaped();
+    const QString badge = QStringLiteral("<span style=\"background-color:#DBEAFE; color:#1E3A8A;"
+                                         " font-size:20pt; font-weight:bold;\">&nbsp;%1&nbsp;</span>")
+                              .arg(escapedText);
+    // Escaping happens before the badge is inserted, or the badge's own tags
+    // would be escaped too. A newline only breaks a line in rich text as <br>.
+    QString html = ui->messageLbl->text().toHtmlEscaped();
+    html.replace(escapedText, badge);
+    html.replace(QLatin1Char('\n'), QStringLiteral("<br>"));
+    ui->messageLbl->setTextFormat(Qt::RichText);
+    ui->messageLbl->setText(html);
+}
+
 // Keeps the message readable when the dialog is made wider or narrower.
 void CustomAlertDialog::resizeEvent(QResizeEvent *event)
 {

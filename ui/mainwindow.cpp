@@ -880,14 +880,18 @@ void MainWindow::submitData()
         showDatabaseError();
         return;
     }
-    CustomAlertDialog("Booking saved",
-                      "Your booking is pending approval.\n\nAllocation key: " +
-                          record.getPasscode() +
-                          "\n\nKeep your allocation key to edit this booking.\n" +
-                          workshopTitle(currentCategory) + "\n" + record.getRecordDate() + "\n" +
-                          record.getTimeSlots(),
-                      CustomAlertDialog::Info, this)
-        .exec();
+    // The allocation key is the one thing the student must remember, so the
+    // dialog draws it as a highlighted badge instead of leaving it inside a
+    // plain line of text.
+    CustomAlertDialog saved("Booking saved",
+                            "Your booking is pending approval.\n\nAllocation key: " +
+                                record.getPasscode() +
+                                "\n\nKeep your allocation key to edit this booking.\n" +
+                                workshopTitle(currentCategory) + "\n" + record.getRecordDate() +
+                                "\n" + record.getTimeSlots(),
+                            CustomAlertDialog::Info, this);
+    saved.highlightText(record.getPasscode());
+    saved.exec();
     resetFlow();
     ui->stackedWidget->setCurrentIndex(0);
 }

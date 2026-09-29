@@ -1,7 +1,6 @@
 #include "workshopcatalog.h"
 
 #include <QColor>
-#include <QCoreApplication>
 #include <QFont>
 #include <QPainter>
 #include <QRect>
@@ -15,11 +14,11 @@ QStringList workshopCategories()
             "Geotechnical",
             "Surveying",
             "Concrete",
+            "Environment and Water Resources Laboratory",
+            "Highway Laboratory",
             "Physics",
             "Drawing Office",
             "Manufacturing",
-            "Environment and Water Resources Laboratory",
-            "Highway Laboratory",
             "Structures Laboratory",
             "Electrical Machines & Communications Laboratory",
             "Measurement Laboratory"};
@@ -43,7 +42,7 @@ QString workshopDepartment(const QString &category)
         return QString();
     if (index < 4)
         return "Department of Nano Science Technology";
-    if (index < 7 || (index >= 10 && index <= 12))
+    if (index <= 8)
         return "Department of Construction Technology";
     if (index >= 13)
         return "Department of Electrotechnology";
@@ -52,10 +51,9 @@ QString workshopDepartment(const QString &category)
 
 QPixmap workshopImage(const QString &category, const QSize &size)
 {
-    // First look for a picture that was supplied with the program.
-    const QString file =
-        QCoreApplication::applicationDirPath() + "/assets/" + category.toLower() + ".png";
-    QPixmap supplied(file);
+    // The workshop pictures are compiled into the program from the resources
+    // folder (see resources/images.qrc), so they are found from any directory.
+    const QPixmap supplied(QString(":/workshops/%1.png").arg(category));
     if (!supplied.isNull())
         return supplied.scaled(size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 

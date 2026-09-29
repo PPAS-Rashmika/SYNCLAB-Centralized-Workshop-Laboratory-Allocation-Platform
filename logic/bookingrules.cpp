@@ -48,7 +48,7 @@ QString BookingRules::validationMessage(Field field)
 {
     switch (field) {
     case Field::Name:
-        return "Enter your full name.";
+        return "Enter your name.";
     case Field::Index:
         return "Enter your student index.";
     case Field::Department:

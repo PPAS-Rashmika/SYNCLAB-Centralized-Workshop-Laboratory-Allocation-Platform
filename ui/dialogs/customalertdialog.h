@@ -20,6 +20,9 @@ class CustomAlertDialog : public QDialog
                                QWidget *parent = nullptr);
     ~CustomAlertDialog();
 
+    // Draws every copy of "text" inside the message as a highlighted badge.
+    void highlightText(const QString &text);
+
   protected:
     void resizeEvent(QResizeEvent *event) override;
 

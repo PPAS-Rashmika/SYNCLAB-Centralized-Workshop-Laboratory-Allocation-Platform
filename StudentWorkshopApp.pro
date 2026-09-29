@@ -10,6 +10,11 @@ CONFIG += c++17
 TEMPLATE = app
 TARGET = StudentWorkshopApp
 
+# The build tells the program which folder these source files live in, so the
+# program can keep all of its input data in a "data" subfolder beside them,
+# no matter which directory the finished exe is started from.
+DEFINES += "\"SOURCE_DIR=\\\"$$PWD\\\"\""
+
 # Every folder is listed here so that a source file can write
 # #include "studentrecord.h" instead of a long relative path.
 INCLUDEPATH += \
@@ -67,6 +72,10 @@ FORMS += \
     ui/forms/custominputdialog.ui \
     ui/forms/adminsettingsdialog.ui \
     ui/forms/systemsettingsdialog.ui
+
+# The workshop pictures. The rcc tool compiles them into the exe, so the
+# program finds them from any folder; workshopImage() loads them by category.
+RESOURCES += resources/images.qrc
 
 # Files kept with the project but not compiled. The SQL files are for reference;
 # the program creates its own tables when it first runs. CODE_GUIDE.md explains
