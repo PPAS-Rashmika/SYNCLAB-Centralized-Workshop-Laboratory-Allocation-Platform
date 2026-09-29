@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Page1</class>
+ <widget class="QWidget" name="page1Widget">
+  <layout class="QVBoxLayout" name="verticalLayout_page1" stretch="0,0,1,0">
+   <property name="spacing"><number>16</number></property>
+   <property name="leftMargin"><number>24</number></property>
+   <property name="topMargin"><number>24</number></property>
+   <property name="rightMargin"><number>24</number></property>
+   <property name="bottomMargin"><number>24</number></property>
+   <item>
+    <layout class="QHBoxLayout" name="topBarLayout">
+     <item><widget class="QPushButton" name="backTo0Btn"><property name="text"><string>← Home</string></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="minimumSize"><size><width>0</width><height>40</height></size></property></widget></item>
+     <item><spacer name="hs1"><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer></item>
+     <item><widget class="QLabel" name="selectTitleLabel"><property name="text"><string>Choose a workshop</string></property><property name="wordWrap"><bool>true</bool></property><property name="alignment"><set>Qt::AlignRight|Qt::AlignVCenter</set></property><property name="styleSheet"><string notr="true">font-size: 26px; font-weight: bold;</string></property></widget></item>
+    </layout>
+   </item>
+   <item><widget class="QLabel" name="selectionHintLabel"><property name="text"><string>Step 1 of 3 · Select a laboratory or workshop, then continue to choose your time.</string></property><property name="wordWrap"><bool>true</bool></property></widget></item>
+   <item>
+    <widget class="QScrollArea" name="cardsScrollArea">
+     <property name="frameShape"><enum>QFrame::NoFrame</enum></property>
+     <property name="widgetResizable"><bool>true</bool></property>
+     <widget class="QWidget" name="cardsScrollContents">
+      <layout class="QGridLayout" name="cardsLayout">
+       <property name="leftMargin"><number>4</number></property>
+       <property name="topMargin"><number>4</number></property>
+       <property name="rightMargin"><number>4</number></property>
+       <property name="bottomMargin"><number>4</number></property>
+       <property name="horizontalSpacing"><number>16</number></property>
+       <property name="verticalSpacing"><number>16</number></property>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+   <item><widget class="QPushButton" name="nextBtn"><property name="text"><string>Continue to date &amp;&amp; time →</string></property><property name="minimumSize"><size><width>0</width><height>48</height></size></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property></widget></item>
+  </layout>
+ </widget>
+ <tabstops><tabstop>backTo0Btn</tabstop><tabstop>cardsScrollArea</tabstop><tabstop>nextBtn</tabstop></tabstops>
+</ui>
