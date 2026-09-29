@@ -20,8 +20,6 @@
 #include <QComboBox>
 #include <QDesktopServices>
 #include <QDir>
-#include <QFile>
-#include <QFileDialog>
 #include <QFileInfo>
 #include <QHeaderView>
 #include <QLabel>
@@ -76,7 +74,6 @@ MainWindow::MainWindow(QWidget *parent, const QString &databasePath)
 
     // Open the SQLite database and make sure the table exists.
     const QString path = databasePath.isEmpty() ? defaultDatabasePath() : databasePath;
-    dataDirectory = QFileInfo(path).absolutePath();
     dbManager = new SqliteDatabaseManager(path);
     databaseReady = dbManager->createTable();
 
@@ -111,21 +108,6 @@ MainWindow::MainWindow(QWidget *parent, const QString &databasePath)
     connect(ui4->adminCalendar, &QCalendarWidget::clicked, this, &MainWindow::adminFilterByDate);
     connect(ui4->mainTable, &QTableWidget::itemSelectionChanged, this,
             &MainWindow::refreshAdminActions);
-
-    // "Browse" lets the student choose a PDF to attach.
-    connect(ui3->browsePdfBtn, &QPushButton::clicked, this, [this] {
-        const QString path = QFileDialog::getOpenFileName(this, "Attach a PDF document", {},
-                                                          "PDF documents (*.pdf)");
-        if (!path.isEmpty())
-            ui3->pdfInput->setText(path);
-    });
-
-    // This button does not exist in Designer, so it is created here.
-    auto *removePdf = new QPushButton("Remove", page3Widget);
-    removePdf->setObjectName("removePdfBtn");
-    removePdf->setToolTip("Remove this booking's attachment");
-    ui3->pdfLayout->addWidget(removePdf);
-    connect(removePdf, &QPushButton::clicked, ui3->pdfInput, &QLineEdit::clear);
 
     // Administrator: open the selected booking in the form.
     connect(ui4->adminEditBtn, &QPushButton::clicked, this, [this] {
@@ -168,20 +150,6 @@ MainWindow::MainWindow(QWidget *parent, const QString &databasePath)
             [this] { composeStatusEmail("Pending"); });
     connect(ui4->rejectEmailBtn, &QPushButton::clicked, this,
             [this] { composeStatusEmail("Reject"); });
-
-    // Double-clicking the PDF column opens the attachment.
-    connect(ui4->mainTable, &QTableWidget::cellDoubleClicked, this, [this](int row, int column) {
-        if (column != 6)
-            return;
-        const QString path = ui4->mainTable->item(row, column)->data(Qt::UserRole).toString();
-        if (path.isEmpty())
-            return;
-        if (!QFileInfo::exists(path) || !QDesktopServices::openUrl(QUrl::fromLocalFile(path)))
-            CustomAlertDialog("Cannot open attachment",
-                              "The PDF is missing or no PDF viewer is available.",
-                              CustomAlertDialog::Error, this)
-                .exec();
-    });
 
     auto *printButton = new QPushButton("Print list", page4Widget);
     printButton->setObjectName("printRecordsBtn");
@@ -229,13 +197,13 @@ void MainWindow::setupDynamicUI()
     ui2->calendar->setVerticalHeaderFormat(QCalendarWidget::NoVerticalHeader);
     ui4->adminCalendar->setVerticalHeaderFormat(QCalendarWidget::NoVerticalHeader);
 
-    // The administrator table has twelve columns.
-    ui4->mainTable->setColumnCount(12);
+    // The administrator table has eleven columns.
+    ui4->mainTable->setColumnCount(11);
     ui4->mainTable->setHorizontalHeaderLabels({"ALLOCATION KEY", "CREATED", "INDEX", "NAME",
-                                               "DEPARTMENT", "EMAIL", "PDF", "BOOKING DATE",
+                                               "DEPARTMENT", "EMAIL", "BOOKING DATE",
                                                "TIME SLOTS", "DESCRIPTION", "REMARKS", "STATUS"});
     ui4->mainTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
-    const QList<int> widths = {155, 150, 100, 150, 200, 200, 145, 120, 210, 200, 190, 130};
+    const QList<int> widths = {155, 150, 100, 150, 200, 200, 120, 210, 200, 190, 130};
     for (int i = 0; i < widths.size(); ++i)
         ui4->mainTable->setColumnWidth(i, widths[i]);
     ui4->mainTable->horizontalHeader()->setStretchLastSection(true);
@@ -596,7 +564,7 @@ void MainWindow::cancelCurrentFlow()
     const bool hasDraft =
         isStudentEditFlow || isAdminEditMode || !ui3->nameInput->text().isEmpty() ||
         !ui3->indexInput->text().isEmpty() || !ui3->emailInput->text().isEmpty() ||
-        !ui3->descriptionInput->toPlainText().isEmpty() || !ui3->pdfInput->text().isEmpty();
+        !ui3->descriptionInput->toPlainText().isEmpty();
     if (hasDraft &&
         CustomAlertDialog("Discard changes", "Leave this booking and discard unsaved changes?",
                           CustomAlertDialog::Question, this)
@@ -783,7 +751,6 @@ void MainWindow::clearUI()
     ui3->indexInput->clear();
     ui3->deptInput->setCurrentIndex(0);
     ui3->emailInput->clear();
-    ui3->pdfInput->clear();
     ui3->descriptionInput->clear();
     setTimeSlotsInUI(QString());
 }
@@ -813,7 +780,6 @@ void MainWindow::loadRecordIntoUI(const StudentRecord &record)
     ui3->deptInput->setCurrentIndex(0);
     ui3->deptInput->setCurrentText(record.getDepartment());
     ui3->emailInput->setText(record.getEmail());
-    ui3->pdfInput->setText(record.getPdfPath());
     ui3->descriptionInput->setPlainText(record.getDescription());
     ui3->summaryDateLbl->setText(workshopTitle(currentCategory) + "  |  " +
                                  date.toString("dddd, d MMMM yyyy"));
@@ -886,18 +852,6 @@ bool MainWindow::validateForm()
     return false;
 }
 
-// Copies the chosen PDF into the program's own uploads folder.
-QString MainWindow::savePdfFile(const QString &sourcePath, const QString &allocationKey)
-{
-    QString error;
-    const QString savedPath =
-        savePdfAttachment(sourcePath, allocationKey, dataDirectory, error);
-    if (!error.isEmpty()) {
-        CustomAlertDialog("Attachment unavailable", error, CustomAlertDialog::Error, this).exec();
-    }
-    return savedPath;
-}
-
 // "Submit" on the booking form: INSERT a new record.
 void MainWindow::submitData()
 {
@@ -907,15 +861,7 @@ void MainWindow::submitData()
     // Gives the booking its 4-digit allocation key, a "Pending" status and a
     // creation timestamp.
     BookingRules::prepareNewBooking(record);
-    const QString source = ui3->pdfInput->text();
-    const QString pdf = savePdfFile(source, record.getPasscode());
-    if (!source.isEmpty() && pdf.isEmpty())
-        return;
-    record.setPdfPath(pdf);
     if (!dbManager->addRecord(record)) {
-        // The insert failed, so remove the copied file to avoid orphans.
-        if (!pdf.isEmpty() && pdf != source)
-            QFile::remove(pdf);
         showDatabaseError();
         return;
     }
@@ -938,14 +884,7 @@ void MainWindow::updateData()
         return;
     StudentRecord updated = readFormRecord();
     BookingRules::prepareUpdatedBooking(updated, isStudentEditFlow);
-    const QString source = ui3->pdfInput->text();
-    const QString pdf = savePdfFile(source, updated.getPasscode());
-    if (!source.isEmpty() && pdf.isEmpty())
-        return;
-    updated.setPdfPath(pdf);
     if (!dbManager->updateRecord(updated)) {
-        if (!pdf.isEmpty() && pdf != source)
-            QFile::remove(pdf);
         showDatabaseError();
         return;
     }
@@ -1118,30 +1057,19 @@ void MainWindow::loadAdminData()
     for (int row = 0; row < records.size(); ++row) {
         const StudentRecord record = records[row];
         ui4->mainTable->insertRow(row);
-        const QStringList values = {record.getPasscode(),
-                                    record.getCreatedAt(),
-                                    record.getIndexNo(),
-                                    record.getName(),
-                                    record.getDepartment(),
-                                    record.getEmail(),
-                                    record.getPdfPath().isEmpty()
-                                        ? "No attachment"
-                                        : QFileInfo(record.getPdfPath()).fileName(),
-                                    record.getRecordDate(),
-                                    record.getTimeSlots(),
-                                    record.getDescription(),
-                                    record.getAdminRemarks(),
+        const QStringList values = {record.getPasscode(),   record.getCreatedAt(),
+                                    record.getIndexNo(),    record.getName(),
+                                    record.getDepartment(), record.getEmail(),
+                                    record.getRecordDate(), record.getTimeSlots(),
+                                    record.getDescription(), record.getAdminRemarks(),
                                     record.getStatus()};
         for (int column = 0; column < values.size(); ++column) {
             auto *item = new QTableWidgetItem(values[column]);
             item->setToolTip(values[column]);
             ui4->mainTable->setItem(row, column, item);
         }
-        // The real database id and the PDF path are hidden inside the cells.
+        // The real database id is hidden inside the first cell.
         ui4->mainTable->item(row, 0)->setData(Qt::UserRole, record.getId());
-        ui4->mainTable->item(row, 6)->setData(Qt::UserRole, record.getPdfPath());
-        ui4->mainTable->item(row, 6)->setToolTip(
-            record.getPdfPath().isEmpty() ? "No PDF attached" : "Double-click to open the PDF");
 
         // Remarks can be typed straight into the table.
         auto *remarks = new QLineEdit(record.getAdminRemarks());
@@ -1158,7 +1086,7 @@ void MainWindow::loadAdminData()
                 remarks->setProperty("savedText", remarks->text());
             }
         });
-        ui4->mainTable->setCellWidget(row, 10, remarks);
+        ui4->mainTable->setCellWidget(row, 9, remarks);
 
         // The status drop-down writes to the database as soon as it changes.
         auto *status = new QComboBox();
@@ -1179,7 +1107,7 @@ void MainWindow::loadAdminData()
                     updateCalendarHighlights();
                     updateAdminCalendarHighlights();
                 });
-        ui4->mainTable->setCellWidget(row, 11, status);
+        ui4->mainTable->setCellWidget(row, 10, status);
     }
     ui4->adminWsDescLbl->setText(
         workshopDepartment(currentCategory) + "\n\n" + QString::number(records.size()) +

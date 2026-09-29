@@ -46,9 +46,9 @@ bool validDate(const QString &value)
 }
 
 // The columns every SELECT below asks for.
-// Important: this order must match the value(0)..value(14) order in readRecord().
+// Important: this order must match the value(0)..value(13) order in readRecord().
 const QString recordColumns =
-    "id, workshop_id, name, index_no, department, email, pdf_path, "
+    "id, workshop_id, name, index_no, department, email, "
     "record_date, time_slot, description, passcode, created_at, status, admin_remarks, category";
 
 // Turn one SQL row into a StudentRecord object.
@@ -61,15 +61,14 @@ StudentRecord readRecord(const QSqlQuery &query)
     record.setIndexNo(query.value(3).toString());
     record.setDepartment(query.value(4).toString());
     record.setEmail(query.value(5).toString());
-    record.setPdfPath(query.value(6).toString());
-    record.setRecordDate(query.value(7).toString());
-    record.setTimeSlots(query.value(8).toString());
-    record.setDescription(query.value(9).toString());
-    record.setPasscode(query.value(10).toString());
-    record.setCreatedAt(query.value(11).toString());
-    record.setStatus(query.value(12).toString());
-    record.setAdminRemarks(query.value(13).toString());
-    record.setCategory(query.value(14).toString());
+    record.setRecordDate(query.value(6).toString());
+    record.setTimeSlots(query.value(7).toString());
+    record.setDescription(query.value(8).toString());
+    record.setPasscode(query.value(9).toString());
+    record.setCreatedAt(query.value(10).toString());
+    record.setStatus(query.value(11).toString());
+    record.setAdminRemarks(query.value(12).toString());
+    record.setCategory(query.value(13).toString());
     return record;
 }
 } // namespace
@@ -174,7 +173,7 @@ bool SqliteDatabaseManager::createTable()
     if (!query.exec("CREATE TABLE IF NOT EXISTS records ("
                     "id INTEGER PRIMARY KEY AUTOINCREMENT, "
                     "workshop_id TEXT, category TEXT, name TEXT, index_no TEXT, "
-                    "department TEXT, email TEXT, pdf_path TEXT, record_date TEXT, time_slot TEXT, "
+                    "department TEXT, email TEXT, record_date TEXT, time_slot TEXT, "
                     "description TEXT, passcode TEXT, created_at TEXT, "
                     "status TEXT DEFAULT 'Pending', admin_remarks TEXT)")) {
         lastError = query.lastError().text();
@@ -200,11 +199,10 @@ bool SqliteDatabaseManager::createTable()
     }
 
     // Add every column that an older database file is missing.
-    const QStringList textColumns = {"workshop_id", "category",    "name",
-                                     "index_no",    "department",  "email",
-                                     "pdf_path",    "record_date", "time_slot",
-                                     "description", "passcode",    "created_at",
-                                     "status",      "admin_remarks"};
+    const QStringList textColumns = {"workshop_id", "category", "name", "index_no",
+                                     "department", "email", "record_date", "time_slot",
+                                     "description", "passcode", "created_at", "status",
+                                     "admin_remarks"};
     for (const QString &column : textColumns) {
         if (columns.contains(column))
             continue;
@@ -284,9 +282,9 @@ bool SqliteDatabaseManager::addRecord(const StudentRecord &record)
 
     // INSERT the new row.
     query.prepare("INSERT INTO records (workshop_id, category, name, index_no, "
-                  "department, email, pdf_path, record_date, time_slot, description, "
+                  "department, email, record_date, time_slot, description, "
                   "passcode, created_at, status, admin_remarks) "
-                  "VALUES (:w_id, :category, :name, :index, :dept, :email, :pdf, "
+                  "VALUES (:w_id, :category, :name, :index, :dept, :email, "
                   ":date, :time, :desc, :passcode, :created_at, :status, :remarks)");
     query.bindValue(":w_id", record.getWorkshopId());
     query.bindValue(":category", record.getCategory());
@@ -294,7 +292,6 @@ bool SqliteDatabaseManager::addRecord(const StudentRecord &record)
     query.bindValue(":index", record.getIndexNo().trimmed());
     query.bindValue(":dept", record.getDepartment().trimmed());
     query.bindValue(":email", record.getEmail().trimmed());
-    query.bindValue(":pdf", record.getPdfPath());
     query.bindValue(":date", record.getRecordDate());
     query.bindValue(":time", splitSlots(record.getTimeSlots()).join(", "));
     query.bindValue(":desc", record.getDescription());
@@ -354,16 +351,14 @@ bool SqliteDatabaseManager::updateRecord(const StudentRecord &record)
 
     // UPDATE the existing row.
     query.prepare("UPDATE records SET workshop_id=:workshop, category=:category, name=:name, "
-                  "index_no=:index, department=:dept, email=:email, pdf_path=:pdf, "
-                  "record_date=:date, time_slot=:time, description=:desc, status=:status "
-                  "WHERE id=:id");
+                  "index_no=:index, department=:dept, email=:email, record_date=:date, "
+                  "time_slot=:time, description=:desc, status=:status WHERE id=:id");
     query.bindValue(":workshop", record.getWorkshopId());
     query.bindValue(":category", record.getCategory());
     query.bindValue(":name", record.getName().trimmed());
     query.bindValue(":index", record.getIndexNo().trimmed());
     query.bindValue(":dept", record.getDepartment().trimmed());
     query.bindValue(":email", record.getEmail().trimmed());
-    query.bindValue(":pdf", record.getPdfPath());
     query.bindValue(":date", record.getRecordDate());
     query.bindValue(":time", splitSlots(record.getTimeSlots()).join(", "));
     query.bindValue(":desc", record.getDescription());

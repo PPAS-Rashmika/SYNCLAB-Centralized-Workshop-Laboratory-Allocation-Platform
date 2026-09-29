@@ -101,7 +101,6 @@ class MainWindow : public QMainWindow
     StudentRecord readFormRecord();
     bool validateForm();
     bool checkPasscode();
-    QString savePdfFile(const QString &sourcePath, const QString &allocationKey);
 
     // ---- The five pages built by Qt Designer ----
     Ui::MainWindow *ui; // the outer window
@@ -122,7 +121,6 @@ class MainWindow : public QMainWindow
     // which database is being used, it just calls the interface functions.
     IDatabaseManager *dbManager = nullptr;
     bool databaseReady = false;
-    QString dataDirectory; // folder that holds the database file and the PDF uploads
 
     // ---- What the user is doing right now ----
     QString currentCategory;   // the workshop being booked

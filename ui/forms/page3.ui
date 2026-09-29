@@ -258,58 +258,6 @@
          </property>
         </widget>
        </item>
-       <item row="8" column="0">
-        <widget class="QLabel" name="label_pdf">
-         <property name="buddy">
-          <cstring>browsePdfBtn</cstring>
-         </property>
-         <property name="textFormat">
-          <enum>Qt::PlainText</enum>
-         </property>
-         <property name="text">
-          <string>Attach &amp;PDF (optional)</string>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">color: #0F172A; font-weight: bold; font-size: 13px;</string>
-         </property>
-        </widget>
-       </item>
-       <item row="9" column="0">
-        <layout class="QHBoxLayout" name="pdfLayout">
-         <property name="spacing">
-          <number>10</number>
-         </property>
-         <item>
-          <widget class="QLineEdit" name="pdfInput">
-           <property name="readOnly">
-            <bool>true</bool>
-           </property>
-           <property name="placeholderText">
-            <string>Select a PDF file...</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="browsePdfBtn">
-           <property name="text">
-            <string>Browse File</string>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>42</height>
-            </size>
-           </property>
-           <property name="cursor">
-            <cursorShape>PointingHandCursor</cursorShape>
-           </property>
-           <property name="styleSheet">
-            <string notr="true">QPushButton { background-color: #E2E8F0; color: #0F172A; border-radius: 6px; font-weight: bold; border: 1px solid #CBD5E1; padding: 0 15px; } QPushButton:hover { background-color: #CBD5E1; border: 1px solid #94A3B8; }</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
        <item row="0" column="1">
         <widget class="QLabel" name="label_6">
          <property name="buddy">
@@ -326,7 +274,7 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="1" rowspan="9">
+       <item row="1" column="1" rowspan="7">
         <widget class="QTextEdit" name="descriptionInput">
          <property name="minimumSize">
           <size>
@@ -433,7 +381,6 @@
   <tabstop>indexInput</tabstop>
   <tabstop>deptInput</tabstop>
   <tabstop>emailInput</tabstop>
-  <tabstop>browsePdfBtn</tabstop>
   <tabstop>descriptionInput</tabstop>
   <tabstop>submitBtn</tabstop>
   <tabstop>updateBtn</tabstop>
