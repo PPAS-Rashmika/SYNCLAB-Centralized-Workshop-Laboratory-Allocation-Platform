@@ -1,5 +1,8 @@
 <!DOCTYPE RCC>
 <RCC version="1.0">
+    <qresource prefix="/branding">
+        <file>logo.png</file>
+    </qresource>
     <!-- The picture for each workshop, in the same order as workshopCategories().
          The rcc tool compiles these files into the exe under :/workshops/. -->
     <qresource prefix="/workshops">

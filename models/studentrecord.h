@@ -3,7 +3,7 @@
 
 #include <QString>
 
-// StudentRecord is the data class for one booking.
+// StudentRecord is the data class for one allocation.
 //
 // ENCAPSULATION: every piece of data below is declared 'private', so no other
 // class can read or change it directly. The only way in is through the small
@@ -17,7 +17,7 @@ class StudentRecord
 {
   public:
     // Constructor.
-    // A brand new booking has no database row id yet (-1) and starts as
+    // A brand new allocation has no database row id yet (-1) and starts as
     // "Pending" until an administrator approves or rejects it.
     StudentRecord() : id(-1), status("Pending") {}
 
@@ -66,12 +66,12 @@ class StudentRecord
     QString department;
     QString email;
     QString supervisorName; // the lecturer supervising the project
-    QString projectName;    // the project the booking is for
-    QString recordDate;     // the booked date, stored as "yyyy-MM-dd"
+    QString projectName;    // the project the allocation is for
+    QString recordDate;     // the allocated date, stored as "yyyy-MM-dd"
     QString timeSlots;      // one or more slots joined with ", "
     QString description;    // what the student wants to do in the laboratory
     QString passcode;       // the 4-digit allocation key given to the student
-    QString createdAt;      // when the booking was first saved
+    QString createdAt;      // when the allocation was first saved
     QString status;         // "Pending", "Approve" or "Reject"
     QString adminRemarks;   // a note typed by the administrator
 };

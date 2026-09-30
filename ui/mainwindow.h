@@ -39,8 +39,8 @@ class MainWindow : public QMainWindow
 
   private slots:
     // ---- Moving between pages ----
-    void startNewBooking();
-    void startEditBookingFlow();
+    void startNewAllocation();
+    void startEditAllocationFlow();
     void cancelCurrentFlow();
     void onNextClicked();
     void openSecondInterface(const QString &category);
@@ -53,7 +53,7 @@ class MainWindow : public QMainWindow
     void onCalendarSelectionChanged();
     void onTimeSlotClicked();
 
-    // ---- Booking form page ----
+    // ---- Allocation form page ----
     void submitData();
     void updateData();
     void deleteData();
@@ -94,7 +94,7 @@ class MainWindow : public QMainWindow
     void setTimeSlotsInUI(const QString &timeString);
     void updateCalendarHighlights();
 
-    // ---- Booking form ----
+    // ---- Allocation form ----
     void clearUI();
     void setFormButtonsMode(bool isEditMode);
     void loadRecordIntoUI(const StudentRecord &record);
@@ -107,7 +107,7 @@ class MainWindow : public QMainWindow
     Ui::Page0 *ui0;     // welcome page
     Ui::Page1 *ui1;     // choose a workshop
     Ui::Page2 *ui2;     // choose a date and time slots
-    Ui::Page3 *ui3;     // fill in the booking form
+    Ui::Page3 *ui3;     // fill in the allocation form
     Ui::Page4 *ui4;     // administrator page
     QWidget *page0Widget = nullptr;
     QWidget *page1Widget = nullptr;
@@ -123,12 +123,12 @@ class MainWindow : public QMainWindow
     bool databaseReady = false;
 
     // ---- What the user is doing right now ----
-    QString currentCategory;   // the workshop being booked
+    QString currentCategory;   // the workshop being allocated
     QString currentWorkshopId; // kept in the record so old data still matches
     StudentRecord currentRecord;
     bool isPasscodeBypassed = false; // true once the allocation key has been accepted
     bool isAdminEditMode = false;    // true when the administrator opened the form
-    bool isStudentEditFlow = false;  // true when a student opened their own booking
+    bool isStudentEditFlow = false;  // true when a student opened their own allocation
 
     // ---- Workshop cards on page 1 ----
     QList<QFrame *> cardFrames;
@@ -142,7 +142,7 @@ class MainWindow : public QMainWindow
     QStringList timeSlotValues;
 
     // ---- Administrator page ----
-    QDate adminFilterDate; // invalid date means "show every booking"
+    QDate adminFilterDate; // invalid date means "show every allocation"
 
     // ---- Appearance ----
     bool isDarkTheme = false;

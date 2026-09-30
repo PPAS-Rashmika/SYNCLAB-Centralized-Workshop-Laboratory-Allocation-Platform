@@ -13,7 +13,7 @@ CustomCalendarWidget::CustomCalendarWidget(QWidget *parent) : QCalendarWidget(pa
     setFirstDayOfWeek(Qt::Monday);
     setGridVisible(false);
     setMinimumSize(320, 240);
-    setAccessibleName(tr("Booking calendar"));
+    setAccessibleName(tr("Allocation calendar"));
 
     // The day bar is the strip of weekday names above the dates. Qt paints it
     // with the "header text format", so changing that format recolours the bar.

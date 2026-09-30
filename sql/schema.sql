@@ -31,5 +31,5 @@ COMMIT;
 
 -- Dates use ISO text: YYYY-MM-DD. Multiple time slots use comma-separated text.
 -- The existing application validates required fields and allocation keys in C++.
--- Its transaction checks prevent overlapping active bookings.
+-- Its transaction checks prevent overlapping active allocations.
 -- The schema is retained to preserve the application's current behavior.

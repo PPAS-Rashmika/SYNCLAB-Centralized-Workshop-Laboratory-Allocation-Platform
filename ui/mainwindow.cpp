@@ -4,7 +4,7 @@
 //   2. Appearance            (theme, workshop cards, window resizing)
 //   3. Moving between pages
 //   4. Date and time page
-//   5. Booking form page
+//   5. Allocation form page
 //   6. Administrator page    (table, email drafts, printing, settings)
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -16,16 +16,18 @@
 #include "customdialogs.h"
 #include "workshopcatalog.h"
 #include "filestorage.h"
-#include "bookingrules.h"
+#include "allocationrules.h"
 #include <QComboBox>
 #include <QDesktopServices>
 #include <QDir>
 #include <QFileInfo>
 #include <QHeaderView>
+#include <QIcon>
 #include <QLabel>
 #include <QLineEdit>
 #include <QMap>
 #include <QPalette>
+#include <QPixmap>
 #include <QPrintDialog>
 #include <QPrinter>
 #include <QPushButton>
@@ -69,8 +71,8 @@ MainWindow::MainWindow(QWidget *parent, const QString &databasePath)
     ui4->setupUi(page4Widget);
     ui->stackedWidget->addWidget(page4Widget);
 
-    setWindowTitle("SYNCLAB | Workshop & Laboratory Bookings");
-    setWindowIcon(QIcon(workshopImage("SYNCLAB", QSize(64, 64))));
+    setWindowTitle("SYNCLAB | Centralized Workshop & Laboratory Allocation Platform");
+    setWindowIcon(QIcon(":/branding/logo.png"));
 
     // Open the SQLite database and make sure the table exists.
     const QString path = databasePath.isEmpty() ? defaultDatabasePath() : databasePath;
@@ -85,8 +87,8 @@ MainWindow::MainWindow(QWidget *parent, const QString &databasePath)
     ui->stackedWidget->setCurrentIndex(0);
 
     // Connect every button to the function that should run when it is clicked.
-    connect(ui0->allocateNowBtn, &QPushButton::clicked, this, &MainWindow::startNewBooking);
-    connect(ui0->editBookingBtn, &QPushButton::clicked, this, &MainWindow::startEditBookingFlow);
+    connect(ui0->allocateNowBtn, &QPushButton::clicked, this, &MainWindow::startNewAllocation);
+    connect(ui0->editAllocationBtn, &QPushButton::clicked, this, &MainWindow::startEditAllocationFlow);
     connect(ui0->settingsBtn0, &QPushButton::clicked, this, &MainWindow::openSystemSettings);
     connect(ui1->backTo0Btn, &QPushButton::clicked, this, &MainWindow::cancelCurrentFlow);
     connect(ui1->nextBtn, &QPushButton::clicked, this, &MainWindow::onNextClicked);
@@ -109,7 +111,7 @@ MainWindow::MainWindow(QWidget *parent, const QString &databasePath)
     connect(ui4->mainTable, &QTableWidget::itemSelectionChanged, this,
             &MainWindow::refreshAdminActions);
 
-    // Administrator: open the selected booking in the form.
+    // Administrator: open the selected allocation in the form.
     connect(ui4->adminEditBtn, &QPushButton::clicked, this, [this] {
         const int row = ui4->mainTable->currentRow();
         if (row < 0)
@@ -128,13 +130,13 @@ MainWindow::MainWindow(QWidget *parent, const QString &databasePath)
         loadAdminData();
     });
 
-    // Administrator: delete the selected booking.
+    // Administrator: delete the selected allocation.
     connect(ui4->adminDelBtn, &QPushButton::clicked, this, [this] {
         const int row = ui4->mainTable->currentRow();
         if (row < 0)
             return;
         const int id = ui4->mainTable->item(row, 0)->data(Qt::UserRole).toInt();
-        if (CustomAlertDialog("Delete booking", "Permanently delete the selected booking?",
+        if (CustomAlertDialog("Delete allocation", "Permanently delete the selected allocation?",
                               CustomAlertDialog::Question, this)
                 .exec() != QDialog::Accepted)
             return;
@@ -156,10 +158,10 @@ MainWindow::MainWindow(QWidget *parent, const QString &databasePath)
     ui4->tableActionsLayout->addWidget(printButton);
     connect(printButton, &QPushButton::clicked, this, &MainWindow::printAllRecords);
 
-    // If the database could not be opened, booking must be switched off.
+    // If the database could not be opened, allocation must be switched off.
     if (!databaseReady) {
         ui0->allocateNowBtn->setEnabled(false);
-        ui0->editBookingBtn->setEnabled(false);
+        ui0->editAllocationBtn->setEnabled(false);
         QTimer::singleShot(0, this, &MainWindow::showDatabaseError);
     }
 }
@@ -181,6 +183,9 @@ MainWindow::~MainWindow()
 void MainWindow::setupDynamicUI()
 {
     ui1->cardsLayout->setAlignment(Qt::AlignTop | Qt::AlignHCenter);
+    // Let the page wallpaper show through the space around the workshop cards.
+    ui1->cardsScrollArea->viewport()->setAutoFillBackground(false);
+    ui1->cardsScrollContents->setAutoFillBackground(false);
 
     // Remember the four time slots and label the four buttons with them.
     timeSlotValues = {"8.30 am - 10.30 am", "10.30 am - 12.30 pm", "1.30 pm - 3.30 pm",
@@ -200,7 +205,7 @@ void MainWindow::setupDynamicUI()
     // The administrator table has eleven columns.
     ui4->mainTable->setColumnCount(11);
     ui4->mainTable->setHorizontalHeaderLabels({"ALLOCATION KEY", "CREATED", "INDEX", "NAME",
-                                               "DEPARTMENT", "EMAIL", "BOOKING DATE",
+                                               "DEPARTMENT", "EMAIL", "ALLOCATION DATE",
                                                "TIME SLOTS", "DESCRIPTION", "REMARKS", "STATUS"});
     ui4->mainTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
     const QList<int> widths = {155, 150, 100, 150, 200, 200, 120, 210, 200, 190, 130};
@@ -234,7 +239,7 @@ void MainWindow::setupDynamicUI()
 void MainWindow::showDatabaseError()
 {
     const QString error = dbManager->getLastError();
-    CustomAlertDialog("Could not save or load booking",
+    CustomAlertDialog("Could not save or load allocation",
                       error.isEmpty() ? "The database is unavailable. Please try again." : error,
                       CustomAlertDialog::Error, this)
         .exec();
@@ -282,9 +287,12 @@ void MainWindow::applyTheme(bool darkMode)
                 "QWidget#page2Widget, QWidget#page3Widget, QWidget#page4Widget { background:%2; }"
                 "QScrollArea { border:none; background:transparent; } QScrollArea > QWidget > "
                 "QWidget { background:%2; }"
+                "QScrollArea#cardsScrollArea > QWidget, QWidget#cardsScrollContents "
+                "{ background:transparent; }"
                 "QLabel { background:transparent; }"
                 "QLabel#welcomeTitle { color:%4; font-size:16px; font-weight:600; }"
-                "QLabel#syncLabTitle { font-size:48px; font-weight:800; }"
+                "QLabel#syncLabTitle { font-size:52px; font-weight:800; }"
+                "QLabel#syncLabSubtitle { font-size:20px; font-weight:600; }"
                 "QLabel#welcomeDesc, QLabel#selectedDescLabel2, QLabel#adminWsDescLbl { color:%4; "
                 "font-size:14px; }"
                 "QLabel#selectTitleLabel, QLabel#selectedNameLabel2, QLabel#confirmTitleLbl, "
@@ -331,7 +339,9 @@ void MainWindow::applyTheme(bool darkMode)
             .arg(text, bg, surface, muted, border, accent, soft,
                  darkMode ? "#FDA4AF" : "#BE123C"));
 
-    ui0->welcomeImg->setPixmap(workshopImage("SYNCLAB", QSize(110, 110)));
+    ui0->welcomeImg->setPixmap(QPixmap(":/branding/logo.png")
+                                   .scaled(QSize(144, 144), Qt::KeepAspectRatio,
+                                           Qt::SmoothTransformation));
 
     // If the user chose a background picture, draw it behind each page.
     QString wallpaper = QSettings(QSettings::defaultFormat(), QSettings::UserScope,
@@ -490,7 +500,7 @@ void MainWindow::resetFlow()
 }
 
 // "Allocate now" on the welcome page.
-void MainWindow::startNewBooking()
+void MainWindow::startNewAllocation()
 {
     if (!databaseReady)
         return;
@@ -499,12 +509,12 @@ void MainWindow::startNewBooking()
     arrangeCards();
 }
 
-// "Edit booking" on the welcome page. The student types the allocation key.
-void MainWindow::startEditBookingFlow()
+// "Edit allocation" on the welcome page. The student types the allocation key.
+void MainWindow::startEditAllocationFlow()
 {
     if (!databaseReady)
         return;
-    CustomInputDialog dialog("Edit booking", "Enter your allocation key:", this);
+    CustomInputDialog dialog("Edit allocation", "Enter your allocation key:", this);
     if (dialog.exec() != QDialog::Accepted)
         return;
     const QString entered = dialog.getInput();
@@ -525,8 +535,8 @@ void MainWindow::startEditBookingFlow()
     // The same key can exist in two workshops, so ask for the index number too.
     if (matches.size() > 1) {
         CustomInputDialog identity(
-            "Confirm booking",
-            "This allocation key matches multiple bookings.\nEnter your student index:", this);
+            "Confirm allocation",
+            "This allocation key matches multiple allocations.\nEnter your student index:", this);
         if (identity.exec() != QDialog::Accepted)
             return;
         const QString identifier = identity.getInput();
@@ -537,8 +547,8 @@ void MainWindow::startEditBookingFlow()
                 ++it;
     }
     if (matches.size() != 1) {
-        CustomAlertDialog("Booking not found",
-                          "The details do not identify a single booking. Check your allocation key "
+        CustomAlertDialog("Allocation not found",
+                          "The details do not identify a single allocation. Check your allocation key "
                           "or contact the administrator.",
                           CustomAlertDialog::Error, this)
             .exec();
@@ -555,12 +565,12 @@ void MainWindow::startEditBookingFlow()
     loadRecordIntoUI(currentRecord);
     selectCard(currentCategory);
     const QDate savedDate = QDate::fromString(currentRecord.getRecordDate(), Qt::ISODate);
-    // Historical bookings must still expose the delete action and editable details.
+    // Historical allocations must still expose the delete action and editable details.
     ui->stackedWidget->setCurrentIndex(savedDate < QDate::currentDate() ? 3 : 1);
     arrangeCards();
 }
 
-// Leaving a booking that has not been saved yet.
+// Leaving a allocation that has not been saved yet.
 void MainWindow::cancelCurrentFlow()
 {
     const bool hasDraft =
@@ -569,7 +579,7 @@ void MainWindow::cancelCurrentFlow()
         !ui3->supervisorInput->text().isEmpty() || !ui3->projectInput->text().isEmpty() ||
         !ui3->descriptionInput->toPlainText().isEmpty();
     if (hasDraft &&
-        CustomAlertDialog("Discard changes", "Leave this booking and discard unsaved changes?",
+        CustomAlertDialog("Discard changes", "Leave this allocation and discard unsaved changes?",
                           CustomAlertDialog::Question, this)
                 .exec() != QDialog::Accepted)
         return;
@@ -639,7 +649,7 @@ void MainWindow::goBackTo1()
     }
 }
 
-// "Back" on the booking form page.
+// "Back" on the allocation form page.
 void MainWindow::goBackTo2()
 {
     ui->stackedWidget->setCurrentIndex(2);
@@ -667,7 +677,7 @@ QStringList MainWindow::getSelectedTimeSlotsList()
     return selectedSlots;
 }
 
-// Ticks the buttons that belong to a saved booking.
+// Ticks the buttons that belong to a saved allocation.
 void MainWindow::setTimeSlotsInUI(const QString &timeString)
 {
     QStringList selectedSlots = timeString.split(',', Qt::SkipEmptyParts);
@@ -686,7 +696,7 @@ void MainWindow::onTimeSlotClicked()
 }
 
 // Runs every time the student picks a different date.
-// Grey slots are the ones already booked by somebody else.
+// Grey slots are the ones already allocated by somebody else.
 void MainWindow::onCalendarSelectionChanged()
 {
     if (currentCategory.isEmpty()) {
@@ -694,14 +704,14 @@ void MainWindow::onCalendarSelectionChanged()
         return;
     }
     const QDate date = ui2->calendar->selectedDate();
-    // The student's own booking is excluded, so editing it does not block itself.
-    const auto booked = dbManager->getBookedTimeSlotsStringList(
+    // The student's own allocation is excluded, so editing it does not block itself.
+    const auto allocated = dbManager->getAllocatedTimeSlotsStringList(
         date.toString(Qt::ISODate), currentCategory, currentRecord.getId());
     const bool queryOk = dbManager->getLastError().isEmpty();
     for (int i = 0; i < timeSlotButtons.size(); ++i) {
         QPushButton *button = timeSlotButtons[i];
         const bool available = queryOk && date >= QDate::currentDate() &&
-                               !booked.contains(timeSlotValues[i]);
+                               !allocated.contains(timeSlotValues[i]);
         button->setEnabled(available);
         if (!available)
             button->setChecked(false);
@@ -712,13 +722,13 @@ void MainWindow::onCalendarSelectionChanged()
     onTimeSlotClicked();
 }
 
-// Draws the small A / P / R badges on the booking calendar.
+// Draws the small A / P / R badges on the allocation calendar.
 void MainWindow::updateCalendarHighlights()
 {
     if (!databaseReady || currentCategory.isEmpty())
         return;
     ui2->calendar->setDateTextFormat(QDate(), QTextCharFormat());
-    // Count how many approved, pending and rejected bookings fall on each date.
+    // Count how many approved, pending and rejected allocations fall on each date.
     QMap<QDate, QMap<QString, int>> counts;
     for (const auto &record : dbManager->getAllRecordsForCategory(currentCategory)) {
         const QDate date = QDate::fromString(record.getRecordDate(), Qt::ISODate);
@@ -744,7 +754,7 @@ void MainWindow::updateAdminCalendarHighlights()
 }
 
 // =====================================================================
-// 5. BOOKING FORM PAGE
+// 5. ALLOCATION FORM PAGE
 // =====================================================================
 
 // Empties every field on the form.
@@ -760,21 +770,21 @@ void MainWindow::clearUI()
     setTimeSlotsInUI(QString());
 }
 
-// Shows either "Submit" (new booking) or "Update" and "Delete" (existing one).
+// Shows either "Submit" (new allocation) or "Update" and "Delete" (existing one).
 void MainWindow::setFormButtonsMode(bool edit)
 {
     ui3->submitBtn->setVisible(!edit);
     ui3->updateBtn->setVisible(edit);
     ui3->deleteBtn->setVisible(edit);
-    ui3->confirmTitleLbl->setText(edit ? "Edit your booking" : "Finalize your booking");
+    ui3->confirmTitleLbl->setText(edit ? "Edit your allocation" : "Finalize your allocation");
 }
 
-// Puts a saved booking back onto the pages so it can be read or changed.
+// Puts a saved allocation back onto the pages so it can be read or changed.
 void MainWindow::loadRecordIntoUI(const StudentRecord &record)
 {
     currentRecord = record;
     const QDate date = QDate::fromString(record.getRecordDate(), Qt::ISODate);
-    // Old bookings remain viewable/deletable, but resubmission requires a current date.
+    // Old allocations remain viewable/deletable, but resubmission requires a current date.
     ui2->calendar->setMinimumDate(
         qMin(date.isValid() ? date : QDate::currentDate(), QDate::currentDate()));
     ui2->calendar->setSelectedDate(date);
@@ -830,52 +840,52 @@ StudentRecord MainWindow::readFormRecord()
 // cursor to the field that needs attention.
 bool MainWindow::validateForm()
 {
-    const BookingRules::Field field =
-        BookingRules::validate(readFormRecord(), ui3->deptInput->currentIndex() > 0);
-    if (field == BookingRules::Field::None) {
+    const AllocationRules::Field field =
+        AllocationRules::validate(readFormRecord(), ui3->deptInput->currentIndex() > 0);
+    if (field == AllocationRules::Field::None) {
         return true;
     }
-    CustomAlertDialog("Check booking details", BookingRules::validationMessage(field),
+    CustomAlertDialog("Check allocation details", AllocationRules::validationMessage(field),
                       CustomAlertDialog::Warning, this)
         .exec();
     // Only the UI controller is responsible for keyboard focus and page changes.
     switch (field) {
-    case BookingRules::Field::Name:
+    case AllocationRules::Field::Name:
         ui3->nameInput->setFocus();
         break;
-    case BookingRules::Field::Index:
+    case AllocationRules::Field::Index:
         ui3->indexInput->setFocus();
         break;
-    case BookingRules::Field::Department:
+    case AllocationRules::Field::Department:
         ui3->deptInput->setFocus();
         break;
-    case BookingRules::Field::Email:
+    case AllocationRules::Field::Email:
         ui3->emailInput->setFocus();
         break;
-    case BookingRules::Field::Supervisor:
+    case AllocationRules::Field::Supervisor:
         ui3->supervisorInput->setFocus();
         break;
-    case BookingRules::Field::Project:
+    case AllocationRules::Field::Project:
         ui3->projectInput->setFocus();
         break;
-    case BookingRules::Field::Schedule:
+    case AllocationRules::Field::Schedule:
         ui->stackedWidget->setCurrentIndex(2);
         break;
-    case BookingRules::Field::None:
+    case AllocationRules::Field::None:
         break;
     }
     return false;
 }
 
-// "Submit" on the booking form: INSERT a new record.
+// "Submit" on the allocation form: INSERT a new record.
 void MainWindow::submitData()
 {
     if (currentRecord.getId() >= 0 || !validateForm())
         return;
     StudentRecord record = readFormRecord();
-    // Gives the booking its 4-digit allocation key, a "Pending" status and a
+    // Gives the allocation its 4-digit allocation key, a "Pending" status and a
     // creation timestamp.
-    BookingRules::prepareNewBooking(record);
+    AllocationRules::prepareNewAllocation(record);
     if (!dbManager->addRecord(record)) {
         showDatabaseError();
         return;
@@ -883,10 +893,10 @@ void MainWindow::submitData()
     // The allocation key is the one thing the student must remember, so the
     // dialog draws it as a highlighted badge instead of leaving it inside a
     // plain line of text.
-    CustomAlertDialog saved("Booking saved",
-                            "Your booking is pending approval.\n\nAllocation key: " +
+    CustomAlertDialog saved("Allocation saved",
+                            "Your allocation is pending approval.\n\nAllocation key: " +
                                 record.getPasscode() +
-                                "\n\nKeep your allocation key to edit this booking.\n" +
+                                "\n\nKeep your allocation key to edit this allocation.\n" +
                                 workshopTitle(currentCategory) + "\n" + record.getRecordDate() +
                                 "\n" + record.getTimeSlots(),
                             CustomAlertDialog::Info, this);
@@ -896,20 +906,20 @@ void MainWindow::submitData()
     ui->stackedWidget->setCurrentIndex(0);
 }
 
-// "Update" on the booking form: UPDATE the existing record.
+// "Update" on the allocation form: UPDATE the existing record.
 void MainWindow::updateData()
 {
     if (currentRecord.getId() < 0 || (!isPasscodeBypassed && !checkPasscode()) || !validateForm())
         return;
     StudentRecord updated = readFormRecord();
-    BookingRules::prepareUpdatedBooking(updated, isStudentEditFlow);
+    AllocationRules::prepareUpdatedAllocation(updated, isStudentEditFlow);
     if (!dbManager->updateRecord(updated)) {
         showDatabaseError();
         return;
     }
-    CustomAlertDialog("Booking updated",
+    CustomAlertDialog("Allocation updated",
                       isStudentEditFlow ? "Your changes have been saved and are pending approval."
-                                        : "Booking changes saved.",
+                                        : "Allocation changes saved.",
                       CustomAlertDialog::Info, this)
         .exec();
     if (isAdminEditMode) {
@@ -925,12 +935,12 @@ void MainWindow::updateData()
     updateCalendarHighlights();
 }
 
-// "Delete" on the booking form: DELETE the record after a yes/no question.
+// "Delete" on the allocation form: DELETE the record after a yes/no question.
 void MainWindow::deleteData()
 {
     if (currentRecord.getId() < 0 || (!isPasscodeBypassed && !checkPasscode()))
         return;
-    if (CustomAlertDialog("Delete booking", "Permanently delete this booking?",
+    if (CustomAlertDialog("Delete allocation", "Permanently delete this allocation?",
                           CustomAlertDialog::Question, this)
             .exec() != QDialog::Accepted)
         return;
@@ -1058,7 +1068,7 @@ void MainWindow::refreshAdminActions()
         button->setEnabled(selected);
 }
 
-// SELECTs the bookings and fills the table with them.
+// SELECTs the allocations and fills the table with them.
 void MainWindow::loadAdminData()
 {
     const QList<StudentRecord> records =
@@ -1130,7 +1140,7 @@ void MainWindow::loadAdminData()
     }
     ui4->adminWsDescLbl->setText(
         workshopDepartment(currentCategory) + "\n\n" + QString::number(records.size()) +
-        (records.size() == 1 ? " booking" : " bookings") +
+        (records.size() == 1 ? " allocation" : " allocations") +
         (adminFilterDate.isValid() ? " on " + adminFilterDate.toString("d MMM yyyy")
                                    : " · All dates"));
     ui4->adminShowAllBtn->setEnabled(adminFilterDate.isValid());
@@ -1161,11 +1171,11 @@ void MainWindow::composeStatusEmail(const QString &status)
         QUrl url("mailto:" + record.getEmail());
         QUrlQuery query;
         const bool pending = status == "Pending";
-        query.addQueryItem("subject", "Workshop booking " +
+        query.addQueryItem("subject", "Workshop allocation " +
                                           QString(pending ? "pending" : "rejected") + ": " +
                                           workshopTitle(currentCategory));
         query.addQueryItem("body",
-                           "Dear " + record.getName() + ",\n\nYour booking for " +
+                           "Dear " + record.getName() + ",\n\nYour allocation for " +
                                workshopTitle(currentCategory) + " on " + record.getRecordDate() +
                                " is " + (pending ? "pending approval." : "rejected.") + "\nTime: " +
                                record.getTimeSlots() + "\nAllocation key: " + record.getPasscode() +
@@ -1190,7 +1200,7 @@ void MainWindow::composeStatusEmail(const QString &status)
         if (!QDesktopServices::openUrl(url))
             CustomAlertDialog(
                 "Email draft unavailable",
-                "The booking status was saved, but no email application could open the draft.",
+                "The allocation status was saved, but no email application could open the draft.",
                 CustomAlertDialog::Warning, this)
                 .exec();
         else
@@ -1200,7 +1210,7 @@ void MainWindow::composeStatusEmail(const QString &status)
     }
 }
 
-// Prints the bookings that are currently listed in the table.
+// Prints the allocations that are currently listed in the table.
 void MainWindow::printAllRecords()
 {
     const auto records = adminFilterDate.isValid()

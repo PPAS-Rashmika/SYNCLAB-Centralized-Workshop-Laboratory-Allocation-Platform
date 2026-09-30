@@ -28,10 +28,10 @@ class SqliteDatabaseManager : public IDatabaseManager
 
     QList<StudentRecord> getRecordsByDateAndCategory(const QString &date,
                                                      const QString &category) override;
-    QList<QDate> getBookedDates(const QString &category) override;
+    QList<QDate> getAllocatedDates(const QString &category) override;
     bool isTimeSlotAvailable(const QString &date, const QString &category,
                              const QStringList &requestedSlots, int excludeRecordId = -1) override;
-    QStringList getBookedTimeSlotsStringList(const QString &date, const QString &category,
+    QStringList getAllocatedTimeSlotsStringList(const QString &date, const QString &category,
                                              int excludeRecordId = -1) override;
     QList<StudentRecord> getAllRecordsForCategory(const QString &category) override;
     QString getLastError() const override;
@@ -44,7 +44,7 @@ class SqliteDatabaseManager : public IDatabaseManager
     bool ensureOpen();                                 // check the connection is usable
     bool beginWrite();                                 // start a transaction
     bool commitWrite();                                // save the transaction
-    bool validateRecord(const StudentRecord &record);  // check one booking before saving
+    bool validateRecord(const StudentRecord &record);  // check one allocation before saving
 };
 
 #endif // DATABASEMANAGER_H

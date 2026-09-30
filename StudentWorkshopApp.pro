@@ -37,7 +37,7 @@ SOURCES += \
     ui/dialogs/dialogtheme.cpp \
     ui/widgets/customcalendarwidget.cpp \
     database/databasemanager.cpp \
-    logic/bookingrules.cpp \
+    logic/allocationrules.cpp \
     utilities/workshopcatalog.cpp \
     utilities/filestorage.cpp
 
@@ -55,7 +55,7 @@ HEADERS += \
     models/studentrecord.h \
     database/idatabasemanager.h \
     database/databasemanager.h \
-    logic/bookingrules.h \
+    logic/allocationrules.h \
     utilities/workshopcatalog.h \
     utilities/filestorage.h
 
@@ -73,7 +73,7 @@ FORMS += \
     ui/forms/adminsettingsdialog.ui \
     ui/forms/systemsettingsdialog.ui
 
-# The workshop pictures. The rcc tool compiles them into the exe, so the
+# The application logo and workshop pictures. The rcc tool compiles them into the exe, so the
 # program finds them from any folder; workshopImage() loads them by category.
 RESOURCES += resources/images.qrc
 

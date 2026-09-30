@@ -41,7 +41,7 @@
       <enum>Qt::PlainText</enum>
      </property>
      <property name="text">
-      <string>Finalize Your Booking</string>
+      <string>Finalize Your Allocation</string>
      </property>
      <property name="styleSheet">
       <string notr="true">font-size: 28px; font-weight: 900; color: #0F172A;</string>
@@ -347,7 +347,7 @@
           <bool>false</bool>
          </property>
          <property name="placeholderText">
-          <string>Describe the purpose of your booking and any equipment you need (optional).</string>
+          <string>Describe the purpose of your allocation and any equipment you need (optional).</string>
          </property>
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -372,7 +372,7 @@
         <bool>false</bool>
        </property>
        <property name="text">
-        <string>Delete Booking</string>
+        <string>Delete Allocation</string>
        </property>
        <property name="minimumSize">
         <size>
@@ -394,7 +394,7 @@
         <bool>false</bool>
        </property>
        <property name="text">
-        <string>Update Booking</string>
+        <string>Update Allocation</string>
        </property>
        <property name="minimumSize">
         <size>
@@ -413,7 +413,7 @@
      <item>
       <widget class="QPushButton" name="submitBtn">
        <property name="text">
-        <string>Confirm Booking</string>
+        <string>Confirm Allocation</string>
        </property>
        <property name="minimumSize">
         <size>

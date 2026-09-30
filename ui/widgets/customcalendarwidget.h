@@ -7,7 +7,7 @@
 #include <QPainter>
 
 // A normal Qt calendar that also draws a small badge on each day showing how
-// many bookings that day has: A = approved, P = pending, R = rejected.
+// many allocations that day has: A = approved, P = pending, R = rejected.
 //
 // INHERITANCE: it is a derived class of QCalendarWidget, so it already behaves
 // like a calendar and we only add what is missing.
@@ -22,7 +22,7 @@ class CustomCalendarWidget : public QCalendarWidget
     // Constructor
     explicit CustomCalendarWidget(QWidget *parent = nullptr);
 
-    // MainWindow calls this with the booking counts for the shown month.
+    // MainWindow calls this with the allocation counts for the shown month.
     void setStatusCounts(const QMap<QDate, QMap<QString, int>> &counts);
 
   protected:

@@ -50,7 +50,7 @@ CustomAlertDialog::~CustomAlertDialog()
 }
 
 // Turns the message into rich text and draws every copy of "text" as a badge,
-// so the student's allocation key stands out in the booking-saved message.
+// so the student's allocation key stands out in the allocation-saved message.
 // The message is escaped first, because a workshop name such as "Electrical
 // Machines & Communications Laboratory" contains an ampersand that rich text
 // would otherwise read as the start of a special character.

@@ -27,11 +27,11 @@ class IDatabaseManager
 
     virtual QList<StudentRecord> getRecordsByDateAndCategory(const QString &date,
                                                              const QString &category) = 0;
-    virtual QList<QDate> getBookedDates(const QString &category) = 0;
+    virtual QList<QDate> getAllocatedDates(const QString &category) = 0;
     virtual bool isTimeSlotAvailable(const QString &date, const QString &category,
                                      const QStringList &requestedSlots,
                                      int excludeRecordId = -1) = 0;
-    virtual QStringList getBookedTimeSlotsStringList(const QString &date, const QString &category,
+    virtual QStringList getAllocatedTimeSlotsStringList(const QString &date, const QString &category,
                                                      int excludeRecordId = -1) = 0;
     virtual QList<StudentRecord> getAllRecordsForCategory(const QString &category) = 0;
     virtual QString getLastError() const = 0;

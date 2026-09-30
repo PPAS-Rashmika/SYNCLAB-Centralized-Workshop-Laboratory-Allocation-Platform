@@ -160,7 +160,7 @@
        <item>
         <widget class="QLabel" name="calendarLegend">
          <property name="text">
-          <string>Booking counts: A = approved · P = pending · R = rejected</string>
+          <string>Allocation counts: A = approved · P = pending · R = rejected</string>
          </property>
          <property name="wordWrap">
           <bool>true</bool>

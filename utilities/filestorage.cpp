@@ -16,7 +16,7 @@ QString defaultDatabasePath()
         return dataPath;
 
     // An older installation kept its database next to the program or in the
-    // user's profile. Keep using that file so no saved booking is lost; it can
+    // user's profile. Keep using that file so no saved allocation is lost; it can
     // simply be moved into the "data" folder.
     for (const QString &folder :
          {QDir::currentPath(), QCoreApplication::applicationDirPath(),

@@ -38,7 +38,7 @@ QString canonicalStatus(const QString &value)
     return QString();
 }
 
-// Booking dates are stored as text in ISO form, for example 2026-09-29.
+// Allocation dates are stored as text in ISO form, for example 2026-09-29.
 bool validDate(const QString &value)
 {
     const QDate date = QDate::fromString(value, Qt::ISODate);
@@ -109,12 +109,12 @@ bool SqliteDatabaseManager::ensureOpen()
         return true;
     lastError = db.lastError().text();
     if (lastError.isEmpty())
-        lastError = "The booking database is not open.";
+        lastError = "The allocation database is not open.";
     return false;
 }
 
 // Start a transaction. A transaction groups a check and its write together,
-// so a booking can never be saved while its time slot is already taken.
+// so an allocation can never be saved while its time slot is already taken.
 bool SqliteDatabaseManager::beginWrite()
 {
     if (!ensureOpen())
@@ -135,12 +135,12 @@ bool SqliteDatabaseManager::commitWrite()
     return false;
 }
 
-// Check a booking before it is written to the database.
+// Check an allocation before it is written to the database.
 bool SqliteDatabaseManager::validateRecord(const StudentRecord &record)
 {
     if (record.getCategory().trimmed().isEmpty() || !validDate(record.getRecordDate()) ||
         splitSlots(record.getTimeSlots()).isEmpty()) {
-        lastError = "Choose a workshop, a valid booking date, and at least one time slot.";
+        lastError = "Choose a workshop, a valid allocation date, and at least one time slot.";
         return false;
     }
     if (record.getName().trimmed().isEmpty() || record.getIndexNo().trimmed().isEmpty() ||
@@ -166,7 +166,7 @@ bool SqliteDatabaseManager::validateRecord(const StudentRecord &record)
 // ---------------------------------------------------------------------------
 
 // Create the records table the first time the program runs.
-// An older database file is also upgraded here, and no existing booking is lost.
+// An older database file is also upgraded here, and no existing allocation is lost.
 bool SqliteDatabaseManager::createTable()
 {
     if (!beginWrite())
@@ -199,7 +199,7 @@ bool SqliteDatabaseManager::createTable()
     query.finish();
 
     if (!columns.contains("id")) {
-        lastError = "The records table has no ID column. Restore a compatible booking database.";
+        lastError = "The records table has no ID column. Restore a compatible allocation database.";
         db.rollback();
         return false;
     }
@@ -245,7 +245,7 @@ bool SqliteDatabaseManager::createTable()
 // Writing: INSERT, UPDATE and DELETE
 // ---------------------------------------------------------------------------
 
-// Insert one new booking.
+// Insert one new allocation.
 bool SqliteDatabaseManager::addRecord(const StudentRecord &record)
 {
     if (!ensureOpen() || !validateRecord(record))
@@ -253,7 +253,7 @@ bool SqliteDatabaseManager::addRecord(const StudentRecord &record)
 
     const QString status = canonicalStatus(record.getStatus());
     if (record.getPasscode().trimmed().isEmpty() || status.isEmpty()) {
-        lastError = "An allocation key and a valid booking status are required.";
+        lastError = "An allocation key and a valid allocation status are required.";
         return false;
     }
     if (!beginWrite())
@@ -273,12 +273,12 @@ bool SqliteDatabaseManager::addRecord(const StudentRecord &record)
     const bool duplicateKey = query.next();
     query.finish();
     if (duplicateKey) {
-        lastError = "This allocation key already exists. Please submit the booking again.";
+        lastError = "This allocation key already exists. Please submit the allocation again.";
         db.rollback();
         return false;
     }
 
-    // A rejected booking does not hold its time slots, so it is not checked.
+    // A rejected allocation does not hold its time slots, so it is not checked.
     if (status != "Reject" &&
         !isTimeSlotAvailable(record.getRecordDate(), record.getCategory(),
                              splitSlots(record.getTimeSlots()))) {
@@ -317,7 +317,7 @@ bool SqliteDatabaseManager::addRecord(const StudentRecord &record)
     return commitWrite();
 }
 
-// Save changes to an existing booking.
+// Save changes to an existing allocation.
 // The allocation key, the created date and the admin remarks are never changed here.
 bool SqliteDatabaseManager::updateRecord(const StudentRecord &record)
 {
@@ -326,7 +326,7 @@ bool SqliteDatabaseManager::updateRecord(const StudentRecord &record)
 
     const QString status = canonicalStatus(record.getStatus());
     if (status.isEmpty()) {
-        lastError = "Choose Pending, Approve, or Reject as the booking status.";
+        lastError = "Choose Pending, Approve, or Reject as the allocation status.";
         return false;
     }
     if (!beginWrite())
@@ -334,7 +334,7 @@ bool SqliteDatabaseManager::updateRecord(const StudentRecord &record)
 
     QSqlQuery query(db);
 
-    // First make sure the booking is still in the database.
+    // First make sure the allocation is still in the database.
     query.prepare("SELECT id FROM records WHERE id = :id");
     query.bindValue(":id", record.getId());
     if (!query.exec()) {
@@ -345,12 +345,12 @@ bool SqliteDatabaseManager::updateRecord(const StudentRecord &record)
     const bool found = query.next();
     query.finish();
     if (!found) {
-        lastError = "The booking no longer exists. Refresh the booking list.";
+        lastError = "The allocation no longer exists. Refresh the allocation list.";
         db.rollback();
         return false;
     }
 
-    // The booking being edited must not block its own time slots,
+    // The allocation being edited must not block its own time slots,
     // so its id is passed in and skipped.
     if (status != "Reject" &&
         !isTimeSlotAvailable(record.getRecordDate(), record.getCategory(),
@@ -385,7 +385,7 @@ bool SqliteDatabaseManager::updateRecord(const StudentRecord &record)
     return commitWrite();
 }
 
-// Delete one booking by its id.
+// Delete one allocation by its id.
 bool SqliteDatabaseManager::deleteRecord(int id)
 {
     if (!ensureOpen())
@@ -399,13 +399,13 @@ bool SqliteDatabaseManager::deleteRecord(int id)
         return false;
     }
     if (query.numRowsAffected() != 1) {
-        lastError = "The booking no longer exists. Refresh the booking list.";
+        lastError = "The allocation no longer exists. Refresh the allocation list.";
         return false;
     }
     return true;
 }
 
-// Change only the status of a booking (Pending, Approve or Reject).
+// Change only the status of an allocation (Pending, Approve or Reject).
 bool SqliteDatabaseManager::updateRecordStatus(int id, const QString &value)
 {
     if (!ensureOpen())
@@ -413,7 +413,7 @@ bool SqliteDatabaseManager::updateRecordStatus(int id, const QString &value)
 
     const QString status = canonicalStatus(value);
     if (status.isEmpty()) {
-        lastError = "Choose Pending, Approve, or Reject as the booking status.";
+        lastError = "Choose Pending, Approve, or Reject as the allocation status.";
         return false;
     }
     if (!beginWrite())
@@ -421,7 +421,7 @@ bool SqliteDatabaseManager::updateRecordStatus(int id, const QString &value)
 
     QSqlQuery query(db);
 
-    // Read the date, workshop and slots of this booking so they can be re-checked.
+    // Read the date, workshop and slots of this allocation so they can be re-checked.
     query.prepare("SELECT record_date, category, time_slot FROM records WHERE id = :id");
     query.bindValue(":id", id);
     if (!query.exec()) {
@@ -430,7 +430,7 @@ bool SqliteDatabaseManager::updateRecordStatus(int id, const QString &value)
         return false;
     }
     if (!query.next()) {
-        lastError = "The booking no longer exists. Refresh the booking list.";
+        lastError = "The allocation no longer exists. Refresh the allocation list.";
         query.finish();
         db.rollback();
         return false;
@@ -440,7 +440,7 @@ bool SqliteDatabaseManager::updateRecordStatus(int id, const QString &value)
     const QStringList slotList = splitSlots(query.value(2).toString());
     query.finish();
 
-    // Approving a booking gives it its slots back, so they must still be free.
+    // Approving an allocation gives it its slots back, so they must still be free.
     if (status != "Reject" && !isTimeSlotAvailable(date, category, slotList, id)) {
         db.rollback();
         return false;
@@ -457,7 +457,7 @@ bool SqliteDatabaseManager::updateRecordStatus(int id, const QString &value)
     return commitWrite();
 }
 
-// Change only the administrator's remark for a booking.
+// Change only the administrator's remark for an allocation.
 bool SqliteDatabaseManager::updateAdminRemarks(int id, const QString &remarks)
 {
     if (!ensureOpen())
@@ -472,7 +472,7 @@ bool SqliteDatabaseManager::updateAdminRemarks(int id, const QString &remarks)
         return false;
     }
     if (query.numRowsAffected() != 1) {
-        lastError = "The booking no longer exists. Refresh the booking list.";
+        lastError = "The allocation no longer exists. Refresh the allocation list.";
         return false;
     }
     return true;
@@ -482,7 +482,7 @@ bool SqliteDatabaseManager::updateAdminRemarks(int id, const QString &remarks)
 // Reading: SELECT
 // ---------------------------------------------------------------------------
 
-// All bookings for one workshop on one date, newest first.
+// All allocations for one workshop on one date, newest first.
 QList<StudentRecord> SqliteDatabaseManager::getRecordsByDateAndCategory(const QString &date,
                                                                         const QString &category)
 {
@@ -505,8 +505,8 @@ QList<StudentRecord> SqliteDatabaseManager::getRecordsByDateAndCategory(const QS
     return records;
 }
 
-// The dates on which a workshop already has bookings that are not rejected.
-QList<QDate> SqliteDatabaseManager::getBookedDates(const QString &category)
+// The dates on which a workshop already has allocations that are not rejected.
+QList<QDate> SqliteDatabaseManager::getAllocatedDates(const QString &category)
 {
     QList<QDate> dates;
     if (!ensureOpen())
@@ -539,25 +539,25 @@ bool SqliteDatabaseManager::isTimeSlotAvailable(const QString &date, const QStri
 
     const QStringList slotList = splitSlots(requestedSlots.join(','));
     if (!validDate(date) || category.trimmed().isEmpty() || slotList.isEmpty()) {
-        lastError = "Choose a workshop, a valid booking date, and at least one time slot.";
+        lastError = "Choose a workshop, a valid allocation date, and at least one time slot.";
         return false;
     }
 
-    const QStringList bookedSlots = getBookedTimeSlotsStringList(date, category, excludeRecordId);
+    const QStringList allocatedSlots = getAllocatedTimeSlotsStringList(date, category, excludeRecordId);
     if (!lastError.isEmpty())
         return false;
 
     for (const QString &slot : slotList) {
-        if (bookedSlots.contains(slot)) {
-            lastError = "The selected time slot is already booked. Choose another time slot.";
+        if (allocatedSlots.contains(slot)) {
+            lastError = "The selected time slot is already allocated. Choose another time slot.";
             return false;
         }
     }
     return true;
 }
 
-// Every slot already booked for one workshop on one date.
-QStringList SqliteDatabaseManager::getBookedTimeSlotsStringList(const QString &date,
+// Every slot already allocated for one workshop on one date.
+QStringList SqliteDatabaseManager::getAllocatedTimeSlotsStringList(const QString &date,
                                                                 const QString &category,
                                                                 int excludeRecordId)
 {
@@ -585,7 +585,7 @@ QStringList SqliteDatabaseManager::getBookedTimeSlotsStringList(const QString &d
     return slotList;
 }
 
-// Every booking of one workshop, most recent date first.
+// Every allocation of one workshop, most recent date first.
 QList<StudentRecord> SqliteDatabaseManager::getAllRecordsForCategory(const QString &category)
 {
     QList<StudentRecord> records;
