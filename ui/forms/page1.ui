@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>page1Widget</class>
  <widget class="QWidget" name="page1Widget">
@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1180</width>
-    <height>650</height>
+    <height>750</height>
    </rect>
   </property>
   <property name="font">
@@ -24,8 +24,8 @@
     <rect>
      <x>24</x>
      <y>24</y>
-     <width>82</width>
-     <height>40</height>
+     <width>111</width>
+     <height>37</height>
     </rect>
    </property>
    <property name="font">
@@ -35,30 +35,21 @@
      <bold>true</bold>
     </font>
    </property>
-   <property name="text">
-    <string>← Home</string>
-   </property>
    <property name="cursor">
     <cursorShape>PointingHandCursor</cursorShape>
+   </property>
+   <property name="text">
+    <string>Home</string>
    </property>
   </widget>
   <widget class="QLabel" name="selectTitleLabel">
    <property name="geometry">
     <rect>
-     <x>927</x>
+     <x>645</x>
      <y>24</y>
-     <width>229</width>
+     <width>511</width>
      <height>40</height>
     </rect>
-   </property>
-   <property name="text">
-    <string>Choose a workshop</string>
-   </property>
-   <property name="wordWrap">
-    <bool>true</bool>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignRight|Qt::AlignVCenter</set>
    </property>
    <property name="font">
     <font>
@@ -66,6 +57,15 @@
      <pointsize>19</pointsize>
      <bold>true</bold>
     </font>
+   </property>
+   <property name="text">
+    <string>Choose a workshop or laboratory </string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+   </property>
+   <property name="wordWrap">
+    <bool>true</bool>
    </property>
   </widget>
   <widget class="QLabel" name="selectionHintLabel">
@@ -88,13 +88,19 @@
    <property name="geometry">
     <rect>
      <x>24</x>
-     <y>113</y>
+     <y>160</y>
      <width>1132</width>
      <height>443</height>
     </rect>
    </property>
    <property name="frameShape">
-    <enum>QFrame::NoFrame</enum>
+    <enum>QFrame::Shape::NoFrame</enum>
+   </property>
+   <property name="verticalScrollBarPolicy">
+    <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
+   </property>
+   <property name="horizontalScrollBarPolicy">
+    <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
    </property>
    <property name="widgetResizable">
     <bool>true</bool>
@@ -117,14 +123,14 @@
        <height>210</height>
       </rect>
      </property>
-     <property name="category" stdset="0">
-      <string>Biochemistry</string>
+     <property name="styleSheet">
+      <string>QFrame#cardFrame01 { background:#FFFFFF; border:2px solid #D4DEEB; border-radius:12px; } QFrame#cardFrame01[selected=&quot;true&quot;] { background:#EAF2FF; border-color:#6099F5; }</string>
      </property>
      <property name="frameShape">
-      <enum>QFrame::NoFrame</enum>
+      <enum>QFrame::Shape::NoFrame</enum>
      </property>
-     <property name="styleSheet">
-      <string>QFrame#cardFrame01 { background:#FFFFFF; border:2px solid #D4DEEB; border-radius:12px; } QFrame#cardFrame01[selected="true"] { background:#EAF2FF; border-color:#6099F5; }</string>
+     <property name="category" stdset="0">
+      <string>Biochemistry</string>
      </property>
      <widget class="QLabel" name="workshopImage01">
       <property name="geometry">
@@ -142,7 +148,7 @@
        <bool>true</bool>
       </property>
       <property name="alignment">
-       <set>Qt::AlignCenter</set>
+       <set>Qt::AlignmentFlag::AlignCenter</set>
       </property>
      </widget>
      <widget class="QLabel" name="workshopTitle01">
@@ -164,11 +170,11 @@
       <property name="text">
        <string>Biochemistry Lab</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignCenter</set>
+      </property>
       <property name="wordWrap">
        <bool>true</bool>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
       </property>
      </widget>
      <widget class="QLabel" name="workshopDepartment01">
@@ -189,11 +195,11 @@
       <property name="text">
        <string>Department of Nano Science Technology</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignTop</set>
+      </property>
       <property name="wordWrap">
        <bool>true</bool>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignHCenter|Qt::AlignTop</set>
       </property>
      </widget>
      <widget class="QPushButton" name="workshopCard_Biochemistry">
@@ -205,24 +211,24 @@
         <height>210</height>
        </rect>
       </property>
-      <property name="text">
-       <string />
-      </property>
       <property name="cursor">
        <cursorShape>PointingHandCursor</cursorShape>
-      </property>
-      <property name="accessibleName">
-       <string>Biochemistry Lab</string>
       </property>
       <property name="toolTip">
        <string>Biochemistry Lab
 Department of Nano Science Technology</string>
       </property>
-      <property name="flat">
-       <bool>true</bool>
+      <property name="accessibleName">
+       <string>Biochemistry Lab</string>
       </property>
       <property name="styleSheet">
        <string>QPushButton { background:transparent; border:2px solid transparent; border-radius:12px; padding:0; } QPushButton:hover, QPushButton:focus { border:2px solid #6099F5; background:rgba(80,140,240,18); }</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="flat">
+       <bool>true</bool>
       </property>
      </widget>
     </widget>
@@ -235,14 +241,14 @@ Department of Nano Science Technology</string>
        <height>210</height>
       </rect>
      </property>
-     <property name="category" stdset="0">
-      <string>Electronics</string>
+     <property name="styleSheet">
+      <string>QFrame#cardFrame02 { background:#FFFFFF; border:2px solid #D4DEEB; border-radius:12px; } QFrame#cardFrame02[selected=&quot;true&quot;] { background:#EAF2FF; border-color:#6099F5; }</string>
      </property>
      <property name="frameShape">
-      <enum>QFrame::NoFrame</enum>
+      <enum>QFrame::Shape::NoFrame</enum>
      </property>
-     <property name="styleSheet">
-      <string>QFrame#cardFrame02 { background:#FFFFFF; border:2px solid #D4DEEB; border-radius:12px; } QFrame#cardFrame02[selected="true"] { background:#EAF2FF; border-color:#6099F5; }</string>
+     <property name="category" stdset="0">
+      <string>Electronics</string>
      </property>
      <widget class="QLabel" name="workshopImage02">
       <property name="geometry">
@@ -260,7 +266,7 @@ Department of Nano Science Technology</string>
        <bool>true</bool>
       </property>
       <property name="alignment">
-       <set>Qt::AlignCenter</set>
+       <set>Qt::AlignmentFlag::AlignCenter</set>
       </property>
      </widget>
      <widget class="QLabel" name="workshopTitle02">
@@ -282,11 +288,11 @@ Department of Nano Science Technology</string>
       <property name="text">
        <string>Electronics Lab</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignCenter</set>
+      </property>
       <property name="wordWrap">
        <bool>true</bool>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
       </property>
      </widget>
      <widget class="QLabel" name="workshopDepartment02">
@@ -307,11 +313,11 @@ Department of Nano Science Technology</string>
       <property name="text">
        <string>Department of Nano Science Technology</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignTop</set>
+      </property>
       <property name="wordWrap">
        <bool>true</bool>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignHCenter|Qt::AlignTop</set>
       </property>
      </widget>
      <widget class="QPushButton" name="workshopCard_Electronics">
@@ -323,24 +329,24 @@ Department of Nano Science Technology</string>
         <height>210</height>
        </rect>
       </property>
-      <property name="text">
-       <string />
-      </property>
       <property name="cursor">
        <cursorShape>PointingHandCursor</cursorShape>
-      </property>
-      <property name="accessibleName">
-       <string>Electronics Lab</string>
       </property>
       <property name="toolTip">
        <string>Electronics Lab
 Department of Nano Science Technology</string>
       </property>
-      <property name="flat">
-       <bool>true</bool>
+      <property name="accessibleName">
+       <string>Electronics Lab</string>
       </property>
       <property name="styleSheet">
        <string>QPushButton { background:transparent; border:2px solid transparent; border-radius:12px; padding:0; } QPushButton:hover, QPushButton:focus { border:2px solid #6099F5; background:rgba(80,140,240,18); }</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="flat">
+       <bool>true</bool>
       </property>
      </widget>
     </widget>
@@ -353,14 +359,14 @@ Department of Nano Science Technology</string>
        <height>210</height>
       </rect>
      </property>
-     <property name="category" stdset="0">
-      <string>Computer</string>
+     <property name="styleSheet">
+      <string>QFrame#cardFrame03 { background:#FFFFFF; border:2px solid #D4DEEB; border-radius:12px; } QFrame#cardFrame03[selected=&quot;true&quot;] { background:#EAF2FF; border-color:#6099F5; }</string>
      </property>
      <property name="frameShape">
-      <enum>QFrame::NoFrame</enum>
+      <enum>QFrame::Shape::NoFrame</enum>
      </property>
-     <property name="styleSheet">
-      <string>QFrame#cardFrame03 { background:#FFFFFF; border:2px solid #D4DEEB; border-radius:12px; } QFrame#cardFrame03[selected="true"] { background:#EAF2FF; border-color:#6099F5; }</string>
+     <property name="category" stdset="0">
+      <string>Computer</string>
      </property>
      <widget class="QLabel" name="workshopImage03">
       <property name="geometry">
@@ -378,7 +384,7 @@ Department of Nano Science Technology</string>
        <bool>true</bool>
       </property>
       <property name="alignment">
-       <set>Qt::AlignCenter</set>
+       <set>Qt::AlignmentFlag::AlignCenter</set>
       </property>
      </widget>
      <widget class="QLabel" name="workshopTitle03">
@@ -400,11 +406,11 @@ Department of Nano Science Technology</string>
       <property name="text">
        <string>Computer Lab</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignCenter</set>
+      </property>
       <property name="wordWrap">
        <bool>true</bool>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
       </property>
      </widget>
      <widget class="QLabel" name="workshopDepartment03">
@@ -425,11 +431,11 @@ Department of Nano Science Technology</string>
       <property name="text">
        <string>Department of Nano Science Technology</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignTop</set>
+      </property>
       <property name="wordWrap">
        <bool>true</bool>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignHCenter|Qt::AlignTop</set>
       </property>
      </widget>
      <widget class="QPushButton" name="workshopCard_Computer">
@@ -441,24 +447,24 @@ Department of Nano Science Technology</string>
         <height>210</height>
        </rect>
       </property>
-      <property name="text">
-       <string />
-      </property>
       <property name="cursor">
        <cursorShape>PointingHandCursor</cursorShape>
-      </property>
-      <property name="accessibleName">
-       <string>Computer Lab</string>
       </property>
       <property name="toolTip">
        <string>Computer Lab
 Department of Nano Science Technology</string>
       </property>
-      <property name="flat">
-       <bool>true</bool>
+      <property name="accessibleName">
+       <string>Computer Lab</string>
       </property>
       <property name="styleSheet">
        <string>QPushButton { background:transparent; border:2px solid transparent; border-radius:12px; padding:0; } QPushButton:hover, QPushButton:focus { border:2px solid #6099F5; background:rgba(80,140,240,18); }</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="flat">
+       <bool>true</bool>
       </property>
      </widget>
     </widget>
@@ -471,14 +477,14 @@ Department of Nano Science Technology</string>
        <height>210</height>
       </rect>
      </property>
-     <property name="category" stdset="0">
-      <string>Geotechnical</string>
+     <property name="styleSheet">
+      <string>QFrame#cardFrame05 { background:#FFFFFF; border:2px solid #D4DEEB; border-radius:12px; } QFrame#cardFrame05[selected=&quot;true&quot;] { background:#EAF2FF; border-color:#6099F5; }</string>
      </property>
      <property name="frameShape">
-      <enum>QFrame::NoFrame</enum>
+      <enum>QFrame::Shape::NoFrame</enum>
      </property>
-     <property name="styleSheet">
-      <string>QFrame#cardFrame05 { background:#FFFFFF; border:2px solid #D4DEEB; border-radius:12px; } QFrame#cardFrame05[selected="true"] { background:#EAF2FF; border-color:#6099F5; }</string>
+     <property name="category" stdset="0">
+      <string>Geotechnical</string>
      </property>
      <widget class="QLabel" name="workshopImage05">
       <property name="geometry">
@@ -496,7 +502,7 @@ Department of Nano Science Technology</string>
        <bool>true</bool>
       </property>
       <property name="alignment">
-       <set>Qt::AlignCenter</set>
+       <set>Qt::AlignmentFlag::AlignCenter</set>
       </property>
      </widget>
      <widget class="QLabel" name="workshopTitle05">
@@ -518,11 +524,11 @@ Department of Nano Science Technology</string>
       <property name="text">
        <string>Geotechnical Lab</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignCenter</set>
+      </property>
       <property name="wordWrap">
        <bool>true</bool>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
       </property>
      </widget>
      <widget class="QLabel" name="workshopDepartment05">
@@ -543,11 +549,11 @@ Department of Nano Science Technology</string>
       <property name="text">
        <string>Department of Construction Technology</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignTop</set>
+      </property>
       <property name="wordWrap">
        <bool>true</bool>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignHCenter|Qt::AlignTop</set>
       </property>
      </widget>
      <widget class="QPushButton" name="workshopCard_Geotechnical">
@@ -559,24 +565,24 @@ Department of Nano Science Technology</string>
         <height>210</height>
        </rect>
       </property>
-      <property name="text">
-       <string />
-      </property>
       <property name="cursor">
        <cursorShape>PointingHandCursor</cursorShape>
-      </property>
-      <property name="accessibleName">
-       <string>Geotechnical Lab</string>
       </property>
       <property name="toolTip">
        <string>Geotechnical Lab
 Department of Construction Technology</string>
       </property>
-      <property name="flat">
-       <bool>true</bool>
+      <property name="accessibleName">
+       <string>Geotechnical Lab</string>
       </property>
       <property name="styleSheet">
        <string>QPushButton { background:transparent; border:2px solid transparent; border-radius:12px; padding:0; } QPushButton:hover, QPushButton:focus { border:2px solid #6099F5; background:rgba(80,140,240,18); }</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="flat">
+       <bool>true</bool>
       </property>
      </widget>
     </widget>
@@ -589,14 +595,14 @@ Department of Construction Technology</string>
        <height>210</height>
       </rect>
      </property>
-     <property name="category" stdset="0">
-      <string>Surveying</string>
+     <property name="styleSheet">
+      <string>QFrame#cardFrame06 { background:#FFFFFF; border:2px solid #D4DEEB; border-radius:12px; } QFrame#cardFrame06[selected=&quot;true&quot;] { background:#EAF2FF; border-color:#6099F5; }</string>
      </property>
      <property name="frameShape">
-      <enum>QFrame::NoFrame</enum>
+      <enum>QFrame::Shape::NoFrame</enum>
      </property>
-     <property name="styleSheet">
-      <string>QFrame#cardFrame06 { background:#FFFFFF; border:2px solid #D4DEEB; border-radius:12px; } QFrame#cardFrame06[selected="true"] { background:#EAF2FF; border-color:#6099F5; }</string>
+     <property name="category" stdset="0">
+      <string>Surveying</string>
      </property>
      <widget class="QLabel" name="workshopImage06">
       <property name="geometry">
@@ -614,7 +620,7 @@ Department of Construction Technology</string>
        <bool>true</bool>
       </property>
       <property name="alignment">
-       <set>Qt::AlignCenter</set>
+       <set>Qt::AlignmentFlag::AlignCenter</set>
       </property>
      </widget>
      <widget class="QLabel" name="workshopTitle06">
@@ -636,11 +642,11 @@ Department of Construction Technology</string>
       <property name="text">
        <string>Surveying Lab</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignCenter</set>
+      </property>
       <property name="wordWrap">
        <bool>true</bool>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
       </property>
      </widget>
      <widget class="QLabel" name="workshopDepartment06">
@@ -661,11 +667,11 @@ Department of Construction Technology</string>
       <property name="text">
        <string>Department of Construction Technology</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignTop</set>
+      </property>
       <property name="wordWrap">
        <bool>true</bool>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignHCenter|Qt::AlignTop</set>
       </property>
      </widget>
      <widget class="QPushButton" name="workshopCard_Surveying">
@@ -677,24 +683,24 @@ Department of Construction Technology</string>
         <height>210</height>
        </rect>
       </property>
-      <property name="text">
-       <string />
-      </property>
       <property name="cursor">
        <cursorShape>PointingHandCursor</cursorShape>
-      </property>
-      <property name="accessibleName">
-       <string>Surveying Lab</string>
       </property>
       <property name="toolTip">
        <string>Surveying Lab
 Department of Construction Technology</string>
       </property>
-      <property name="flat">
-       <bool>true</bool>
+      <property name="accessibleName">
+       <string>Surveying Lab</string>
       </property>
       <property name="styleSheet">
        <string>QPushButton { background:transparent; border:2px solid transparent; border-radius:12px; padding:0; } QPushButton:hover, QPushButton:focus { border:2px solid #6099F5; background:rgba(80,140,240,18); }</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="flat">
+       <bool>true</bool>
       </property>
      </widget>
     </widget>
@@ -707,14 +713,14 @@ Department of Construction Technology</string>
        <height>210</height>
       </rect>
      </property>
-     <property name="category" stdset="0">
-      <string>Concrete</string>
+     <property name="styleSheet">
+      <string>QFrame#cardFrame07 { background:#FFFFFF; border:2px solid #D4DEEB; border-radius:12px; } QFrame#cardFrame07[selected=&quot;true&quot;] { background:#EAF2FF; border-color:#6099F5; }</string>
      </property>
      <property name="frameShape">
-      <enum>QFrame::NoFrame</enum>
+      <enum>QFrame::Shape::NoFrame</enum>
      </property>
-     <property name="styleSheet">
-      <string>QFrame#cardFrame07 { background:#FFFFFF; border:2px solid #D4DEEB; border-radius:12px; } QFrame#cardFrame07[selected="true"] { background:#EAF2FF; border-color:#6099F5; }</string>
+     <property name="category" stdset="0">
+      <string>Concrete</string>
      </property>
      <widget class="QLabel" name="workshopImage07">
       <property name="geometry">
@@ -732,7 +738,7 @@ Department of Construction Technology</string>
        <bool>true</bool>
       </property>
       <property name="alignment">
-       <set>Qt::AlignCenter</set>
+       <set>Qt::AlignmentFlag::AlignCenter</set>
       </property>
      </widget>
      <widget class="QLabel" name="workshopTitle07">
@@ -754,11 +760,11 @@ Department of Construction Technology</string>
       <property name="text">
        <string>Concrete Lab</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignCenter</set>
+      </property>
       <property name="wordWrap">
        <bool>true</bool>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
       </property>
      </widget>
      <widget class="QLabel" name="workshopDepartment07">
@@ -779,11 +785,11 @@ Department of Construction Technology</string>
       <property name="text">
        <string>Department of Construction Technology</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignTop</set>
+      </property>
       <property name="wordWrap">
        <bool>true</bool>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignHCenter|Qt::AlignTop</set>
       </property>
      </widget>
      <widget class="QPushButton" name="workshopCard_Concrete">
@@ -795,24 +801,24 @@ Department of Construction Technology</string>
         <height>210</height>
        </rect>
       </property>
-      <property name="text">
-       <string />
-      </property>
       <property name="cursor">
        <cursorShape>PointingHandCursor</cursorShape>
-      </property>
-      <property name="accessibleName">
-       <string>Concrete Lab</string>
       </property>
       <property name="toolTip">
        <string>Concrete Lab
 Department of Construction Technology</string>
       </property>
-      <property name="flat">
-       <bool>true</bool>
+      <property name="accessibleName">
+       <string>Concrete Lab</string>
       </property>
       <property name="styleSheet">
        <string>QPushButton { background:transparent; border:2px solid transparent; border-radius:12px; padding:0; } QPushButton:hover, QPushButton:focus { border:2px solid #6099F5; background:rgba(80,140,240,18); }</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="flat">
+       <bool>true</bool>
       </property>
      </widget>
     </widget>
@@ -825,14 +831,14 @@ Department of Construction Technology</string>
        <height>210</height>
       </rect>
      </property>
-     <property name="category" stdset="0">
-      <string>Drawing Office</string>
+     <property name="styleSheet">
+      <string>QFrame#cardFrame11 { background:#FFFFFF; border:2px solid #D4DEEB; border-radius:12px; } QFrame#cardFrame11[selected=&quot;true&quot;] { background:#EAF2FF; border-color:#6099F5; }</string>
      </property>
      <property name="frameShape">
-      <enum>QFrame::NoFrame</enum>
+      <enum>QFrame::Shape::NoFrame</enum>
      </property>
-     <property name="styleSheet">
-      <string>QFrame#cardFrame11 { background:#FFFFFF; border:2px solid #D4DEEB; border-radius:12px; } QFrame#cardFrame11[selected="true"] { background:#EAF2FF; border-color:#6099F5; }</string>
+     <property name="category" stdset="0">
+      <string>Drawing Office</string>
      </property>
      <widget class="QLabel" name="workshopImage11">
       <property name="geometry">
@@ -850,7 +856,7 @@ Department of Construction Technology</string>
        <bool>true</bool>
       </property>
       <property name="alignment">
-       <set>Qt::AlignCenter</set>
+       <set>Qt::AlignmentFlag::AlignCenter</set>
       </property>
      </widget>
      <widget class="QLabel" name="workshopTitle11">
@@ -872,11 +878,11 @@ Department of Construction Technology</string>
       <property name="text">
        <string>Drawing Office</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignCenter</set>
+      </property>
       <property name="wordWrap">
        <bool>true</bool>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
       </property>
      </widget>
      <widget class="QLabel" name="workshopDepartment11">
@@ -897,11 +903,11 @@ Department of Construction Technology</string>
       <property name="text">
        <string>Department of Mechanical and Manufacturing Technology</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignTop</set>
+      </property>
       <property name="wordWrap">
        <bool>true</bool>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignHCenter|Qt::AlignTop</set>
       </property>
      </widget>
      <widget class="QPushButton" name="workshopCard_Drawing_Office">
@@ -913,24 +919,24 @@ Department of Construction Technology</string>
         <height>210</height>
        </rect>
       </property>
-      <property name="text">
-       <string />
-      </property>
       <property name="cursor">
        <cursorShape>PointingHandCursor</cursorShape>
-      </property>
-      <property name="accessibleName">
-       <string>Drawing Office</string>
       </property>
       <property name="toolTip">
        <string>Drawing Office
 Department of Mechanical and Manufacturing Technology</string>
       </property>
-      <property name="flat">
-       <bool>true</bool>
+      <property name="accessibleName">
+       <string>Drawing Office</string>
       </property>
       <property name="styleSheet">
        <string>QPushButton { background:transparent; border:2px solid transparent; border-radius:12px; padding:0; } QPushButton:hover, QPushButton:focus { border:2px solid #6099F5; background:rgba(80,140,240,18); }</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="flat">
+       <bool>true</bool>
       </property>
      </widget>
     </widget>
@@ -943,14 +949,14 @@ Department of Mechanical and Manufacturing Technology</string>
        <height>210</height>
       </rect>
      </property>
-     <property name="category" stdset="0">
-      <string>Manufacturing</string>
+     <property name="styleSheet">
+      <string>QFrame#cardFrame12 { background:#FFFFFF; border:2px solid #D4DEEB; border-radius:12px; } QFrame#cardFrame12[selected=&quot;true&quot;] { background:#EAF2FF; border-color:#6099F5; }</string>
      </property>
      <property name="frameShape">
-      <enum>QFrame::NoFrame</enum>
+      <enum>QFrame::Shape::NoFrame</enum>
      </property>
-     <property name="styleSheet">
-      <string>QFrame#cardFrame12 { background:#FFFFFF; border:2px solid #D4DEEB; border-radius:12px; } QFrame#cardFrame12[selected="true"] { background:#EAF2FF; border-color:#6099F5; }</string>
+     <property name="category" stdset="0">
+      <string>Manufacturing</string>
      </property>
      <widget class="QLabel" name="workshopImage12">
       <property name="geometry">
@@ -968,7 +974,7 @@ Department of Mechanical and Manufacturing Technology</string>
        <bool>true</bool>
       </property>
       <property name="alignment">
-       <set>Qt::AlignCenter</set>
+       <set>Qt::AlignmentFlag::AlignCenter</set>
       </property>
      </widget>
      <widget class="QLabel" name="workshopTitle12">
@@ -990,11 +996,11 @@ Department of Mechanical and Manufacturing Technology</string>
       <property name="text">
        <string>Manufacturing Lab</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignCenter</set>
+      </property>
       <property name="wordWrap">
        <bool>true</bool>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
       </property>
      </widget>
      <widget class="QLabel" name="workshopDepartment12">
@@ -1015,11 +1021,11 @@ Department of Mechanical and Manufacturing Technology</string>
       <property name="text">
        <string>Department of Mechanical and Manufacturing Technology</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignTop</set>
+      </property>
       <property name="wordWrap">
        <bool>true</bool>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignHCenter|Qt::AlignTop</set>
       </property>
      </widget>
      <widget class="QPushButton" name="workshopCard_Manufacturing">
@@ -1031,24 +1037,24 @@ Department of Mechanical and Manufacturing Technology</string>
         <height>210</height>
        </rect>
       </property>
-      <property name="text">
-       <string />
-      </property>
       <property name="cursor">
        <cursorShape>PointingHandCursor</cursorShape>
-      </property>
-      <property name="accessibleName">
-       <string>Manufacturing Lab</string>
       </property>
       <property name="toolTip">
        <string>Manufacturing Lab
 Department of Mechanical and Manufacturing Technology</string>
       </property>
-      <property name="flat">
-       <bool>true</bool>
+      <property name="accessibleName">
+       <string>Manufacturing Lab</string>
       </property>
       <property name="styleSheet">
        <string>QPushButton { background:transparent; border:2px solid transparent; border-radius:12px; padding:0; } QPushButton:hover, QPushButton:focus { border:2px solid #6099F5; background:rgba(80,140,240,18); }</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="flat">
+       <bool>true</bool>
       </property>
      </widget>
     </widget>
@@ -1061,14 +1067,14 @@ Department of Mechanical and Manufacturing Technology</string>
        <height>210</height>
       </rect>
      </property>
-     <property name="category" stdset="0">
-      <string>Electrical Machines &amp; Communications Laboratory</string>
+     <property name="styleSheet">
+      <string>QFrame#cardFrame14 { background:#FFFFFF; border:2px solid #D4DEEB; border-radius:12px; } QFrame#cardFrame14[selected=&quot;true&quot;] { background:#EAF2FF; border-color:#6099F5; }</string>
      </property>
      <property name="frameShape">
-      <enum>QFrame::NoFrame</enum>
+      <enum>QFrame::Shape::NoFrame</enum>
      </property>
-     <property name="styleSheet">
-      <string>QFrame#cardFrame14 { background:#FFFFFF; border:2px solid #D4DEEB; border-radius:12px; } QFrame#cardFrame14[selected="true"] { background:#EAF2FF; border-color:#6099F5; }</string>
+     <property name="category" stdset="0">
+      <string>Electrical Machines &amp; Communications Laboratory</string>
      </property>
      <widget class="QLabel" name="workshopImage14">
       <property name="geometry">
@@ -1086,7 +1092,7 @@ Department of Mechanical and Manufacturing Technology</string>
        <bool>true</bool>
       </property>
       <property name="alignment">
-       <set>Qt::AlignCenter</set>
+       <set>Qt::AlignmentFlag::AlignCenter</set>
       </property>
      </widget>
      <widget class="QLabel" name="workshopTitle14">
@@ -1108,11 +1114,11 @@ Department of Mechanical and Manufacturing Technology</string>
       <property name="text">
        <string>Electrical Machines &amp; Communications Laboratory</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignCenter</set>
+      </property>
       <property name="wordWrap">
        <bool>true</bool>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
       </property>
      </widget>
      <widget class="QLabel" name="workshopDepartment14">
@@ -1133,11 +1139,11 @@ Department of Mechanical and Manufacturing Technology</string>
       <property name="text">
        <string>Department of Electrotechnology</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignTop</set>
+      </property>
       <property name="wordWrap">
        <bool>true</bool>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignHCenter|Qt::AlignTop</set>
       </property>
      </widget>
      <widget class="QPushButton" name="workshopCard_Electrical_Machines___Communications_Laboratory">
@@ -1149,24 +1155,24 @@ Department of Mechanical and Manufacturing Technology</string>
         <height>210</height>
        </rect>
       </property>
-      <property name="text">
-       <string />
-      </property>
       <property name="cursor">
        <cursorShape>PointingHandCursor</cursorShape>
-      </property>
-      <property name="accessibleName">
-       <string>Electrical Machines &amp; Communications Laboratory</string>
       </property>
       <property name="toolTip">
        <string>Electrical Machines &amp; Communications Laboratory
 Department of Electrotechnology</string>
       </property>
-      <property name="flat">
-       <bool>true</bool>
+      <property name="accessibleName">
+       <string>Electrical Machines &amp; Communications Laboratory</string>
       </property>
       <property name="styleSheet">
        <string>QPushButton { background:transparent; border:2px solid transparent; border-radius:12px; padding:0; } QPushButton:hover, QPushButton:focus { border:2px solid #6099F5; background:rgba(80,140,240,18); }</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="flat">
+       <bool>true</bool>
       </property>
      </widget>
     </widget>
@@ -1179,14 +1185,14 @@ Department of Electrotechnology</string>
        <height>210</height>
       </rect>
      </property>
-     <property name="category" stdset="0">
-      <string>Measurement Laboratory</string>
+     <property name="styleSheet">
+      <string>QFrame#cardFrame15 { background:#FFFFFF; border:2px solid #D4DEEB; border-radius:12px; } QFrame#cardFrame15[selected=&quot;true&quot;] { background:#EAF2FF; border-color:#6099F5; }</string>
      </property>
      <property name="frameShape">
-      <enum>QFrame::NoFrame</enum>
+      <enum>QFrame::Shape::NoFrame</enum>
      </property>
-     <property name="styleSheet">
-      <string>QFrame#cardFrame15 { background:#FFFFFF; border:2px solid #D4DEEB; border-radius:12px; } QFrame#cardFrame15[selected="true"] { background:#EAF2FF; border-color:#6099F5; }</string>
+     <property name="category" stdset="0">
+      <string>Measurement Laboratory</string>
      </property>
      <widget class="QLabel" name="workshopImage15">
       <property name="geometry">
@@ -1204,7 +1210,7 @@ Department of Electrotechnology</string>
        <bool>true</bool>
       </property>
       <property name="alignment">
-       <set>Qt::AlignCenter</set>
+       <set>Qt::AlignmentFlag::AlignCenter</set>
       </property>
      </widget>
      <widget class="QLabel" name="workshopTitle15">
@@ -1226,11 +1232,11 @@ Department of Electrotechnology</string>
       <property name="text">
        <string>Measurement Laboratory</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignCenter</set>
+      </property>
       <property name="wordWrap">
        <bool>true</bool>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
       </property>
      </widget>
      <widget class="QLabel" name="workshopDepartment15">
@@ -1251,11 +1257,11 @@ Department of Electrotechnology</string>
       <property name="text">
        <string>Department of Electrotechnology</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignTop</set>
+      </property>
       <property name="wordWrap">
        <bool>true</bool>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignHCenter|Qt::AlignTop</set>
       </property>
      </widget>
      <widget class="QPushButton" name="workshopCard_Measurement_Laboratory">
@@ -1267,42 +1273,39 @@ Department of Electrotechnology</string>
         <height>210</height>
        </rect>
       </property>
-      <property name="text">
-       <string />
-      </property>
       <property name="cursor">
        <cursorShape>PointingHandCursor</cursorShape>
-      </property>
-      <property name="accessibleName">
-       <string>Measurement Laboratory</string>
       </property>
       <property name="toolTip">
        <string>Measurement Laboratory
 Department of Electrotechnology</string>
       </property>
-      <property name="flat">
-       <bool>true</bool>
+      <property name="accessibleName">
+       <string>Measurement Laboratory</string>
       </property>
       <property name="styleSheet">
        <string>QPushButton { background:transparent; border:2px solid transparent; border-radius:12px; padding:0; } QPushButton:hover, QPushButton:focus { border:2px solid #6099F5; background:rgba(80,140,240,18); }</string>
       </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="flat">
+       <bool>true</bool>
+      </property>
      </widget>
     </widget>
    </widget>
-   <property name="horizontalScrollBarPolicy">
-    <enum>Qt::ScrollBarAlwaysOff</enum>
-   </property>
-   <property name="verticalScrollBarPolicy">
-    <enum>Qt::ScrollBarAlwaysOff</enum>
-   </property>
   </widget>
   <widget class="QPushButton" name="nextBtn">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="geometry">
     <rect>
      <x>24</x>
-     <y>578</y>
+     <y>680</y>
      <width>1132</width>
-     <height>48</height>
+     <height>50</height>
     </rect>
    </property>
    <property name="font">
@@ -1312,14 +1315,11 @@ Department of Electrotechnology</string>
      <bold>true</bold>
     </font>
    </property>
-   <property name="text">
-    <string>Continue to date &amp;&amp; time →</string>
-   </property>
    <property name="cursor">
     <cursorShape>PointingHandCursor</cursorShape>
    </property>
-   <property name="enabled">
-    <bool>false</bool>
+   <property name="text">
+    <string>Continue to date and time</string>
    </property>
   </widget>
  </widget>
@@ -1329,22 +1329,17 @@ Department of Electrotechnology</string>
   <tabstop>workshopCard_Biochemistry</tabstop>
   <tabstop>workshopCard_Electronics</tabstop>
   <tabstop>workshopCard_Computer</tabstop>
-  <tabstop>workshopCard_Advanced_Material</tabstop>
   <tabstop>workshopCard_Geotechnical</tabstop>
   <tabstop>workshopCard_Surveying</tabstop>
   <tabstop>workshopCard_Concrete</tabstop>
-  <tabstop>workshopCard_Environment_and_Water_Resources_Laboratory</tabstop>
-  <tabstop>workshopCard_Highway_Laboratory</tabstop>
-  <tabstop>workshopCard_Physics</tabstop>
   <tabstop>workshopCard_Drawing_Office</tabstop>
   <tabstop>workshopCard_Manufacturing</tabstop>
-  <tabstop>workshopCard_Structures_Laboratory</tabstop>
   <tabstop>workshopCard_Electrical_Machines___Communications_Laboratory</tabstop>
   <tabstop>workshopCard_Measurement_Laboratory</tabstop>
   <tabstop>nextBtn</tabstop>
  </tabstops>
  <resources>
-  <include location="../../resources/images.qrc" />
+  <include location="../../resources/images.qrc"/>
  </resources>
- <connections />
+ <connections/>
 </ui>

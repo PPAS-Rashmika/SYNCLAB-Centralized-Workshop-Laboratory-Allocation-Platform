@@ -1,10 +1,7 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>AdminSettingsDialog</class>
  <widget class="QDialog" name="AdminSettingsDialog">
-  <property name="windowTitle">
-   <string>Administration email settings</string>
-  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -12,6 +9,35 @@
     <width>450</width>
     <height>348</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>450</width>
+    <height>348</height>
+   </size>
+  </property>
+  <property name="font">
+   <font>
+    <family>Segoe UI</family>
+    <pointsize>10</pointsize>
+   </font>
+  </property>
+  <property name="windowTitle">
+   <string>Administration email settings</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QDialog { background-color: #FFFFFF; color: #0F172A; }
+QLabel { color: #0F172A; background: transparent; }
+QLineEdit, QComboBox { background-color: #F8FAFC; color: #0F172A; border: 1px solid #CBD5E1; border-radius: 7px; padding: 8px; }
+QLineEdit:focus, QComboBox:focus { border: 1px solid #2563EB; }
+QComboBox QAbstractItemView { background-color: #F8FAFC; color: #0F172A; selection-background-color: #2563EB; selection-color: white; border: 1px solid #CBD5E1; }
+QPushButton { background-color: #2563EB; color: white; border: 2px solid transparent; border-radius: 8px; padding: 2px 14px; }
+QPushButton:focus, QPushButton:default { border-color: #0F172A; }
+QPushButton:hover { border-color: #CBD5E1; }
+QPushButton:disabled { background-color: #CBD5E1; color: #0F172A; }
+QPushButton#cancelBtn, QPushButton#closeBtn { background-color: #F8FAFC; color: #0F172A; border-color: #CBD5E1; }
+QGroupBox { color: #0F172A; border: 1px solid #CBD5E1; border-radius: 8px; margin-top: 16px; padding-top: 10px; }
+QGroupBox::title { subcontrol-origin: margin; left: 12px; padding: 0 4px; }</string>
   </property>
   <widget class="QLabel" name="titleLbl">
    <property name="geometry">
@@ -22,12 +48,6 @@
      <height>34</height>
     </rect>
    </property>
-   <property name="wordWrap">
-    <bool>true</bool>
-   </property>
-   <property name="textFormat">
-    <enum>Qt::PlainText</enum>
-   </property>
    <property name="font">
     <font>
      <pointsize>16</pointsize>
@@ -36,6 +56,12 @@
    </property>
    <property name="text">
     <string>Admin Settings</string>
+   </property>
+   <property name="textFormat">
+    <enum>Qt::TextFormat::PlainText</enum>
+   </property>
+   <property name="wordWrap">
+    <bool>true</bool>
    </property>
   </widget>
   <widget class="QLabel" name="lbl1">
@@ -47,20 +73,17 @@
      <height>20</height>
     </rect>
    </property>
+   <property name="text">
+    <string>Lab / Workshop In-charge Email</string>
+   </property>
+   <property name="textFormat">
+    <enum>Qt::TextFormat::PlainText</enum>
+   </property>
    <property name="wordWrap">
     <bool>true</bool>
    </property>
-   <property name="textFormat">
-    <enum>Qt::PlainText</enum>
-   </property>
-   <property name="text">
-    <string>&amp;Dean email (optional)</string>
-   </property>
   </widget>
   <widget class="QLineEdit" name="deanEmailInput">
-   <property name="placeholderText">
-    <string>Optional email address</string>
-   </property>
    <property name="geometry">
     <rect>
      <x>24</x>
@@ -80,6 +103,9 @@
      <pointsize>10</pointsize>
     </font>
    </property>
+   <property name="placeholderText">
+    <string>Required in-charge email address</string>
+   </property>
   </widget>
   <widget class="QLabel" name="lbl2">
    <property name="geometry">
@@ -90,20 +116,17 @@
      <height>20</height>
     </rect>
    </property>
+   <property name="text">
+    <string>Department or head email</string>
+   </property>
+   <property name="textFormat">
+    <enum>Qt::TextFormat::PlainText</enum>
+   </property>
    <property name="wordWrap">
     <bool>true</bool>
    </property>
-   <property name="textFormat">
-    <enum>Qt::PlainText</enum>
-   </property>
-   <property name="text">
-    <string>Department &amp;head email (optional)</string>
-   </property>
   </widget>
   <widget class="QLineEdit" name="depHeadEmailInput">
-   <property name="placeholderText">
-    <string>Optional email address</string>
-   </property>
    <property name="geometry">
     <rect>
      <x>24</x>
@@ -123,6 +146,9 @@
      <pointsize>10</pointsize>
     </font>
    </property>
+   <property name="placeholderText">
+    <string>Required department or head email address</string>
+   </property>
   </widget>
   <widget class="QPushButton" name="cancelBtn">
    <property name="geometry">
@@ -139,17 +165,17 @@
      <height>40</height>
     </size>
    </property>
-   <property name="text">
-    <string>Cancel</string>
-   </property>
-   <property name="cursor">
-    <cursorShape>PointingHandCursor</cursorShape>
-   </property>
    <property name="font">
     <font>
      <pointsize>10</pointsize>
      <bold>true</bold>
     </font>
+   </property>
+   <property name="cursor">
+    <cursorShape>PointingHandCursor</cursorShape>
+   </property>
+   <property name="text">
+    <string>Cancel</string>
    </property>
   </widget>
   <widget class="QPushButton" name="saveBtn">
@@ -167,52 +193,26 @@
      <height>40</height>
     </size>
    </property>
-   <property name="text">
-    <string>Save Settings</string>
-   </property>
-   <property name="cursor">
-    <cursorShape>PointingHandCursor</cursorShape>
-   </property>
    <property name="font">
     <font>
      <pointsize>10</pointsize>
      <bold>true</bold>
     </font>
    </property>
+   <property name="cursor">
+    <cursorShape>PointingHandCursor</cursorShape>
+   </property>
+   <property name="text">
+    <string>Save Settings</string>
+   </property>
   </widget>
-  <property name="styleSheet">
-   <string notr="true">QDialog { background-color: #FFFFFF; color: #0F172A; }
-QLabel { color: #0F172A; background: transparent; }
-QLineEdit, QComboBox { background-color: #F8FAFC; color: #0F172A; border: 1px solid #CBD5E1; border-radius: 7px; padding: 8px; }
-QLineEdit:focus, QComboBox:focus { border: 1px solid #2563EB; }
-QComboBox QAbstractItemView { background-color: #F8FAFC; color: #0F172A; selection-background-color: #2563EB; selection-color: white; border: 1px solid #CBD5E1; }
-QPushButton { background-color: #2563EB; color: white; border: 2px solid transparent; border-radius: 8px; padding: 2px 14px; }
-QPushButton:focus, QPushButton:default { border-color: #0F172A; }
-QPushButton:hover { border-color: #CBD5E1; }
-QPushButton:disabled { background-color: #CBD5E1; color: #0F172A; }
-QPushButton#cancelBtn, QPushButton#closeBtn { background-color: #F8FAFC; color: #0F172A; border-color: #CBD5E1; }
-QGroupBox { color: #0F172A; border: 1px solid #CBD5E1; border-radius: 8px; margin-top: 16px; padding-top: 10px; }
-QGroupBox::title { subcontrol-origin: margin; left: 12px; padding: 0 4px; }</string>
-  </property>
-  <property name="font">
-   <font>
-    <family>Segoe UI</family>
-    <pointsize>10</pointsize>
-   </font>
-  </property>
-  <property name="minimumSize">
-   <size>
-    <width>450</width>
-    <height>348</height>
-   </size>
-  </property>
  </widget>
- <resources />
- <connections />
  <tabstops>
   <tabstop>deanEmailInput</tabstop>
   <tabstop>depHeadEmailInput</tabstop>
   <tabstop>saveBtn</tabstop>
   <tabstop>cancelBtn</tabstop>
  </tabstops>
+ <resources/>
+ <connections/>
 </ui>

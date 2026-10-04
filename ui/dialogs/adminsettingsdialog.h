@@ -8,7 +8,7 @@ namespace Ui
 class AdminSettingsDialog;
 }
 
-// Displays and saves the optional administration email addresses.
+// Displays and saves the two required administration email addresses.
 class AdminSettingsDialog : public QDialog
 {
     Q_OBJECT

@@ -1,7 +1,15 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>page0Widget</class>
  <widget class="QWidget" name="page0Widget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1180</width>
+    <height>780</height>
+   </rect>
+  </property>
   <property name="font">
    <font>
     <family>Segoe UI</family>
@@ -12,15 +20,15 @@
   <property name="styleSheet">
    <string notr="true">QWidget { color:#17243B;   }QMainWindow, QStackedWidget, QWidget#page0Widget, QWidget#page1Widget, QWidget#page2Widget, QWidget#page3Widget, QWidget#page4Widget { background:#F4F7FB; }QScrollArea { border:none; background:transparent; } QScrollArea &gt; QWidget &gt; QWidget { background:#F4F7FB; }QScrollArea#cardsScrollArea &gt; QWidget, QWidget#cardsScrollContents { background:transparent; }QLabel { background:transparent; }QLabel#welcomeTitle { color:#52647D;   }QLabel#syncLabTitle {   }QLabel#syncLabSubtitle {   }QLabel#welcomeDesc, QLabel#selectedDescLabel2, QLabel#adminWsDescLbl { color:#52647D;  }QLabel#selectTitleLabel, QLabel#selectedNameLabel2, QLabel#confirmTitleLbl, QLabel#adminWsTitleLbl {   }QLineEdit, QTextEdit, QComboBox { background:#FFFFFF; border:1px solid #D4DEEB; border-radius:7px; padding:8px; selection-background-color:#2563EB; selection-color:white; }QLineEdit:focus, QTextEdit:focus, QComboBox:focus { border:1px solid #2563EB; }QComboBox QAbstractItemView { background:#FFFFFF; color:#17243B; selection-background-color:#2563EB; selection-color:white; }QPushButton { background:#FFFFFF; color:#17243B; border:1px solid #D4DEEB; border-radius:8px; padding:9px 14px;  }QPushButton:hover, QPushButton:focus { background:#EAF2FF; border-color:#2563EB; }QPushButton:pressed { border:2px solid #2563EB; }QPushButton#allocateNowBtn, QPushButton#nextBtn, QPushButton#nextTo3Btn, QPushButton#submitBtn, QPushButton#updateBtn { background:#2563EB; color:white; border:1px solid #2563EB; }QPushButton#allocateNowBtn:hover, QPushButton#nextBtn:hover, QPushButton#nextTo3Btn:hover, QPushButton#submitBtn:hover, QPushButton#updateBtn:hover { background:#1D4ED8; }QPushButton#deleteBtn, QPushButton#adminDelBtn { color:#BE123C; }QPushButton[timeSlot=true] { padding:10px 8px; }QPushButton:checked { background:#2563EB; color:white; border-color:#2563EB; }QPushButton:disabled { background:#F4F7FB; color:#52647D; border:1px solid #D4DEEB; }QPushButton#allocateNowBtn:disabled, QPushButton#nextBtn:disabled, QPushButton#nextTo3Btn:disabled, QPushButton#submitBtn:disabled, QPushButton#updateBtn:disabled, QPushButton#deleteBtn:disabled, QPushButton#adminDelBtn:disabled { background:#F4F7FB; color:#52647D; border:1px solid #D4DEEB; }QFrame#summaryBox { background:#EAF2FF; border:1px solid #D4DEEB; border-radius:10px; }QLabel#summaryDateLbl { color:#2563EB;  }QTableWidget { background:#FFFFFF; alternate-background-color:#F4F7FB; border:1px solid #D4DEEB; gridline-color:#D4DEEB; selection-background-color:#EAF2FF; selection-color:#17243B; }QHeaderView::section { font-weight:600; background:#EAF2FF; color:#17243B; border:none; padding:10px;  }QTableWidget QLineEdit, QTableWidget QComboBox { padding:4px; border-radius:4px; }QCalendarWidget { background:#FFFFFF; border:1px solid #D4DEEB; border-radius:8px; }QCalendarWidget QWidget#qt_calendar_navigationbar { background:#2563EB; }QCalendarWidget QToolButton { font-weight:600; color:white; background:transparent; padding:6px;  }QCalendarWidget QMenu, QCalendarWidget QSpinBox { background:#FFFFFF; color:#17243B; }QCalendarWidget QAbstractItemView { background:#FFFFFF; color:#17243B; selection-background-color:#2563EB; selection-color:white; outline:0; }QToolTip { background:#FFFFFF; color:#17243B; border:1px solid #D4DEEB; padding:6px; }</string>
   </property>
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>1180</width>
-    <height>780</height>
-   </rect>
-  </property>
   <widget class="QLabel" name="welcomeImg">
+   <property name="geometry">
+    <rect>
+     <x>518</x>
+     <y>200</y>
+     <width>144</width>
+     <height>143</height>
+    </rect>
+   </property>
    <property name="font">
     <font>
      <family>Segoe UI</family>
@@ -28,31 +36,31 @@
      <bold>false</bold>
     </font>
    </property>
-   <property name="scaledContents">
-    <bool>true</bool>
-   </property>
-   <property name="pixmap">
-    <pixmap resource="../../resources/images.qrc">:/branding/logo.png</pixmap>
-   </property>
-   <property name="geometry">
-    <rect>
-     <x>518</x>
-     <y>173</y>
-     <width>144</width>
-     <height>143</height>
-    </rect>
-   </property>
    <property name="accessibleName">
     <string>SYNCLAB logo</string>
    </property>
    <property name="textFormat">
-    <enum>Qt::PlainText</enum>
+    <enum>Qt::TextFormat::PlainText</enum>
+   </property>
+   <property name="pixmap">
+    <pixmap resource="../../resources/images.qrc">:/branding/logo.png</pixmap>
+   </property>
+   <property name="scaledContents">
+    <bool>true</bool>
    </property>
    <property name="alignment">
-    <set>Qt::AlignCenter</set>
+    <set>Qt::AlignmentFlag::AlignCenter</set>
    </property>
   </widget>
   <widget class="QLabel" name="welcomeTitle">
+   <property name="geometry">
+    <rect>
+     <x>24</x>
+     <y>350</y>
+     <width>1132</width>
+     <height>21</height>
+    </rect>
+   </property>
    <property name="font">
     <font>
      <family>Segoe UI</family>
@@ -60,25 +68,25 @@
      <bold>true</bold>
     </font>
    </property>
-   <property name="geometry">
-    <rect>
-     <x>24</x>
-     <y>336</y>
-     <width>1132</width>
-     <height>21</height>
-    </rect>
-   </property>
-   <property name="textFormat">
-    <enum>Qt::PlainText</enum>
-   </property>
    <property name="text">
     <string>WELCOME</string>
    </property>
+   <property name="textFormat">
+    <enum>Qt::TextFormat::PlainText</enum>
+   </property>
    <property name="alignment">
-    <set>Qt::AlignCenter</set>
+    <set>Qt::AlignmentFlag::AlignCenter</set>
    </property>
   </widget>
   <widget class="QLabel" name="syncLabTitle">
+   <property name="geometry">
+    <rect>
+     <x>24</x>
+     <y>380</y>
+     <width>1132</width>
+     <height>69</height>
+    </rect>
+   </property>
    <property name="font">
     <font>
      <family>Segoe UI</family>
@@ -86,32 +94,17 @@
      <bold>true</bold>
     </font>
    </property>
-   <property name="geometry">
-    <rect>
-     <x>24</x>
-     <y>373</y>
-     <width>1132</width>
-     <height>69</height>
-    </rect>
-   </property>
-   <property name="textFormat">
-    <enum>Qt::PlainText</enum>
-   </property>
    <property name="text">
     <string>SYNCLAB</string>
    </property>
+   <property name="textFormat">
+    <enum>Qt::TextFormat::PlainText</enum>
+   </property>
    <property name="alignment">
-    <set>Qt::AlignCenter</set>
+    <set>Qt::AlignmentFlag::AlignCenter</set>
    </property>
   </widget>
   <widget class="QLabel" name="syncLabSubtitle">
-   <property name="font">
-    <font>
-     <family>Segoe UI</family>
-     <pointsize>15</pointsize>
-     <bold>true</bold>
-    </font>
-   </property>
    <property name="geometry">
     <rect>
      <x>24</x>
@@ -120,27 +113,27 @@
      <height>27</height>
     </rect>
    </property>
-   <property name="textFormat">
-    <enum>Qt::PlainText</enum>
+   <property name="font">
+    <font>
+     <family>Segoe UI</family>
+     <pointsize>15</pointsize>
+     <bold>true</bold>
+    </font>
    </property>
    <property name="text">
     <string>Centralized Workshop &amp; Laboratory Allocation Platform</string>
    </property>
+   <property name="textFormat">
+    <enum>Qt::TextFormat::PlainText</enum>
+   </property>
    <property name="alignment">
-    <set>Qt::AlignCenter</set>
+    <set>Qt::AlignmentFlag::AlignCenter</set>
    </property>
    <property name="wordWrap">
     <bool>true</bool>
    </property>
   </widget>
   <widget class="QLabel" name="welcomeDesc">
-   <property name="font">
-    <font>
-     <family>Segoe UI</family>
-     <pointsize>11</pointsize>
-     <bold>false</bold>
-    </font>
-   </property>
    <property name="geometry">
     <rect>
      <x>24</x>
@@ -149,28 +142,28 @@
      <height>38</height>
     </rect>
    </property>
-   <property name="textFormat">
-    <enum>Qt::PlainText</enum>
+   <property name="font">
+    <font>
+     <family>Segoe UI</family>
+     <pointsize>11</pointsize>
+     <bold>false</bold>
+    </font>
    </property>
    <property name="text">
-    <string>Manage your university workshop and laboratory allocations efficiently.
+    <string>Manage the university workshop and laboratory allocations efficiently.
 Please choose an option below to get started with your session allocations.</string>
    </property>
+   <property name="textFormat">
+    <enum>Qt::TextFormat::PlainText</enum>
+   </property>
    <property name="alignment">
-    <set>Qt::AlignCenter</set>
+    <set>Qt::AlignmentFlag::AlignCenter</set>
    </property>
    <property name="wordWrap">
     <bool>true</bool>
    </property>
   </widget>
   <widget class="QPushButton" name="allocateNowBtn">
-   <property name="font">
-    <font>
-     <family>Segoe UI</family>
-     <pointsize>10</pointsize>
-     <bold>true</bold>
-    </font>
-   </property>
    <property name="geometry">
     <rect>
      <x>319</x>
@@ -179,14 +172,6 @@ Please choose an option below to get started with your session allocations.</str
      <height>56</height>
     </rect>
    </property>
-   <property name="cursor">
-    <cursorShape>PointingHandCursor</cursorShape>
-   </property>
-   <property name="text">
-    <string>&amp;New allocation</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="editAllocationBtn">
    <property name="font">
     <font>
      <family>Segoe UI</family>
@@ -194,6 +179,14 @@ Please choose an option below to get started with your session allocations.</str
      <bold>true</bold>
     </font>
    </property>
+   <property name="cursor">
+    <cursorShape>PointingHandCursor</cursorShape>
+   </property>
+   <property name="text">
+    <string>New allocation</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="editAllocationBtn">
    <property name="geometry">
     <rect>
      <x>505</x>
@@ -202,14 +195,6 @@ Please choose an option below to get started with your session allocations.</str
      <height>56</height>
     </rect>
    </property>
-   <property name="cursor">
-    <cursorShape>PointingHandCursor</cursorShape>
-   </property>
-   <property name="text">
-    <string>&amp;Edit allocation</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="settingsBtn0">
    <property name="font">
     <font>
      <family>Segoe UI</family>
@@ -217,6 +202,14 @@ Please choose an option below to get started with your session allocations.</str
      <bold>true</bold>
     </font>
    </property>
+   <property name="cursor">
+    <cursorShape>PointingHandCursor</cursorShape>
+   </property>
+   <property name="text">
+    <string>Edit allocation</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="settingsBtn0">
    <property name="geometry">
     <rect>
      <x>691</x>
@@ -225,15 +218,23 @@ Please choose an option below to get started with your session allocations.</str
      <height>56</height>
     </rect>
    </property>
+   <property name="font">
+    <font>
+     <family>Segoe UI</family>
+     <pointsize>10</pointsize>
+     <bold>true</bold>
+    </font>
+   </property>
    <property name="cursor">
     <cursorShape>PointingHandCursor</cursorShape>
    </property>
    <property name="text">
-    <string>&amp;Settings</string>
+    <string>Settings</string>
    </property>
   </widget>
  </widget>
  <resources>
-  <include location="../../resources/images.qrc" />
+  <include location="../../resources/images.qrc"/>
  </resources>
+ <connections/>
 </ui>

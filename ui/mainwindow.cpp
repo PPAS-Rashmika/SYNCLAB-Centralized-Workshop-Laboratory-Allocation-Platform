@@ -215,8 +215,6 @@ MainWindow::MainWindow(QWidget *parent, const QString &databasePath)
     connect(ui4->rejectEmailBtn, &QPushButton::clicked, this,
             [this] { composeStatusEmail("Reject"); });
 
-    connect(ui4->printRecordsBtn, &QPushButton::clicked, this, &MainWindow::printAllRecords);
-
     // If the database could not be opened, allocation must be switched off.
     if (!databaseReady) {
         ui0->allocateNowBtn->setEnabled(false);
@@ -1065,7 +1063,7 @@ void MainWindow::composeStatusEmail(const QString &status)
                                record.getTimeSlots() + "\nAllocation key: " + record.getPasscode() +
                                "\nRemarks: " + record.getAdminRemarks());
         if (pending) {
-            // Copy in the dean and the head of department if their addresses
+            // Copy in the lab/workshop in-charge and the head of department if their addresses
             // were saved in the administrator settings.
             QSettings settings(QSettings::defaultFormat(), QSettings::UserScope,
                                "StudentWorkshopApp", "AdminSettings");
