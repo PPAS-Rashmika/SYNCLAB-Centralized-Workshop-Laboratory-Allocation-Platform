@@ -1,18 +1,32 @@
 <!DOCTYPE RCC>
 <RCC version="1.0">
+    <!-- Images වල සැබෑ folders මෙහි ඇත; alias නම් C++ සහ .ui files භාවිත කරයි. -->
+    <!-- Program icon සහ welcome logo සඳහා resource කොටසයි. -->
     <qresource prefix="/branding">
+        <!-- logo.png: tag එක ඇතුළේ file path වෙනස් කරයි; alias එකේ නම code references සමඟ ගළපන්න. -->
         <file alias="logo.png">logo/logo.png</file>
     </qresource>
+    <!-- Workshops දහයේ pictures සඳහා resource කොටසයි. -->
     <qresource prefix="/workshops">
+        <!-- Biochemistry.png: tag එක ඇතුළේ file path වෙනස් කරයි; alias එකේ නම code references සමඟ ගළපන්න. -->
         <file alias="Biochemistry.png">workshops and laboratory/Biochemistry.png</file>
+        <!-- Electronics.png: tag එක ඇතුළේ file path වෙනස් කරයි; alias එකේ නම code references සමඟ ගළපන්න. -->
         <file alias="Electronics.png">workshops and laboratory/Electronics.png</file>
+        <!-- Computer.png: tag එක ඇතුළේ file path වෙනස් කරයි; alias එකේ නම code references සමඟ ගළපන්න. -->
         <file alias="Computer.png">workshops and laboratory/Computer.png</file>
+        <!-- Geotechnical.png: tag එක ඇතුළේ file path වෙනස් කරයි; alias එකේ නම code references සමඟ ගළපන්න. -->
         <file alias="Geotechnical.png">workshops and laboratory/Geotechnical.png</file>
+        <!-- Surveying.png: tag එක ඇතුළේ file path වෙනස් කරයි; alias එකේ නම code references සමඟ ගළපන්න. -->
         <file alias="Surveying.png">workshops and laboratory/Surveying.png</file>
+        <!-- Concrete.png: tag එක ඇතුළේ file path වෙනස් කරයි; alias එකේ නම code references සමඟ ගළපන්න. -->
         <file alias="Concrete.png">workshops and laboratory/Concrete.png</file>
+        <!-- Drawing Office.png: tag එක ඇතුළේ file path වෙනස් කරයි; alias එකේ නම code references සමඟ ගළපන්න. -->
         <file alias="Drawing Office.png">workshops and laboratory/Drawing Office.png</file>
+        <!-- Manufacturing.png: tag එක ඇතුළේ file path වෙනස් කරයි; alias එකේ නම code references සමඟ ගළපන්න. -->
         <file alias="Manufacturing.png">workshops and laboratory/Manufacturing.png</file>
+        <!-- Electrical Machines සහ Communications Laboratory.png: tag එක ඇතුළේ file path වෙනස් කරයි; alias එකේ නම code references සමඟ ගළපන්න. -->
         <file alias="Electrical Machines &amp; Communications Laboratory.png">workshops and laboratory/Electrical Machines &amp; Communications Laboratory.png</file>
+        <!-- Measurement Laboratory.png: tag එක ඇතුළේ file path වෙනස් කරයි; alias එකේ නම code references සමඟ ගළපන්න. -->
         <file alias="Measurement Laboratory.png">workshops and laboratory/Measurement Laboratory.png</file>
     </qresource>
 </RCC>

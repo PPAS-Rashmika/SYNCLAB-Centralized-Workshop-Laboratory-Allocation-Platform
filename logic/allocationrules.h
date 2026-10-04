@@ -1,30 +1,26 @@
+// Booking පරීක්ෂා කිරීමේ නීති සහ අසාර්ථක වූ field එක හඳුනාගන්නා නම් මෙහි ඇත.
+// එකම header එක කිහිප වරක් include වුවත් definitions එකවරක් පමණක් යෙදීමට මේ guard එක ඇත.
 #ifndef ALLOCATIONRULES_H
 #define ALLOCATIONRULES_H
 
+// #include වලින් මේ file එකට අවශ්‍ය Qt සහ project declarations ලබාගනී.
 #include "studentrecord.h"
 
-// AllocationRules holds the business rules of the program.
-//
-// Every function is 'static', which means it is called on the class itself
-// (AllocationRules::validate(...)) and no object of this class is ever created.
-// It is used as a tidy place to keep the rules, so that MainWindow only deals
-// with widgets and the database only deals with SQL.
-//
-// Nothing in this class touches the user interface, so the rules can be read
-// and checked on their own.
+// Static functions නිසා object එකක් නොහදා AllocationRules::function() ලෙස නීති භාවිත කරයි.
 class AllocationRules
 {
+  // අනෙක් code වලින් භාවිත කළ හැකි functions.
   public:
-    // Which part of the form is wrong. None means the allocation is valid.
+    // Validation වැරැද්ද ඇති field නමයි; None යනු සියල්ල නිවැරදියි.
     enum class Field { None, Name, Index, Department, Email, Supervisor, Project, Schedule };
 
-    // Checks an allocation and returns the first field that is wrong.
+    // Form එකේ පළමු වැරදි field එක ලබාදෙයි; සියල්ල හරි නම් Field::None දෙයි.
     static Field validate(const StudentRecord &record, bool departmentSelected);
-    // Turns that answer into the sentence shown to the user.
+    // වැරදි field එකට පෙන්වන පණිවිඩය තෝරයි. Messages වෙනස් කිරීමට return text වෙනස් කරන්න.
     static QString validationMessage(Field field);
-    // Fills in the values only a brand new allocation needs.
+    // නව booking එකට ඉලක්කම් හතරේ key, created_at සහ Pending status සකසයි.
     static void prepareNewAllocation(StudentRecord &record);
-    // Fills in the values that change when an existing allocation is edited.
+    // Student කළ edit එකකට නැවත Pending යොදයි; admin edit එකේ status එක තබයි.
     static void prepareUpdatedAllocation(StudentRecord &record, bool studentEdit);
 };
 

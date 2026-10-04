@@ -1,3 +1,5 @@
+// Designer දී තෝරාගත් පාට light/dark mode එකට ගළපයි. පාට වෙනස් කිරීමට පහත colour codes බලන්න.
+// #include වලින් මේ file එකට අවශ්‍ය Qt සහ project declarations ලබාගනී.
 #include "designertheme.h"
 
 #include <QDialog>
@@ -7,9 +9,12 @@
 #include <QVariant>
 #include <QWidget>
 
+// නම් නැති namespace එකේ helpers මේ file එක තුළට පමණක් සීමා වේ.
 namespace {
+// Stylesheet එකේ හඳුනාගත් light colours dark colours වලට හරවයි.
 QString recolor(const QString &source, bool dialog)
 {
+    // වම light colour එකයි; දකුණ එයට ගැළපෙන dark colour එකයි.
     const QHash<QString, QString> replacements = {
         {"#f4f7fb", "#0F172A"}, {"#f8fafc", "#0F172A"}, {"#f1f5f9", "#0F172A"},
         {"#ffffff", dialog ? "#172033" : "#1E293B"},
@@ -22,6 +27,7 @@ QString recolor(const QString &source, bool dialog)
     static const QRegularExpression color("#[0-9a-fA-F]{6}(?![0-9a-fA-F])");
     QString result;
     qsizetype position = 0;
+    // Stylesheet හි colour codes එක බැගින් සොයා map එකේ අගයන් යොදයි.
     auto matches = color.globalMatch(source);
     while (matches.hasNext()) {
         const auto match = matches.next();
@@ -30,8 +36,7 @@ QString recolor(const QString &source, bool dialog)
         position = match.capturedEnd();
     }
     result += source.mid(position);
-    // A blue caption needs a lighter shade on dark surfaces. Blue button and
-    // selection backgrounds retain their original white-text contrast.
+    // Blue text dark background එකේ කියවීමට ලා blue කරයි; button background වෙනස් නොකරයි.
     static const QRegularExpression accentText(
         "(?<![\\w-])(color\\s*:\\s*)#2563EB(?![0-9a-fA-F])",
         QRegularExpression::CaseInsensitiveOption);
@@ -40,9 +45,11 @@ QString recolor(const QString &source, bool dialog)
 }
 }
 
+// Controls වල මුල් style මතක තබා theme මාරු කරන විට අදාළ පාට යොදයි.
 void applyDesignerTheme(QWidget *root, bool darkMode)
 {
     const bool dialog = qobject_cast<QDialog *>(root) != nullptr;
+    // Qt ඇතුළත controls වල background, text, selection සහ disabled පාට සකසයි.
     QPalette palette = root->palette();
     palette.setColor(QPalette::Window, darkMode ? QColor(dialog ? "#172033" : "#0F172A") : QColor("#F4F7FB"));
     palette.setColor(QPalette::WindowText, darkMode ? QColor("#F1F5F9") : QColor("#17243B"));
@@ -61,7 +68,7 @@ void applyDesignerTheme(QWidget *root, bool darkMode)
     QList<QWidget *> widgets = root->findChildren<QWidget *>();
     widgets.prepend(root);
     for (QWidget *widget : widgets) {
-        // The snapshot is per-widget so individual Designer style edits survive.
+        // එක් control එකේ මුල් Designer style තබයි; light mode වෙත ආපසු යන විට එය ගනී.
         if (!widget->property("_designerStyleSheet").isValid())
             widget->setProperty("_designerStyleSheet", widget->styleSheet());
         const QString original = widget->property("_designerStyleSheet").toString();

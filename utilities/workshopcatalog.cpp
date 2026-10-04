@@ -1,3 +1,5 @@
+// Workshop නම්, departments සහ images තෝරයි. ලැයිස්තුව සහ department සම්බන්ධය මෙහි වෙනස් කරන්න.
+// #include වලින් මේ file එකට අවශ්‍ය Qt සහ project declarations ලබාගනී.
 #include "workshopcatalog.h"
 
 #include <QColor>
@@ -5,6 +7,7 @@
 #include <QPainter>
 #include <QRect>
 
+// Cards වල workshop අනුපිළිවෙළයි. මෙය වෙනස් කළොත් selection.ui හි category values ද ගළපන්න.
 QStringList workshopCategories()
 {
     return {"Biochemistry",
@@ -19,9 +22,9 @@ QStringList workshopCategories()
             "Measurement Laboratory"};
 }
 
+// Workshop එකට පෙන්වන සම්පූර්ණ නම හදයි; අවශ්‍ය නම් Lab යන කොටස වෙනස් කරන්න.
 QString workshopTitle(const QString &category)
 {
-    // Two workshops already carry their full name, the others simply add " Lab".
     if (category == "Drawing Office")
         return category;
     if (category.endsWith(" Laboratory"))
@@ -29,9 +32,9 @@ QString workshopTitle(const QString &category)
     return category + " Lab";
 }
 
+// Workshop එක අයත් department එක තෝරයි. Student ගේ department එක මෙයින් තීරණය නොකරයි.
 QString workshopDepartment(const QString &category)
 {
-    // Explicit membership keeps the owning department stable when cards are reordered.
     if (QStringList{"Biochemistry", "Electronics", "Computer"}.contains(category))
         return "Department of Nano Science Technology";
     if (QStringList{"Geotechnical", "Surveying", "Concrete"}.contains(category))
@@ -43,16 +46,15 @@ QString workshopDepartment(const QString &category)
     return QString();
 }
 
+// Resource image එක label ප්‍රමාණයට ගළපයි; image නැත්නම් අකුරු සහිත badge එකක් අඳියි.
 QPixmap workshopImage(const QString &category, const QSize &size)
 {
-    // resources/images.qrc embeds pictures from "resources/workshops and laboratory"
-    // under /workshops, so they are found from any run directory.
+    // සැබෑ image path resources/images.qrc හි ඇත; :/workshops/... යනු එහි alias එකයි.
     const QPixmap supplied(QString(":/workshops/%1.png").arg(category));
     if (!supplied.isNull())
         return supplied.scaled(size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
-    // Otherwise draw a badge: a soft rounded square with the initials on top.
-    // The picture is drawn at twice the size so it stays sharp on high DPI screens.
+    // Image නැත්නම් පැහැදිලි badge එකක් සඳහා දෙගුණයක් resolution එකෙන් අඳියි.
     QPixmap image(size * 2);
     image.setDevicePixelRatio(2);
     image.fill(Qt::transparent);
@@ -60,19 +62,20 @@ QPixmap workshopImage(const QString &category, const QSize &size)
     QPainter painter(&image);
     painter.setRenderHint(QPainter::Antialiasing);
 
-    // Every workshop gets its own colour by moving around the HSV colour wheel.
     const int position = qMax(0, workshopCategories().indexOf(category));
+    // Workshop අනුව badge පාට වෙනස් කරයි; HSV අගයන් මෙහි වෙනස් කළ හැක.
     const QColor accent = QColor::fromHsv((210 + position * 19) % 360, 170, 195);
     QColor soft = accent;
     soft.setAlpha(24);
 
+    // Badge එකේ ප්‍රමාණය සහ කොන් වටකුරු කිරීමේ අගයන් පහත ඇත.
     const int diameter = qMin(size.width(), size.height()) - 8;
     QRect circle((size.width() - diameter) / 2, 4, diameter, diameter);
     painter.setPen(Qt::NoPen);
     painter.setBrush(soft);
     painter.drawRoundedRect(circle, 20, 20);
 
-    // Take the first letter of each word, for example "Drawing Office" -> "DO".
+    // Workshop වචනවල මුල් අකුරු එකතු කරයි; Drawing Office සඳහා DO වේ.
     QString initials;
     for (const QString &word : category.split(' ', Qt::SkipEmptyParts))
         initials += word.left(1);
@@ -80,6 +83,7 @@ QPixmap workshopImage(const QString &category, const QSize &size)
         initials = "SL";
 
     painter.setPen(accent);
+    // Badge අකුරු font එක සහ ප්‍රමාණය මෙහි වෙනස් කරන්න.
     painter.setFont(QFont("Segoe UI", diameter / 4, QFont::Bold));
     painter.drawText(circle, Qt::AlignCenter, initials.left(2));
     painter.end();

@@ -1,29 +1,25 @@
+// Workshop නම, department සහ image ලබාගන්නා functions මෙහි ප්‍රකාශ කරයි.
+// එකම header එක කිහිප වරක් include වුවත් definitions එකවරක් පමණක් යෙදීමට මේ guard එක ඇත.
 #ifndef WORKSHOPCATALOG_H
 #define WORKSHOPCATALOG_H
 
+// #include වලින් මේ file එකට අවශ්‍ය Qt සහ project declarations ලබාගනී.
 #include <QPixmap>
 #include <QSize>
 #include <QString>
 #include <QStringList>
 
-// ---------------------------------------------------------------------------
-// Information about the workshops this program offers.
-// These are plain functions and not a class, because there is no data to
-// store. They only return fixed information about the workshops.
-// ---------------------------------------------------------------------------
 
-// The names of all workshops, in the order they appear on the home page.
+// Cards වල workshop අනුපිළිවෙළයි. මෙය වෙනස් කළොත් selection.ui හි category values ද ගළපන්න.
 QStringList workshopCategories();
 
-// The heading shown for a workshop, for example "Computer Lab".
+// Workshop එකට පෙන්වන සම්පූර්ණ නම හදයි; අවශ්‍ය නම් Lab යන කොටස වෙනස් කරන්න.
 QString workshopTitle(const QString &category);
 
-// The department that runs the workshop.
+// Workshop එක අයත් department එක තෝරයි. Student ගේ department එක මෙයින් තීරණය නොකරයි.
 QString workshopDepartment(const QString &category);
 
-// The picture shown on a workshop card.
-// It loads the embedded image mapped from resources/workshops and laboratory.
-// If the resource is missing, it draws a coloured badge with the workshop initials.
+// Resource image එක label ප්‍රමාණයට ගළපයි; image නැත්නම් අකුරු සහිත badge එකක් අඳියි.
 QPixmap workshopImage(const QString &category, const QSize &size);
 
-#endif // WORKSHOPCATALOG_H
+#endif

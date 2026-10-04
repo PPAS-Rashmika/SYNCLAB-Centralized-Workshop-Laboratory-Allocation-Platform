@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
+ <!-- Student booking form එකයි; labels, input geometry සහ department list මෙහි වෙනස් කරන්න. -->
  <class>formWidget</class>
+ <!-- formWidget: ඇතුළත controls තබන කොටස; name එක C++ code එකේද භාවිත විය හැක. -->
  <widget class="QWidget" name="formWidget">
+  <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -10,6 +13,7 @@
     <height>780</height>
    </rect>
   </property>
+  <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
   <property name="font">
    <font>
     <family>Segoe UI</family>
@@ -17,10 +21,13 @@
     <bold>false</bold>
    </font>
   </property>
+  <!-- මෙම control එකේ පාට, border, padding සහ radius සඳහා CSS rules මෙහි ඇත. -->
   <property name="styleSheet">
    <string notr="true">QWidget { color:#17243B;   }QMainWindow, QStackedWidget, QWidget#welcomeWidget, QWidget#selectionWidget, QWidget#calanderWidget, QWidget#formWidget, QWidget#adminWidget { background:#F4F7FB; }QScrollArea { border:none; background:transparent; } QScrollArea &gt; QWidget &gt; QWidget { background:#F4F7FB; }QScrollArea#cardsScrollArea &gt; QWidget, QWidget#cardsScrollContents { background:transparent; }QLabel { background:transparent; }QLabel#welcomeTitle { color:#52647D;   }QLabel#syncLabTitle {   }QLabel#syncLabSubtitle {   }QLabel#welcomeDesc, QLabel#selectedDescLabel2, QLabel#adminWsDescLbl { color:#52647D;  }QLabel#selectTitleLabel, QLabel#selectedNameLabel2, QLabel#confirmTitleLbl, QLabel#adminWsTitleLbl {   }QLineEdit, QTextEdit, QComboBox { background:#FFFFFF; border:1px solid #D4DEEB; border-radius:7px; padding:8px; selection-background-color:#2563EB; selection-color:white; }QLineEdit:focus, QTextEdit:focus, QComboBox:focus { border:1px solid #2563EB; }QComboBox QAbstractItemView { background:#FFFFFF; color:#17243B; selection-background-color:#2563EB; selection-color:white; }QPushButton { background:#FFFFFF; color:#17243B; border:1px solid #D4DEEB; border-radius:8px; padding:9px 14px;  }QPushButton:hover, QPushButton:focus { background:#EAF2FF; border-color:#2563EB; }QPushButton:pressed { border:2px solid #2563EB; }QPushButton#allocateNowBtn, QPushButton#nextBtn, QPushButton#nextTo3Btn, QPushButton#submitBtn, QPushButton#updateBtn { background:#2563EB; color:white; border:1px solid #2563EB; }QPushButton#allocateNowBtn:hover, QPushButton#nextBtn:hover, QPushButton#nextTo3Btn:hover, QPushButton#submitBtn:hover, QPushButton#updateBtn:hover { background:#1D4ED8; }QPushButton#deleteBtn, QPushButton#adminDelBtn { color:#BE123C; }QPushButton[timeSlot=true] { padding:10px 8px; }QPushButton:checked { background:#2563EB; color:white; border-color:#2563EB; }QPushButton:disabled { background:#F4F7FB; color:#52647D; border:1px solid #D4DEEB; }QPushButton#allocateNowBtn:disabled, QPushButton#nextBtn:disabled, QPushButton#nextTo3Btn:disabled, QPushButton#submitBtn:disabled, QPushButton#updateBtn:disabled, QPushButton#deleteBtn:disabled, QPushButton#adminDelBtn:disabled { background:#F4F7FB; color:#52647D; border:1px solid #D4DEEB; }QFrame#summaryBox { background:#EAF2FF; border:1px solid #D4DEEB; border-radius:10px; }QLabel#summaryDateLbl { color:#2563EB;  }QTableWidget { background:#FFFFFF; alternate-background-color:#F4F7FB; border:1px solid #D4DEEB; gridline-color:#D4DEEB; selection-background-color:#EAF2FF; selection-color:#17243B; }QHeaderView::section { font-weight:600; background:#EAF2FF; color:#17243B; border:none; padding:10px;  }QTableWidget QLineEdit, QTableWidget QComboBox { padding:4px; border-radius:4px; }QCalendarWidget { background:#FFFFFF; border:1px solid #D4DEEB; border-radius:8px; }QCalendarWidget QWidget#qt_calendar_navigationbar { background:#2563EB; }QCalendarWidget QToolButton { font-weight:600; color:white; background:transparent; padding:6px;  }QCalendarWidget QMenu, QCalendarWidget QSpinBox { background:#FFFFFF; color:#17243B; }QCalendarWidget QAbstractItemView { background:#FFFFFF; color:#17243B; selection-background-color:#2563EB; selection-color:white; outline:0; }QToolTip { background:#FFFFFF; color:#17243B; border:1px solid #D4DEEB; padding:6px; }</string>
   </property>
+  <!-- backTo2Btn: ක්ලික් කළ හැකි button එක; name එක C++ code එකේද භාවිත විය හැක. -->
   <widget class="QPushButton" name="backTo2Btn">
+   <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
    <property name="geometry">
     <rect>
      <x>24</x>
@@ -29,6 +36,7 @@
      <height>37</height>
     </rect>
    </property>
+   <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
    <property name="font">
     <font>
      <family>Segoe UI</family>
@@ -39,11 +47,14 @@
    <property name="cursor">
     <cursorShape>PointingHandCursor</cursorShape>
    </property>
+   <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
    <property name="text">
     <string>Back to Time Slot</string>
    </property>
   </widget>
+  <!-- confirmTitleLbl: text/image පෙන්වන label එක; name එක C++ code එකේද භාවිත විය හැක. -->
   <widget class="QLabel" name="confirmTitleLbl">
+   <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
    <property name="geometry">
     <rect>
      <x>24</x>
@@ -52,6 +63,7 @@
      <height>33</height>
     </rect>
    </property>
+   <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
    <property name="font">
     <font>
      <family>Segoe UI</family>
@@ -59,6 +71,7 @@
      <bold>true</bold>
     </font>
    </property>
+   <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
    <property name="text">
     <string>Finalize your allocation</string>
    </property>
@@ -66,7 +79,9 @@
     <enum>Qt::TextFormat::PlainText</enum>
    </property>
   </widget>
+  <!-- summaryBox: card හෝ border සහිත කොටස; name එක C++ code එකේද භාවිත විය හැක. -->
   <widget class="QFrame" name="summaryBox">
+   <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
    <property name="geometry">
     <rect>
      <x>24</x>
@@ -75,6 +90,7 @@
      <height>72</height>
     </rect>
    </property>
+   <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
    <property name="font">
     <font>
      <family>Segoe UI</family>
@@ -82,7 +98,9 @@
      <bold>false</bold>
     </font>
    </property>
+   <!-- summaryDateLbl: text/image පෙන්වන label එක; name එක C++ code එකේද භාවිත විය හැක. -->
    <widget class="QLabel" name="summaryDateLbl">
+    <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
     <property name="geometry">
      <rect>
       <x>21</x>
@@ -91,6 +109,7 @@
       <height>17</height>
      </rect>
     </property>
+    <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
     <property name="font">
      <font>
       <family>Segoe UI</family>
@@ -98,17 +117,21 @@
       <bold>true</bold>
      </font>
     </property>
+    <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
     <property name="text">
      <string>Date: </string>
     </property>
     <property name="textFormat">
      <enum>Qt::TextFormat::PlainText</enum>
     </property>
+    <!-- true නම් ඉඩ මදි text එක ඊළඟ පේළියට යයි. -->
     <property name="wordWrap">
      <bool>true</bool>
     </property>
    </widget>
+   <!-- summaryTimeLbl: text/image පෙන්වන label එක; name එක C++ code එකේද භාවිත විය හැක. -->
    <widget class="QLabel" name="summaryTimeLbl">
+    <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
     <property name="geometry">
      <rect>
       <x>21</x>
@@ -117,6 +140,7 @@
       <height>17</height>
      </rect>
     </property>
+    <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
     <property name="font">
      <font>
       <family>Segoe UI</family>
@@ -124,18 +148,22 @@
       <bold>false</bold>
      </font>
     </property>
+    <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
     <property name="text">
      <string>Time: </string>
     </property>
     <property name="textFormat">
      <enum>Qt::TextFormat::PlainText</enum>
     </property>
+    <!-- true නම් ඉඩ මදි text එක ඊළඟ පේළියට යයි. -->
     <property name="wordWrap">
      <bool>true</bool>
     </property>
    </widget>
   </widget>
+  <!-- formScrollArea: ඉඩ මදි විට scroll කරන කොටස; name එක C++ code එකේද භාවිත විය හැක. -->
   <widget class="QScrollArea" name="formScrollArea">
+   <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
    <property name="geometry">
     <rect>
      <x>24</x>
@@ -144,6 +172,7 @@
      <height>476</height>
     </rect>
    </property>
+   <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
    <property name="font">
     <font>
      <family>Segoe UI</family>
@@ -157,7 +186,9 @@
    <property name="widgetResizable">
     <bool>false</bool>
    </property>
+   <!-- formScrollContents: ඇතුළත controls තබන කොටස; name එක C++ code එකේද භාවිත විය හැක. -->
    <widget class="QWidget" name="formScrollContents">
+    <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
     <property name="geometry">
      <rect>
       <x>0</x>
@@ -166,12 +197,14 @@
       <height>476</height>
      </rect>
     </property>
+    <!-- Control එක මෙයට වඩා කුඩා කිරීමට ඉඩ නොදෙන ප්‍රමාණයයි. -->
     <property name="minimumSize">
      <size>
       <width>1132</width>
       <height>476</height>
      </size>
     </property>
+    <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
     <property name="font">
      <font>
       <family>Segoe UI</family>
@@ -179,7 +212,9 @@
       <bold>false</bold>
      </font>
     </property>
+    <!-- label: text/image පෙන්වන label එක; name එක C++ code එකේද භාවිත විය හැක. -->
     <widget class="QLabel" name="label">
+     <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
      <property name="geometry">
       <rect>
        <x>9</x>
@@ -188,6 +223,7 @@
        <height>21</height>
       </rect>
      </property>
+     <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
      <property name="font">
       <font>
        <family>Segoe UI</family>
@@ -195,6 +231,7 @@
        <bold>false</bold>
       </font>
      </property>
+     <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
      <property name="text">
       <string>Full name *</string>
      </property>
@@ -205,7 +242,9 @@
       <cstring>nameInput</cstring>
      </property>
     </widget>
+    <!-- nameInput: එක් පේළියක text input එක; name එක C++ code එකේද භාවිත විය හැක. -->
     <widget class="QLineEdit" name="nameInput">
+     <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
      <property name="geometry">
       <rect>
        <x>9</x>
@@ -214,6 +253,7 @@
        <height>37</height>
       </rect>
      </property>
+     <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
      <property name="font">
       <font>
        <family>Segoe UI</family>
@@ -224,6 +264,7 @@
      <property name="maxLength">
       <number>254</number>
      </property>
+     <!-- Input එක හිස් විට පෙන්වන උදව් text එක මෙහි වෙනස් කරන්න. -->
      <property name="placeholderText">
       <string>Enter your full name</string>
      </property>
@@ -231,7 +272,9 @@
       <bool>true</bool>
      </property>
     </widget>
+    <!-- label_2: text/image පෙන්වන label එක; name එක C++ code එකේද භාවිත විය හැක. -->
     <widget class="QLabel" name="label_2">
+     <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
      <property name="geometry">
       <rect>
        <x>9</x>
@@ -240,6 +283,7 @@
        <height>21</height>
       </rect>
      </property>
+     <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
      <property name="font">
       <font>
        <family>Segoe UI</family>
@@ -247,6 +291,7 @@
        <bold>false</bold>
       </font>
      </property>
+     <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
      <property name="text">
       <string>Student index *</string>
      </property>
@@ -257,7 +302,9 @@
       <cstring>indexInput</cstring>
      </property>
     </widget>
+    <!-- indexInput: එක් පේළියක text input එක; name එක C++ code එකේද භාවිත විය හැක. -->
     <widget class="QLineEdit" name="indexInput">
+     <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
      <property name="geometry">
       <rect>
        <x>9</x>
@@ -266,6 +313,7 @@
        <height>37</height>
       </rect>
      </property>
+     <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
      <property name="font">
       <font>
        <family>Segoe UI</family>
@@ -276,6 +324,7 @@
      <property name="maxLength">
       <number>254</number>
      </property>
+     <!-- Input එක හිස් විට පෙන්වන උදව් text එක මෙහි වෙනස් කරන්න. -->
      <property name="placeholderText">
       <string>Enter your student index number</string>
      </property>
@@ -283,7 +332,9 @@
       <bool>true</bool>
      </property>
     </widget>
+    <!-- label_3: text/image පෙන්වන label එක; name එක C++ code එකේද භාවිත විය හැක. -->
     <widget class="QLabel" name="label_3">
+     <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
      <property name="geometry">
       <rect>
        <x>9</x>
@@ -292,6 +343,7 @@
        <height>21</height>
       </rect>
      </property>
+     <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
      <property name="font">
       <font>
        <family>Segoe UI</family>
@@ -299,6 +351,7 @@
        <bold>false</bold>
       </font>
      </property>
+     <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
      <property name="text">
       <string>Department *</string>
      </property>
@@ -309,7 +362,9 @@
       <cstring>deptInput</cstring>
      </property>
     </widget>
+    <!-- deptInput: ලැයිස්තුවෙන් අගයක් තෝරන control එක; name එක C++ code එකේද භාවිත විය හැක. -->
     <widget class="QComboBox" name="deptInput">
+     <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
      <property name="geometry">
       <rect>
        <x>9</x>
@@ -318,6 +373,7 @@
        <height>37</height>
       </rect>
      </property>
+     <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
      <property name="font">
       <font>
        <family>Segoe UI</family>
@@ -334,33 +390,45 @@
      <property name="minimumContentsLength">
       <number>24</number>
      </property>
+     <!-- Combo list එකේ එක් තේරීමක්; නම මෙහි වෙනස් කළ හැක. -->
      <item>
+      <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
       <property name="text">
        <string>Select department</string>
       </property>
      </item>
+     <!-- Combo list එකේ එක් තේරීමක්; නම මෙහි වෙනස් කළ හැක. -->
      <item>
+      <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
       <property name="text">
        <string>Department of Construction Technology</string>
       </property>
      </item>
+     <!-- Combo list එකේ එක් තේරීමක්; නම මෙහි වෙනස් කළ හැක. -->
      <item>
+      <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
       <property name="text">
        <string>Department of Electrotechnology</string>
       </property>
      </item>
+     <!-- Combo list එකේ එක් තේරීමක්; නම මෙහි වෙනස් කළ හැක. -->
      <item>
+      <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
       <property name="text">
        <string>Department of Mechanical and Manufacturing Technology</string>
       </property>
      </item>
+     <!-- Combo list එකේ එක් තේරීමක්; නම මෙහි වෙනස් කළ හැක. -->
      <item>
+      <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
       <property name="text">
        <string>Department of Nano Science Technology</string>
       </property>
      </item>
     </widget>
+    <!-- label_email: text/image පෙන්වන label එක; name එක C++ code එකේද භාවිත විය හැක. -->
     <widget class="QLabel" name="label_email">
+     <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
      <property name="geometry">
       <rect>
        <x>9</x>
@@ -369,6 +437,7 @@
        <height>21</height>
       </rect>
      </property>
+     <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
      <property name="font">
       <font>
        <family>Segoe UI</family>
@@ -376,6 +445,7 @@
        <bold>false</bold>
       </font>
      </property>
+     <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
      <property name="text">
       <string>Email address *</string>
      </property>
@@ -386,7 +456,9 @@
       <cstring>emailInput</cstring>
      </property>
     </widget>
+    <!-- emailInput: එක් පේළියක text input එක; name එක C++ code එකේද භාවිත විය හැක. -->
     <widget class="QLineEdit" name="emailInput">
+     <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
      <property name="geometry">
       <rect>
        <x>9</x>
@@ -395,6 +467,7 @@
        <height>37</height>
       </rect>
      </property>
+     <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
      <property name="font">
       <font>
        <family>Segoe UI</family>
@@ -405,6 +478,7 @@
      <property name="maxLength">
       <number>254</number>
      </property>
+     <!-- Input එක හිස් විට පෙන්වන උදව් text එක මෙහි වෙනස් කරන්න. -->
      <property name="placeholderText">
       <string>name@university.edu</string>
      </property>
@@ -412,7 +486,9 @@
       <bool>true</bool>
      </property>
     </widget>
+    <!-- label_supervisor: text/image පෙන්වන label එක; name එක C++ code එකේද භාවිත විය හැක. -->
     <widget class="QLabel" name="label_supervisor">
+     <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
      <property name="geometry">
       <rect>
        <x>9</x>
@@ -421,6 +497,7 @@
        <height>21</height>
       </rect>
      </property>
+     <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
      <property name="font">
       <font>
        <family>Segoe UI</family>
@@ -428,6 +505,7 @@
        <bold>false</bold>
       </font>
      </property>
+     <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
      <property name="text">
       <string>Supervisor name *</string>
      </property>
@@ -438,7 +516,9 @@
       <cstring>supervisorInput</cstring>
      </property>
     </widget>
+    <!-- supervisorInput: එක් පේළියක text input එක; name එක C++ code එකේද භාවිත විය හැක. -->
     <widget class="QLineEdit" name="supervisorInput">
+     <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
      <property name="geometry">
       <rect>
        <x>9</x>
@@ -447,6 +527,7 @@
        <height>37</height>
       </rect>
      </property>
+     <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
      <property name="font">
       <font>
        <family>Segoe UI</family>
@@ -457,6 +538,7 @@
      <property name="maxLength">
       <number>254</number>
      </property>
+     <!-- Input එක හිස් විට පෙන්වන උදව් text එක මෙහි වෙනස් කරන්න. -->
      <property name="placeholderText">
       <string>Enter the name of your supervisor</string>
      </property>
@@ -464,7 +546,9 @@
       <bool>true</bool>
      </property>
     </widget>
+    <!-- label_project: text/image පෙන්වන label එක; name එක C++ code එකේද භාවිත විය හැක. -->
     <widget class="QLabel" name="label_project">
+     <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
      <property name="geometry">
       <rect>
        <x>9</x>
@@ -473,6 +557,7 @@
        <height>21</height>
       </rect>
      </property>
+     <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
      <property name="font">
       <font>
        <family>Segoe UI</family>
@@ -480,6 +565,7 @@
        <bold>false</bold>
       </font>
      </property>
+     <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
      <property name="text">
       <string>Project name *</string>
      </property>
@@ -490,7 +576,9 @@
       <cstring>projectInput</cstring>
      </property>
     </widget>
+    <!-- projectInput: එක් පේළියක text input එක; name එක C++ code එකේද භාවිත විය හැක. -->
     <widget class="QLineEdit" name="projectInput">
+     <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
      <property name="geometry">
       <rect>
        <x>9</x>
@@ -499,6 +587,7 @@
        <height>37</height>
       </rect>
      </property>
+     <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
      <property name="font">
       <font>
        <family>Segoe UI</family>
@@ -509,6 +598,7 @@
      <property name="maxLength">
       <number>254</number>
      </property>
+     <!-- Input එක හිස් විට පෙන්වන උදව් text එක මෙහි වෙනස් කරන්න. -->
      <property name="placeholderText">
       <string>Enter the title of your project</string>
      </property>
@@ -516,7 +606,9 @@
       <bool>true</bool>
      </property>
     </widget>
+    <!-- label_6: text/image පෙන්වන label එක; name එක C++ code එකේද භාවිත විය හැක. -->
     <widget class="QLabel" name="label_6">
+     <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
      <property name="geometry">
       <rect>
        <x>578</x>
@@ -525,6 +617,7 @@
        <height>21</height>
       </rect>
      </property>
+     <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
      <property name="font">
       <font>
        <family>Segoe UI</family>
@@ -532,6 +625,7 @@
        <bold>false</bold>
       </font>
      </property>
+     <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
      <property name="text">
       <string>Description (optional)</string>
      </property>
@@ -542,7 +636,9 @@
       <cstring>descriptionInput</cstring>
      </property>
     </widget>
+    <!-- descriptionInput: පේළි කිහිපයක text input එක; name එක C++ code එකේද භාවිත විය හැක. -->
     <widget class="QTextEdit" name="descriptionInput">
+     <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
      <property name="geometry">
       <rect>
        <x>578</x>
@@ -551,6 +647,7 @@
        <height>427</height>
       </rect>
      </property>
+     <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
      <property name="font">
       <font>
        <family>Segoe UI</family>
@@ -564,13 +661,16 @@
      <property name="acceptRichText">
       <bool>false</bool>
      </property>
+     <!-- Input එක හිස් විට පෙන්වන උදව් text එක මෙහි වෙනස් කරන්න. -->
      <property name="placeholderText">
       <string>Describe the purpose of your allocation and any equipment you need (optional).</string>
      </property>
     </widget>
    </widget>
   </widget>
+  <!-- deleteBtn: ක්ලික් කළ හැකි button එක; name එක C++ code එකේද භාවිත විය හැක. -->
   <widget class="QPushButton" name="deleteBtn">
+   <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
    <property name="geometry">
     <rect>
      <x>24</x>
@@ -579,6 +679,7 @@
      <height>50</height>
     </rect>
    </property>
+   <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
    <property name="font">
     <font>
      <family>Segoe UI</family>
@@ -592,11 +693,14 @@
    <property name="visible">
     <bool>false</bool>
    </property>
+   <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
    <property name="text">
     <string>Delete Allocation</string>
    </property>
   </widget>
+  <!-- updateBtn: ක්ලික් කළ හැකි button එක; name එක C++ code එකේද භාවිත විය හැක. -->
   <widget class="QPushButton" name="updateBtn">
+   <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
    <property name="geometry">
     <rect>
      <x>597</x>
@@ -605,6 +709,7 @@
      <height>50</height>
     </rect>
    </property>
+   <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
    <property name="font">
     <font>
      <family>Segoe UI</family>
@@ -618,11 +723,14 @@
    <property name="visible">
     <bool>false</bool>
    </property>
+   <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
    <property name="text">
     <string>Update Allocation</string>
    </property>
   </widget>
+  <!-- submitBtn: ක්ලික් කළ හැකි button එක; name එක C++ code එකේද භාවිත විය හැක. -->
   <widget class="QPushButton" name="submitBtn">
+   <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
    <property name="geometry">
     <rect>
      <x>24</x>
@@ -631,6 +739,7 @@
      <height>50</height>
     </rect>
    </property>
+   <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
    <property name="font">
     <font>
      <family>Segoe UI</family>
@@ -641,11 +750,13 @@
    <property name="cursor">
     <cursorShape>PointingHandCursor</cursorShape>
    </property>
+   <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
    <property name="text">
     <string>Confirm Allocation</string>
    </property>
   </widget>
  </widget>
+ <!-- Tab key මගින් controls අතර යන අනුපිළිවෙළ මෙහි ඇත. -->
  <tabstops>
   <tabstop>backTo2Btn</tabstop>
   <tabstop>nameInput</tabstop>

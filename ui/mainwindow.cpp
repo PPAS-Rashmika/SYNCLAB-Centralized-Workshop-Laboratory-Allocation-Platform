@@ -1,11 +1,5 @@
-// MainWindow is the controller of the program.
-// Everything the window does lives in this one file, grouped into sections:
-//   1. Starting the program  (constructor, destructor, first setup)
-//   2. Appearance            (theme and workshop card state)
-//   3. Moving between pages
-//   4. Date and time page
-//   5. Allocation form page
-//   6. Administrator page    (table, email drafts, settings)
+// පිටු පහේ වැඩ මෙහි පාලනය කරයි. Buttons, bookings, calendar සහ admin වැඩ පහත functions වල ඇත.
+// #include වලින් මේ file එකට අවශ්‍ය Qt සහ project declarations ලබාගනී.
 #include "mainwindow.h"
 #include "designertheme.h"
 #include <QStackedWidget>
@@ -43,28 +37,33 @@
 #include <QStyle>
 #include <QResizeEvent>
 
+// නම් නැති namespace එකේ helpers මේ file එක තුළට පමණක් සීමා වේ.
 namespace {
-// Preserve Designer coordinates as the baseline, expanding the authored
-// containers and controls to use the available window space. Small windows
-// retain readable control sizes and scroll the baseline canvas.
 class DesignerPageScroll final : public QScrollArea
 {
+// අනෙක් code වලින් භාවිත කළ හැකි functions.
 public:
+    // Designer පිටුව scroll area එකකට දමා මුල් ප්‍රමාණය මතක තබයි.
     DesignerPageScroll(QWidget *parent, QWidget *canvas)
         : QScrollArea(parent), baseSize(canvas->size())
     {
         capture(canvas);
+        // Scroll area border ඉවත් කර Designer canvas එකම පෙන්වයි.
         setFrameShape(QFrame::NoFrame);
         setWidgetResizable(false);
         setAlignment(Qt::AlignLeft | Qt::AlignTop);
         setWidget(canvas);
     }
 
+// මෙම class එකට සහ එයින් ලබාගත් classes වලට භාවිත කළ හැකි functions.
 protected:
+    // කවුළුවේ ප්‍රමාණය වෙනස් වූ විට ඇතුළත controls නැවත ගළපයි.
     void resizeEvent(QResizeEvent *event) override
     {
+        // කවුළුවේ ප්‍රමාණය වෙනස් වූ විට ඇතුළත controls නැවත ගළපයි.
         QScrollArea::resizeEvent(event);
         const QSize target = maximumViewportSize().expandedTo(baseSize);
+        // මුල් width/height සහ අලුත් ප්‍රමාණයේ අනුපාතයෙන් controls resize කරයි.
         const double sx = double(target.width()) / baseSize.width();
         const double sy = double(target.height()) / baseSize.height();
         widget()->resize(target);
@@ -75,15 +74,19 @@ protected:
         }
     }
 
+// මෙම class එක තුළ පමණක් භාවිත කරන functions සහ දත්ත.
 private:
+    // එක් control එක සහ එහි මුල් ස්ථානය/ප්‍රමාණය එකම entry එකක් ලෙස තබයි.
     struct Item { QWidget *widget; QRect geometry; };
     QSize baseSize;
     QList<Item> items;
 
+    // පිටුවේ controls වල මුල් ස්ථාන සහ ප්‍රමාණ සටහන් කරයි; resize වෙද්දී ඒවා භාවිත කරයි.
     void capture(QWidget *container)
     {
         for (QWidget *child : container->findChildren<QWidget *>(QString(), Qt::FindDirectChildrenOnly)) {
             items.append({child, child->geometry()});
+            // ඇතුළත scroll area එකක් තිබේ නම් එහි controls ද මතක තබයි.
             if (auto *scroll = qobject_cast<QScrollArea *>(child)) {
                 if (scroll->widget()) {
                     items.append({scroll->widget(), scroll->widget()->geometry()});
@@ -97,6 +100,7 @@ private:
     }
 };
 
+// පිටුවක් scroll wrapper එක සමඟ stack එකට එක් කරයි. index එකෙන් පිටුව හඳුනාගනී.
 void addDesignerPage(QStackedWidget *stack, QWidget *canvas, int index)
 {
     auto *scroll = new DesignerPageScroll(stack, canvas);
@@ -105,21 +109,19 @@ void addDesignerPage(QStackedWidget *stack, QWidget *canvas, int index)
 }
 }
 
-// =====================================================================
-// 1. STARTING THE PROGRAM
-// =====================================================================
 
-// Constructor
+// පිටු පහ සාදා database එක විවෘත කර buttons සහ ඒවායේ functions සම්බන්ධ කරයි.
 MainWindow::MainWindow(QWidget *parent, const QString &databasePath)
     : QMainWindow(parent), welcomeUi(new Ui::welcomeWidget), selectionUi(new Ui::selectionWidget),
       calanderUi(new Ui::calanderWidget), formUi(new Ui::formWidget), adminUi(new Ui::adminWidget)
 {
-    // Create the page host directly; only the actual pages need .ui files.
     setObjectName("MainWindow");
+    // Window එකේ මුල් ප්‍රමාණයයි; Designer page ප්‍රමාණයත් සමඟ ගළපන්න.
     resize(1180, 780);
     setWindowTitle(tr("SYNCLAB | Centralized Workshop & Laboratory Allocation Platform"));
     setWindowIcon(QIcon(":/branding/logo.png"));
     setFont(QFont("Segoe UI", 10));
+    // පොදු UI පාට සහ borders මෙහි ඇත; # colour codes සහ button rules වෙනස් කළ හැක.
     setStyleSheet(QStringLiteral(R"CSS(
 QWidget { color:#17243B; }
 QMainWindow, QStackedWidget, QWidget#welcomeWidget, QWidget#selectionWidget, QWidget#calanderWidget, QWidget#formWidget, QWidget#adminWidget { background:#F4F7FB; }
@@ -157,9 +159,11 @@ QCalendarWidget QMenu, QCalendarWidget QSpinBox { background:#FFFFFF; color:#172
 QCalendarWidget QAbstractItemView { background:#FFFFFF; color:#17243B; selection-background-color:#2563EB; selection-color:white; outline:0; }
 QToolTip { background:#FFFFFF; color:#17243B; border:1px solid #D4DEEB; padding:6px; }
 )CSS"));
+    // එක් වරකට එක් පිටුවක් පෙන්වන page stack එකයි.
     stackedWidget = new QStackedWidget(this);
     stackedWidget->setObjectName("stackedWidget");
     setCentralWidget(stackedWidget);
+    // Page අංක: 0 welcome, 1 selection, 2 calander, 3 form, 4 admin.
     welcomeWidget = new QWidget();
     welcomeUi->setupUi(welcomeWidget);
     addDesignerPage(stackedWidget, welcomeWidget, 0);
@@ -176,11 +180,12 @@ QToolTip { background:#FFFFFF; color:#17243B; border:1px solid #D4DEEB; padding:
     adminUi->setupUi(adminWidget);
     addDesignerPage(stackedWidget, adminWidget, 4);
 
-    // Open the SQLite database and make sure the table exists.
+    // Test එකෙන් path එකක් නොදුන්නොත් filestorage.cpp තෝරන database එක භාවිත කරයි.
     const QString path = databasePath.isEmpty() ? defaultDatabasePath() : databasePath;
     dbManager = new SqliteDatabaseManager(path);
     databaseReady = dbManager->createTable();
 
+    // Designer දී තැබූ text මතක තබයි; edit වැඩේ අවසන් කළ විට එය නැවත යොදයි.
     calanderUi->backTo1Btn->setProperty("_designerBackText", calanderUi->backTo1Btn->text());
     formUi->confirmTitleLbl->setProperty("_designerNewTitle", formUi->confirmTitleLbl->text());
     bindWorkshopCards();
@@ -191,32 +196,50 @@ QToolTip { background:#FFFFFF; color:#17243B; border:1px solid #D4DEEB; padding:
                    .toBool());
     stackedWidget->setCurrentIndex(0);
 
-    // Connect every button to the function that should run when it is clicked.
+    // Allocate now button එක new booking function එකට සම්බන්ධ කරයි.
     connect(welcomeUi->allocateNowBtn, &QPushButton::clicked, this, &MainWindow::startNewAllocation);
+    // Edit allocation button එකෙන් allocation key ඉල්ලයි.
     connect(welcomeUi->editAllocationBtn, &QPushButton::clicked, this, &MainWindow::startEditAllocationFlow);
+    // Settings button එකෙන් master passcode පරීක්ෂාව ආරම්භ කරයි.
     connect(welcomeUi->settingsBtn0, &QPushButton::clicked, this, &MainWindow::openSystemSettings);
+    // Selection Back button එකෙන් save නොකළ වෙනස්කම් ගැන අසා ආපසු යයි.
     connect(selectionUi->backTo0Btn, &QPushButton::clicked, this, &MainWindow::cancelCurrentFlow);
+    // Selection Next button එක calendar පිටුවට ගෙන යයි.
     connect(selectionUi->nextBtn, &QPushButton::clicked, this, &MainWindow::onNextClicked);
+    // Calendar Back button එක අදාළ පෙර පිටුවට ගෙන යයි.
     connect(calanderUi->backTo1Btn, &QPushButton::clicked, this, &MainWindow::goBackTo1);
+    // Calendar Next button එකෙන් දිනය/slots form summary එකට ගනී.
     connect(calanderUi->nextTo3Btn, &QPushButton::clicked, this, &MainWindow::onNextTo3Clicked);
+    // Form Back button එක calendar පිටුවට ගෙන යයි.
     connect(formUi->backTo2Btn, &QPushButton::clicked, this, &MainWindow::goBackTo2);
+    // දිනය මාරු වූ විට available slots නැවත ලබාගනී.
     connect(calanderUi->calendar, &QCalendarWidget::selectionChanged, this,
             &MainWindow::onCalendarSelectionChanged);
+    // Submit button එකෙන් අලුත් booking එක save කරයි.
     connect(formUi->submitBtn, &QPushButton::clicked, this, &MainWindow::submitData);
+    // Update button එකෙන් පවතින booking වෙනස්කම් save කරයි.
     connect(formUi->updateBtn, &QPushButton::clicked, this, &MainWindow::updateData);
+    // Delete button එකෙන් තහවුරු කිරීමෙන් පසු booking එක මකයි.
     connect(formUi->deleteBtn, &QPushButton::clicked, this, &MainWindow::deleteData);
+    // Administrator button එකෙන් workshop admin passcode ඉල්ලයි.
     connect(calanderUi->adminBtn2, &QPushButton::clicked, this, &MainWindow::showRecordsWindow);
+    // Admin Back button එක welcome පිටුවට ගෙන යයි.
     connect(adminUi->adminBackBtn, &QPushButton::clicked, this, &MainWindow::goBackFromAdmin);
+    // Admin Settings button එකෙන් emails දෙක වෙනස් කරයි.
     connect(adminUi->adminSettingsBtn, &QPushButton::clicked, this,
             &MainWindow::openAdminEmailSettings);
+    // Show all button එකෙන් date filter ඉවත් කරයි.
     connect(adminUi->adminShowAllBtn, &QPushButton::clicked, this, &MainWindow::adminClearFilter);
+    // Admin calendar date selection වෙනස් වුණොත් table එක filter කරයි.
     connect(adminUi->adminCalendar, &QCalendarWidget::selectionChanged, this,
             [this] { adminFilterByDate(adminUi->adminCalendar->selectedDate()); });
+    // එම date එක click කළත් admin filter එක යොදයි.
     connect(adminUi->adminCalendar, &QCalendarWidget::clicked, this, &MainWindow::adminFilterByDate);
+    // Table selection වෙනස් වෙද්දී admin action buttons enable/disable කරයි.
     connect(adminUi->mainTable, &QTableWidget::itemSelectionChanged, this,
             &MainWindow::refreshAdminActions);
 
-    // Administrator: open the selected allocation in the form.
+    // තෝරාගත් row එකේ hidden ID එකෙන් booking එක සොයා edit form එකට ගෙන යයි.
     connect(adminUi->adminEditBtn, &QPushButton::clicked, this, [this] {
         const int row = adminUi->mainTable->currentRow();
         if (row < 0)
@@ -235,7 +258,7 @@ QToolTip { background:#FFFFFF; color:#17243B; border:1px solid #D4DEEB; padding:
         loadAdminData();
     });
 
-    // Administrator: delete the selected allocation.
+    // තෝරාගත් booking එක මකන්න user ගෙන් තහවුරු කර නැවත table/calendar සකසයි.
     connect(adminUi->adminDelBtn, &QPushButton::clicked, this, [this] {
         const int row = adminUi->mainTable->currentRow();
         if (row < 0)
@@ -253,12 +276,14 @@ QToolTip { background:#FFFFFF; color:#17243B; border:1px solid #D4DEEB; padding:
         updateCalendarHighlights();
     });
 
+    // Pending status එක save කර email draft එක විවෘත කරයි.
     connect(adminUi->pendingEmailBtn, &QPushButton::clicked, this,
             [this] { composeStatusEmail("Pending"); });
+    // Reject status එක save කර email draft එක විවෘත කරයි.
     connect(adminUi->rejectEmailBtn, &QPushButton::clicked, this,
             [this] { composeStatusEmail("Reject"); });
 
-    // If the database could not be opened, allocation must be switched off.
+    // Database එක අසාර්ථක නම් booking buttons අක්‍රිය කර දෝෂය පෙන්වයි.
     if (!databaseReady) {
         welcomeUi->allocateNowBtn->setEnabled(false);
         welcomeUi->editAllocationBtn->setEnabled(false);
@@ -266,7 +291,7 @@ QToolTip { background:#FFFFFF; color:#17243B; border:1px solid #D4DEEB; padding:
     }
 }
 
-// Destructor
+// Window එක වසන විට database එක සහ new වලින් හදපු UI helpers නිදහස් කරයි.
 MainWindow::~MainWindow()
 {
     delete dbManager;
@@ -277,30 +302,31 @@ MainWindow::~MainWindow()
     delete adminUi;
 }
 
-// Connects dynamic behavior and configures input limits. Static text, fonts,
-// pictures, widget sizes and positions are stored in the Designer forms.
+// Time slots, table column පළල සහ input සීමා මෙහි සකසයි. ඒ අගයන් වෙනස් කිරීමට පහත ලැයිස්තු බලන්න.
 void MainWindow::setupDynamicUI()
 {
-    // Let the page wallpaper show through the space around the workshop cards.
+    // Cards අතර හිස් ප්‍රදේශයෙන් page wallpaper එක පෙනීමට ඉඩ දෙයි.
     selectionUi->cardsScrollArea->viewport()->setAutoFillBackground(false);
     selectionUi->cardsScrollContents->setAutoFillBackground(false);
 
-    // Remember the booking values associated with the four authored buttons.
+    // Slots වෙනස් කිරීමට මෙයත් calander.ui හි time buttons වල text එකත් ගළපන්න.
     timeSlotValues = {"8.30 am - 10.30 am", "10.30 am - 12.30 pm", "1.30 pm - 3.30 pm",
                       "3.30 pm - 5.30 pm"};
+    // ඉහත values සහ buttons එකම අනුපිළිවෙළේ තිබිය යුතුයි.
     timeSlotButtons = {calanderUi->timeBtn1, calanderUi->timeBtn2, calanderUi->timeBtn3, calanderUi->timeBtn4};
     for (int i = 0; i < timeSlotButtons.size(); ++i) {
-        // The stylesheet uses [timeSlot=true] to recognise these buttons.
+        // CSS හි timeSlot=true rules මෙම buttons වලට යොදයි.
         timeSlotButtons[i]->setProperty("timeSlot", true);
         connect(timeSlotButtons[i], &QPushButton::toggled, this, &MainWindow::onTimeSlotClicked);
     }
 
+    // නව bookings වලට අද හෝ ඉදිරි දිනයක් පමණක් තෝරාගැනීමට දෙයි.
     calanderUi->calendar->setMinimumDate(QDate::currentDate());
     calanderUi->calendar->setVerticalHeaderFormat(QCalendarWidget::NoVerticalHeader);
     adminUi->adminCalendar->setVerticalHeaderFormat(QCalendarWidget::NoVerticalHeader);
 
-    // The administrator table has eleven columns.
     adminUi->mainTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
+    // Admin table columns 11 හි පළලයි; අගයන් column අනුපිළිවෙළින් වෙනස් කරන්න.
     const QList<int> widths = {155, 150, 100, 150, 200, 200, 140, 210, 200, 190, 130};
     for (int i = 0; i < widths.size(); ++i)
         adminUi->mainTable->setColumnWidth(i, widths[i]);
@@ -316,6 +342,7 @@ void MainWindow::setupDynamicUI()
 
     formUi->deptInput->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLengthWithIcon);
     formUi->deptInput->setMinimumContentsLength(16);
+    // Input වල උපරිම text දිග මෙහි සකසයි; අවශ්‍ය field එකේ අගය වෙනස් කරන්න.
     formUi->nameInput->setMaxLength(160);
     formUi->indexInput->setMaxLength(80);
     formUi->emailInput->setMaxLength(254);
@@ -328,29 +355,25 @@ void MainWindow::setupDynamicUI()
     refreshAdminActions();
 }
 
-// Shows the last database error message in a dialog box.
+// Database වැඩේ අසාර්ථක වූ හේතුව user ට පෙන්වයි.
 void MainWindow::showDatabaseError()
 {
     const QString error = dbManager->getLastError();
+    // Title/message සහ OK/Cancel සකසයි; message වර්ගයට ගැළපෙන පාට තෝරයි.
     CustomAlertDialog("Could not save or load allocation",
                       error.isEmpty() ? "The database is unavailable. Please try again." : error,
                       CustomAlertDialog::Error, this)
         .exec();
 }
 
-// =====================================================================
-// 2. APPEARANCE: THEME AND WORKSHOP CARD STATE
-// =====================================================================
 
-// Applies the light or dark colour scheme to the whole window.
+// තෝරාගත් theme සහ wallpaper පිටු පහට යොදයි; calendar සහ card පාටත් නැවත සකසයි.
 void MainWindow::applyTheme(bool darkMode)
 {
     isDarkTheme = darkMode;
-    // Designer owns the page controls' normal style, font, geometry and static text.
-    // The theme helper only changes recognised palette colours for dark mode.
     applyDesignerTheme(this, darkMode);
 
-    // If the user chose a background picture, draw it behind each page.
+    // Save කළ wallpaper path එක කියවා file එක තිබේ නම් පමණක් පිටුවල පෙන්වයි.
     QString wallpaper = QSettings(QSettings::defaultFormat(), QSettings::UserScope,
                                   "StudentWorkshopApp", "ThemeSettings")
                             .value("wallpaper")
@@ -370,11 +393,11 @@ void MainWindow::applyTheme(bool darkMode)
     updateAdminCalendarHighlights();
 }
 
-// Connect the cards stored in selection.ui. Their position, size, pictures and
-// labels are authored in Designer and are never reconstructed at runtime.
+// selection.ui හි card category එක කියවා එහි button එක selectCard() වෙත සම්බන්ධ කරයි.
 void MainWindow::bindWorkshopCards()
 {
     for (QFrame *card : selectionUi->cardsScrollContents->findChildren<QFrame *>()) {
+        // Card එකේ category property එක workshopCategories() හි නමට ගළපන්න.
         const QString category = card->property("category").toString();
         if (category.isEmpty())
             continue;
@@ -385,13 +408,14 @@ void MainWindow::bindWorkshopCards()
     }
 }
 
-// A dynamic state selects a Designer-authored CSS rule, without replacing it.
+// තෝරාගත් card එකට selected ලකුණ දී Next button එක ක්‍රියාත්මක කරයි.
 void MainWindow::selectCard(const QString &category)
 {
     selectedCategory = category;
     for (QFrame *card : cardFrames) {
         const bool selected = card->property("category").toString() == category;
         card->setProperty("selected", selected);
+        // Selected property මාරු වූ පසු card CSS එක නැවත යොදයි.
         card->style()->unpolish(card);
         card->style()->polish(card);
         card->update();
@@ -401,11 +425,8 @@ void MainWindow::selectCard(const QString &category)
     selectionUi->nextBtn->setEnabled(!category.isEmpty());
 }
 
-// =====================================================================
-// 3. MOVING BETWEEN PAGES
-// =====================================================================
 
-// Puts every variable and widget back to its starting value.
+// දැනට කරන booking වැඩේ සහ form values මුල් තත්ත්වයට ගෙන එයි.
 void MainWindow::resetFlow()
 {
     currentRecord = StudentRecord();
@@ -424,7 +445,7 @@ void MainWindow::resetFlow()
     setFormButtonsMode(false);
 }
 
-// "Allocate now" on the welcome page.
+// නව booking එකක් සඳහා form එක හිස් කර workshop selection පිටුව පෙන්වයි.
 void MainWindow::startNewAllocation()
 {
     if (!databaseReady)
@@ -433,7 +454,7 @@ void MainWindow::startNewAllocation()
     stackedWidget->setCurrentIndex(1);
 }
 
-// "Edit allocation" on the welcome page. The student types the allocation key.
+// Allocation key එකෙන් booking එක සොයා student ට edit කිරීමට විවෘත කරයි.
 void MainWindow::startEditAllocationFlow()
 {
     if (!databaseReady)
@@ -443,7 +464,7 @@ void MainWindow::startEditAllocationFlow()
         return;
     const QString entered = dialog.getInput();
 
-    // Search every workshop for that key.
+    // Allocation key එක සියලු workshops වල සොයයි.
     QList<StudentRecord> matches;
     for (const QString &category : workshopCategories()) {
         const auto records = dbManager->getAllRecordsForCategory(category);
@@ -456,7 +477,7 @@ void MainWindow::startEditAllocationFlow()
                 matches.append(record);
     }
 
-    // The same key can exist in two workshops, so ask for the index number too.
+    // පරණ දත්තවල එකම key එක කිහිපයක තිබේ නම් student index එකෙන් තෝරයි.
     if (matches.size() > 1) {
         CustomInputDialog identity(
             "Confirm allocation",
@@ -471,6 +492,7 @@ void MainWindow::startEditAllocationFlow()
                 ++it;
     }
     if (matches.size() != 1) {
+        // Title/message සහ OK/Cancel සකසයි; message වර්ගයට ගැළපෙන පාට තෝරයි.
         CustomAlertDialog("Allocation not found",
                           "The details do not identify a single allocation. Check your allocation key "
                           "or contact the administrator.",
@@ -489,19 +511,21 @@ void MainWindow::startEditAllocationFlow()
     loadRecordIntoUI(currentRecord);
     selectCard(currentCategory);
     const QDate savedDate = QDate::fromString(currentRecord.getRecordDate(), Qt::ISODate);
-    // Historical allocations must still expose the delete action and editable details.
+    // පරණ දිනයක් ඇති booking එකක් වුවත් form එකට ගොස් බලන්න/මකන්න දෙයි.
     stackedWidget->setCurrentIndex(savedDate < QDate::currentDate() ? 3 : 1);
 }
 
-// Leaving a allocation that has not been saved yet.
+// Save නොකළ දත්ත තිබේ නම් තහවුරු කිරීමක් ඉල්ලා welcome පිටුවට යයි.
 void MainWindow::cancelCurrentFlow()
 {
+    // Save නොකළ inputs තිබේදැයි පරීක්ෂා කර discard ප්‍රශ්නය පෙන්වයි.
     const bool hasDraft =
         isStudentEditFlow || isAdminEditMode || !formUi->nameInput->text().isEmpty() ||
         !formUi->indexInput->text().isEmpty() || !formUi->emailInput->text().isEmpty() ||
         !formUi->supervisorInput->text().isEmpty() || !formUi->projectInput->text().isEmpty() ||
         !formUi->descriptionInput->toPlainText().isEmpty();
     if (hasDraft &&
+        // Title/message සහ OK/Cancel සකසයි; message වර්ගයට ගැළපෙන පාට තෝරයි.
         CustomAlertDialog("Discard changes", "Leave this allocation and discard unsaved changes?",
                           CustomAlertDialog::Question, this)
                 .exec() != QDialog::Accepted)
@@ -510,7 +534,7 @@ void MainWindow::cancelCurrentFlow()
     stackedWidget->setCurrentIndex(0);
 }
 
-// "Next" on the workshop selection page.
+// තෝරාගත් workshop එකට calendar පිටුව පෙන්වයි; workshop මාරු වුණොත් slots ඉවත් කරයි.
 void MainWindow::onNextClicked()
 {
     if (selectedCategory.isEmpty())
@@ -522,7 +546,7 @@ void MainWindow::onNextClicked()
     setFormButtonsMode(isStudentEditFlow || isAdminEditMode);
 }
 
-// Fills page 2 with the chosen workshop and shows it.
+// Workshop නම, department සහ image calendar/admin පිටුවලට දමා calendar පිටුව විවෘත කරයි.
 void MainWindow::openSecondInterface(const QString &category)
 {
     if (currentCategory != category)
@@ -534,7 +558,7 @@ void MainWindow::openSecondInterface(const QString &category)
         workshopDepartment(category) +
         "\n\nChoose a date and one or more available time slots.\nGrey slots are unavailable.");
     adminUi->adminWsTitleLbl->setText(workshopTitle(category));
-    // Fit each selected-workshop picture inside its Designer-authored label.
+    // තෝරාගත් image එකේ උපරිම size එක 160x100; label එක කුඩා නම් ඊටත් ගළපයි.
     calanderUi->selectedImgLabel2->setPixmap(
         workshopImage(category, QSize(160, 100).boundedTo(calanderUi->selectedImgLabel2->size())));
     adminUi->adminImgLabel->setPixmap(
@@ -544,7 +568,7 @@ void MainWindow::openSecondInterface(const QString &category)
     stackedWidget->setCurrentIndex(2);
 }
 
-// "Next" on the date and time page.
+// Slots නැවත පරීක්ෂා කර දිනය/වෙලාව summary එකට දමා form පිටුව පෙන්වයි.
 void MainWindow::onNextTo3Clicked()
 {
     onCalendarSelectionChanged();
@@ -558,11 +582,11 @@ void MainWindow::onNextTo3Clicked()
     formUi->nameInput->setFocus();
 }
 
-// "Back" on the date and time page.
+// Student නම් selection පිටුවටත් admin edit එකක් නම් dashboard එකටත් ආපසු යයි.
 void MainWindow::goBackTo1()
 {
+    // Admin edit වැඩක් නම් dashboard එකට ආපසු යාම සඳහා වෙනම තත්ත්වයක් භාවිත කරයි.
     if (isAdminEditMode) {
-        // The administrator came from the records table, so send them back there.
         isAdminEditMode = false;
         currentRecord = StudentRecord();
         clearUI();
@@ -573,24 +597,21 @@ void MainWindow::goBackTo1()
     }
 }
 
-// "Back" on the allocation form page.
+// Form පිටුවෙන් calendar පිටුවට ආපසු යයි.
 void MainWindow::goBackTo2()
 {
     stackedWidget->setCurrentIndex(2);
 }
 
-// "Back" on the administrator page.
+// Admin වැඩේ අවසන් කර welcome පිටුව පෙන්වයි.
 void MainWindow::goBackFromAdmin()
 {
     resetFlow();
     stackedWidget->setCurrentIndex(0);
 }
 
-// =====================================================================
-// 4. DATE AND TIME PAGE
-// =====================================================================
 
-// Returns the text of every time slot button that is ticked.
+// Enable වී tick කළ time buttons වල values ලැයිස්තුවක් ලබාදෙයි.
 QStringList MainWindow::getSelectedTimeSlotsList()
 {
     QStringList selectedSlots;
@@ -601,7 +622,7 @@ QStringList MainWindow::getSelectedTimeSlotsList()
     return selectedSlots;
 }
 
-// Ticks the buttons that belong to a saved allocation.
+// Save කළ slot list එකට ගැළපෙන available time buttons tick කරයි.
 void MainWindow::setTimeSlotsInUI(const QString &timeString)
 {
     QStringList selectedSlots = timeString.split(',', Qt::SkipEmptyParts);
@@ -613,14 +634,13 @@ void MainWindow::setTimeSlotsInUI(const QString &timeString)
     onTimeSlotClicked();
 }
 
-// The Next button only works when at least one time slot is chosen.
+// අවම වශයෙන් slot එකක් තෝරා ඇත්නම් පමණක් Next ක්‍රියාත්මක කරයි.
 void MainWindow::onTimeSlotClicked()
 {
     calanderUi->nextTo3Btn->setEnabled(!getSelectedTimeSlotsList().isEmpty());
 }
 
-// Runs every time the student picks a different date.
-// Grey slots are the ones already allocated by somebody else.
+// තෝරාගත් දිනට පුරවා ඇති slots සොයා unavailable buttons අක්‍රිය කරයි.
 void MainWindow::onCalendarSelectionChanged()
 {
     if (currentCategory.isEmpty()) {
@@ -628,12 +648,13 @@ void MainWindow::onCalendarSelectionChanged()
         return;
     }
     const QDate date = calanderUi->calendar->selectedDate();
-    // The student's own allocation is excluded, so editing it does not block itself.
+    // Edit කරන booking ID එක හැර දමන නිසා තමන්ගේ slots තමන්ට block නොවේ.
     const auto allocated = dbManager->getAllocatedTimeSlotsStringList(
         date.toString(Qt::ISODate), currentCategory, currentRecord.getId());
     const bool queryOk = dbManager->getLastError().isEmpty();
     for (int i = 0; i < timeSlotButtons.size(); ++i) {
         QPushButton *button = timeSlotButtons[i];
+        // Database query හරි, දිනය පරණ නැති සහ slot එක නොපිරුණු විට පමණක් button එක enable වේ.
         const bool available = queryOk && date >= QDate::currentDate() &&
                                !allocated.contains(timeSlotValues[i]);
         button->setEnabled(available);
@@ -646,23 +667,23 @@ void MainWindow::onCalendarSelectionChanged()
     onTimeSlotClicked();
 }
 
-// Draws the small A / P / R badges on the allocation calendar.
+// Booking status අනුව දිනකට ඇති ගණන් සොයා student calendar එකට දෙයි.
 void MainWindow::updateCalendarHighlights()
 {
     if (!databaseReady || currentCategory.isEmpty())
         return;
     calanderUi->calendar->setDateTextFormat(QDate(), QTextCharFormat());
-    // Count how many approved, pending and rejected allocations fall on each date.
     QMap<QDate, QMap<QString, int>> counts;
     for (const auto &record : dbManager->getAllRecordsForCategory(currentCategory)) {
         const QDate date = QDate::fromString(record.getRecordDate(), Qt::ISODate);
         if (date.isValid())
+            // මෙම දිනයේ අදාළ status එකේ booking ගණන එකකින් වැඩි කරයි.
             counts[date][record.getStatus()]++;
     }
     calanderUi->calendar->setStatusCounts(counts);
 }
 
-// The same badges, but on the administrator's calendar.
+// එම booking ගණන් admin calendar එකටත් යොදයි.
 void MainWindow::updateAdminCalendarHighlights()
 {
     if (!databaseReady || currentCategory.isEmpty())
@@ -677,11 +698,8 @@ void MainWindow::updateAdminCalendarHighlights()
     adminUi->adminCalendar->setStatusCounts(counts);
 }
 
-// =====================================================================
-// 5. ALLOCATION FORM PAGE
-// =====================================================================
 
-// Empties every field on the form.
+// Student form inputs සහ තෝරාගත් slots හිස් කරයි.
 void MainWindow::clearUI()
 {
     formUi->nameInput->clear();
@@ -694,7 +712,7 @@ void MainWindow::clearUI()
     setTimeSlotsInUI(QString());
 }
 
-// Shows either "Submit" (new allocation) or "Update" and "Delete" (existing one).
+// නව booking එකට Submit; edit එකට Update/Delete පෙන්වයි.
 void MainWindow::setFormButtonsMode(bool edit)
 {
     formUi->submitBtn->setVisible(!edit);
@@ -703,13 +721,13 @@ void MainWindow::setFormButtonsMode(bool edit)
     formUi->confirmTitleLbl->setText(edit ? "Edit your allocation" : formUi->confirmTitleLbl->property("_designerNewTitle").toString());
 }
 
-// Puts a saved allocation back onto the pages so it can be read or changed.
+// Save කළ booking දත්ත input fields සහ date/time controls වලට දමයි.
 void MainWindow::loadRecordIntoUI(const StudentRecord &record)
 {
     currentRecord = record;
     const QDate date = QDate::fromString(record.getRecordDate(), Qt::ISODate);
-    // Old allocations remain viewable/deletable, but resubmission requires a current date.
     calanderUi->calendar->setMinimumDate(
+        // Save කළ පරණ booking දිනයත් calendar එකේ තෝරා පෙන්වීමට ඉඩ දෙයි.
         qMin(date.isValid() ? date : QDate::currentDate(), QDate::currentDate()));
     calanderUi->calendar->setSelectedDate(date);
     onCalendarSelectionChanged();
@@ -728,7 +746,7 @@ void MainWindow::loadRecordIntoUI(const StudentRecord &record)
     setFormButtonsMode(true);
 }
 
-// The administrator's "Edit" button uses the same form as the student.
+// Admin තෝරාගත් booking එක form පිටුවට ගෙන edit mode එක සකසයි.
 void MainWindow::loadRecordForEdit(const StudentRecord &record)
 {
     isAdminEditMode = true;
@@ -742,10 +760,11 @@ void MainWindow::loadRecordForEdit(const StudentRecord &record)
     stackedWidget->setCurrentIndex(3);
 }
 
-// Reads what is on screen into a StudentRecord object.
+// Screen එකේ input values කියවා StudentRecord එකකට දමයි.
 StudentRecord MainWindow::readFormRecord()
 {
     StudentRecord record = currentRecord;
+    // Inputs වල මුල/අග spaces ඉවත් කර දත්ත object එකට දමයි.
     record.setName(formUi->nameInput->text().trimmed());
     record.setIndexNo(formUi->indexInput->text().trimmed());
     record.setDepartment(formUi->deptInput->currentText());
@@ -760,19 +779,20 @@ StudentRecord MainWindow::readFormRecord()
     return record;
 }
 
-// Checks the form. If something is wrong it shows a message and moves the
-// cursor to the field that needs attention.
+// Form එක පරීක්ෂා කර වැරදි field එකට cursor එක ගෙන යයි.
 bool MainWindow::validateForm()
 {
     const AllocationRules::Field field =
+        // Form එකේ පළමු වැරදි field එක ලබාදෙයි; සියල්ල හරි නම් Field::None දෙයි.
         AllocationRules::validate(readFormRecord(), formUi->deptInput->currentIndex() > 0);
     if (field == AllocationRules::Field::None) {
         return true;
     }
+    // Title/message සහ OK/Cancel සකසයි; message වර්ගයට ගැළපෙන පාට තෝරයි.
     CustomAlertDialog("Check allocation details", AllocationRules::validationMessage(field),
                       CustomAlertDialog::Warning, this)
         .exec();
-    // Only the UI controller is responsible for keyboard focus and page changes.
+    // වැරදි field එකට focus දීමට case එක වෙනස් කරන්න; Schedule නම් calendar පිටුව පෙන්වයි.
     switch (field) {
     case AllocationRules::Field::Name:
         formUi->nameInput->setFocus();
@@ -801,22 +821,18 @@ bool MainWindow::validateForm()
     return false;
 }
 
-// "Submit" on the allocation form: INSERT a new record.
+// නව booking එක පරීක්ෂා කර database එකට save කර allocation key එක පෙන්වයි.
 void MainWindow::submitData()
 {
     if (currentRecord.getId() >= 0 || !validateForm())
         return;
     StudentRecord record = readFormRecord();
-    // Gives the allocation its 4-digit allocation key, a "Pending" status and a
-    // creation timestamp.
+    // නව booking එකට ඉලක්කම් හතරේ key, created_at සහ Pending status සකසයි.
     AllocationRules::prepareNewAllocation(record);
     if (!dbManager->addRecord(record)) {
         showDatabaseError();
         return;
     }
-    // The allocation key is the one thing the student must remember, so the
-    // dialog draws it as a highlighted badge instead of leaving it inside a
-    // plain line of text.
     CustomAlertDialog saved("Allocation saved",
                             "Your allocation is pending approval.\n\nAllocation key: " +
                                 record.getPasscode() +
@@ -824,23 +840,26 @@ void MainWindow::submitData()
                                 workshopTitle(currentCategory) + "\n" + record.getRecordDate() +
                                 "\n" + record.getTimeSlots(),
                             CustomAlertDialog::Info, this);
+    // Save වූ key එක user ට ලේසියෙන් කියවීමට ලොකු badge එකක් කරයි.
     saved.highlightText(record.getPasscode());
     saved.exec();
     resetFlow();
     stackedWidget->setCurrentIndex(0);
 }
 
-// "Update" on the allocation form: UPDATE the existing record.
+// පවතින booking එකේ වෙනස්කම් save කර අදාළ පිටුවට ආපසු යයි.
 void MainWindow::updateData()
 {
     if (currentRecord.getId() < 0 || (!isPasscodeBypassed && !checkPasscode()) || !validateForm())
         return;
     StudentRecord updated = readFormRecord();
+    // Student කළ edit එකකට නැවත Pending යොදයි; admin edit එකේ status එක තබයි.
     AllocationRules::prepareUpdatedAllocation(updated, isStudentEditFlow);
     if (!dbManager->updateRecord(updated)) {
         showDatabaseError();
         return;
     }
+    // Title/message සහ OK/Cancel සකසයි; message වර්ගයට ගැළපෙන පාට තෝරයි.
     CustomAlertDialog("Allocation updated",
                       isStudentEditFlow ? "Your changes have been saved and are pending approval."
                                         : "Allocation changes saved.",
@@ -859,7 +878,7 @@ void MainWindow::updateData()
     updateCalendarHighlights();
 }
 
-// "Delete" on the allocation form: DELETE the record after a yes/no question.
+// User තහවුරු කළ පසු දැනට edit කරන booking එක මකා දමයි.
 void MainWindow::deleteData()
 {
     if (currentRecord.getId() < 0 || (!isPasscodeBypassed && !checkPasscode()))
@@ -885,7 +904,7 @@ void MainWindow::deleteData()
     updateCalendarHighlights();
 }
 
-// Asks for the allocation key before a change is allowed.
+// ඇතුළත් කළ allocation key එක මෙම booking එකේ key එකදැයි බලයි.
 bool MainWindow::checkPasscode()
 {
     CustomInputDialog dialog("Authentication", "Enter your allocation key:", this);
@@ -893,11 +912,8 @@ bool MainWindow::checkPasscode()
            dialog.getInput().compare(currentRecord.getPasscode(), Qt::CaseInsensitive) == 0;
 }
 
-// =====================================================================
-// 6. ADMINISTRATOR PAGE
-// =====================================================================
 
-// "Administrator" button: check the passcode, then show the records page.
+// Workshop admin passcode එක පරීක්ෂා කර dashboard එක විවෘත කරයි.
 void MainWindow::showRecordsWindow()
 {
     CustomInputDialog authentication(
@@ -907,8 +923,10 @@ void MainWindow::showRecordsWindow()
         return;
     if (authentication.getInput() != QSettings(QSettings::defaultFormat(), QSettings::UserScope,
                                                "StudentWorkshopApp", "Passcodes")
+                                         // Save කළ admin passcode නැත්නම් මුල් passcode එක 0000000 වේ.
                                          .value(currentCategory + "_passcode", "0000000")
                                          .toString()) {
+        // Title/message සහ OK/Cancel සකසයි; message වර්ගයට ගැළපෙන පාට තෝරයි.
         CustomAlertDialog("Access denied", "Incorrect administrator passcode.",
                           CustomAlertDialog::Error, this)
             .exec();
@@ -919,7 +937,7 @@ void MainWindow::showRecordsWindow()
     stackedWidget->setCurrentIndex(4);
 }
 
-// The administrator clicked a date on their calendar.
+// Admin තෝරාගත් දිනයේ bookings පමණක් table එකට ගනී.
 void MainWindow::adminFilterByDate(const QDate &date)
 {
     if (adminFilterDate == date)
@@ -928,7 +946,7 @@ void MainWindow::adminFilterByDate(const QDate &date)
     loadAdminData();
 }
 
-// "Show all" removes the date filter.
+// Date filter එක ඉවත් කර සියලු bookings පෙන්වයි.
 void MainWindow::adminClearFilter()
 {
     adminFilterDate = QDate();
@@ -937,7 +955,7 @@ void MainWindow::adminClearFilter()
     loadAdminData();
 }
 
-// The master passcode opens the theme and background settings.
+// Master passcode එක පරීක්ෂා කර system settings dialog එක විවෘත කරයි.
 void MainWindow::openSystemSettings()
 {
     CustomInputDialog authentication("System settings", "Enter the master passcode:", this);
@@ -945,26 +963,31 @@ void MainWindow::openSystemSettings()
         return;
     if (authentication.getInput() != QSettings(QSettings::defaultFormat(), QSettings::UserScope,
                                                "StudentWorkshopApp", "Passcodes")
+                                         // Save කළ master passcode නැත්නම් මුල් passcode එක 0000 වේ.
                                          .value("master_passcode", "0000")
                                          .toString()) {
+        // Title/message සහ OK/Cancel සකසයි; message වර්ගයට ගැළපෙන පාට තෝරයි.
         CustomAlertDialog("Access denied", "Incorrect master passcode.", CustomAlertDialog::Error,
                           this)
             .exec();
         return;
     }
     SystemSettingsDialog dialog(this);
+    // Settings dialog එකේ theme signal ලැබුණොත් pages නැවත පාට කරයි.
     connect(&dialog, &SystemSettingsDialog::themeChanged, this, [this] {
         applyTheme(QSettings(QSettings::defaultFormat(), QSettings::UserScope, "StudentWorkshopApp",
                              "ThemeSettings")
                        .value("darkMode", false)
                        .toBool());
     });
+    // Wallpaper signal එකේ path save කර theme සමඟ නැවත යොදයි.
     connect(&dialog, &SystemSettingsDialog::wallpaperChanged, this, [this](const QString &path) {
         QSettings settings(QSettings::defaultFormat(), QSettings::UserScope, "StudentWorkshopApp",
                            "ThemeSettings");
         settings.setValue("wallpaper", path);
         settings.sync();
         if (settings.status() != QSettings::NoError) {
+            // Title/message සහ OK/Cancel සකසයි; message වර්ගයට ගැළපෙන පාට තෝරයි.
             CustomAlertDialog("Settings not saved", "Unable to save the background setting.",
                               CustomAlertDialog::Error, this)
                 .exec();
@@ -975,14 +998,14 @@ void MainWindow::openSystemSettings()
     dialog.exec();
 }
 
-// The administrator's email settings dialog.
+// Admin email settings dialog එක විවෘත කරයි.
 void MainWindow::openAdminEmailSettings()
 {
     AdminSettingsDialog dialog(this);
     dialog.exec();
 }
 
-// Edit, delete and email buttons only work when a row is selected.
+// Table row එකක් තෝරා ඇති විට පමණක් Edit/Delete/Email buttons ක්‍රියාත්මක කරයි.
 void MainWindow::refreshAdminActions()
 {
     const bool selected =
@@ -992,7 +1015,7 @@ void MainWindow::refreshAdminActions()
         button->setEnabled(selected);
 }
 
-// SELECTs the allocations and fills the table with them.
+// Database bookings table rows වලට දමා editable remarks සහ status controls සකසයි.
 void MainWindow::loadAdminData()
 {
     const QList<StudentRecord> records =
@@ -1003,13 +1026,13 @@ void MainWindow::loadAdminData()
         showDatabaseError();
         return;
     }
-    // Blocking signals stops the table telling us the selection changed while
-    // we are still filling it in.
+    // Table එක පුරවන අතර selection signals තාවකාලිකව නවතයි.
     const QSignalBlocker tableBlocker(adminUi->mainTable);
     adminUi->mainTable->setRowCount(0);
     for (int row = 0; row < records.size(); ++row) {
         const StudentRecord record = records[row];
         adminUi->mainTable->insertRow(row);
+        // මෙම values අනුපිළිවෙළ admin.ui හි columns සහ widths ලැයිස්තුවට ගළපන්න.
         const QStringList values = {record.getPasscode(),   record.getCreatedAt(),
                                     record.getIndexNo(),    record.getName(),
                                     record.getDepartment(), record.getEmail(),
@@ -1021,10 +1044,10 @@ void MainWindow::loadAdminData()
             item->setToolTip(values[column]);
             adminUi->mainTable->setItem(row, column, item);
         }
-        // The real database id is hidden inside the first cell.
+        // පළමු cell එකේ නොපෙනෙන UserRole දත්ත ලෙස සැබෑ database ID එක තබයි.
         adminUi->mainTable->item(row, 0)->setData(Qt::UserRole, record.getId());
 
-        // Remarks can be typed straight into the table.
+        // Remarks cell එකේ typing අවසන් කළ විට නව remark එක save කරයි.
         auto *remarks = new QLineEdit(record.getAdminRemarks());
         remarks->setMaxLength(1000);
         remarks->setPlaceholderText("Add a remark");
@@ -1041,11 +1064,12 @@ void MainWindow::loadAdminData()
         });
         adminUi->mainTable->setCellWidget(row, 9, remarks);
 
-        // The status drop-down writes to the database as soon as it changes.
+        // පෙන්වන status label සහ database status value වෙන වෙනම මෙහි ඇත.
         auto *status = new QComboBox();
         status->addItem("Pending", "Pending");
         status->addItem("Approved", "Approve");
         status->addItem("Rejected", "Reject");
+        // Save කළ status එක තෝරා error එකකදී ආපසු යෙදීමට savedIndex මතක තබයි.
         status->setCurrentIndex(qMax(0, status->findData(record.getStatus())));
         status->setProperty("savedIndex", status->currentIndex());
         connect(status, &QComboBox::currentIndexChanged, this,
@@ -1072,7 +1096,7 @@ void MainWindow::loadAdminData()
     updateAdminCalendarHighlights();
 }
 
-// Saves the new status and opens an email draft telling the student about it.
+// Status එක save කර student email draft එක විවෘත කරයි. Subject/body පහත වෙනස් කරන්න.
 void MainWindow::composeStatusEmail(const QString &status)
 {
     const int row = adminUi->mainTable->currentRow();
@@ -1091,13 +1115,15 @@ void MainWindow::composeStatusEmail(const QString &status)
             showDatabaseError();
             return;
         }
-        // Build a mailto: link. The email program opens with the text ready.
+        // Email එක auto-send නොකර mail application එකේ draft එකක් පමණක් විවෘත කරයි.
         QUrl url("mailto:" + record.getEmail());
         QUrlQuery query;
         const bool pending = status == "Pending";
+        // Email subject text එක මෙහි වෙනස් කරන්න.
         query.addQueryItem("subject", "Workshop allocation " +
                                           QString(pending ? "pending" : "rejected") + ": " +
                                           workshopTitle(currentCategory));
+        // Student ට යන email body එක මෙහි වෙනස් කරන්න; booking values අගට එක් වේ.
         query.addQueryItem("body",
                            "Dear " + record.getName() + ",\n\nYour allocation for " +
                                workshopTitle(currentCategory) + " on " + record.getRecordDate() +
@@ -1105,11 +1131,10 @@ void MainWindow::composeStatusEmail(const QString &status)
                                record.getTimeSlots() + "\nAllocation key: " + record.getPasscode() +
                                "\nRemarks: " + record.getAdminRemarks());
         if (pending) {
-            // Copy in the lab/workshop in-charge and the head of department if their addresses
-            // were saved in the administrator settings.
             QSettings settings(QSettings::defaultFormat(), QSettings::UserScope,
                                "StudentWorkshopApp", "AdminSettings");
             QStringList recipients;
+            // dean_email යනු පැරණි save key එකයි; දැන් එහි Lab/Workshop In-charge email එක තබයි.
             for (const QString &key : {QString("dean_email"), QString("dep_head_email")}) {
                 const QString email = settings.value(key).toString();
                 if (!email.isEmpty())
@@ -1122,6 +1147,7 @@ void MainWindow::composeStatusEmail(const QString &status)
         loadAdminData();
         updateCalendarHighlights();
         if (!QDesktopServices::openUrl(url))
+            // Title/message සහ OK/Cancel සකසයි; message වර්ගයට ගැළපෙන පාට තෝරයි.
             CustomAlertDialog(
                 "Email draft unavailable",
                 "The allocation status was saved, but no email application could open the draft.",

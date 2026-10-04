@@ -1,8 +1,10 @@
+// Passcode හෝ index වැනි එක් text අගයක් ඉල්ලන dialog එකේ වැඩ මෙහි ඇත.
+// #include වලින් මේ file එකට අවශ්‍ය Qt සහ project declarations ලබාගනී.
 #include "custominputdialog.h"
 #include "dialogtheme.h"
 #include "ui_custominputdialog.h"
 
-// Constructor: builds a dialog with one text box and OK / Cancel buttons.
+// එක් text box එකක් සහ OK/Cancel buttons සකසයි.
 CustomInputDialog::CustomInputDialog(const QString &title, const QString &prompt, QWidget *parent)
     : QDialog(parent), ui(new Ui::CustomInputDialog)
 {
@@ -13,15 +15,16 @@ CustomInputDialog::CustomInputDialog(const QString &title, const QString &prompt
     ui->promptLbl->setText(prompt);
     ui->promptLbl->setBuddy(ui->inputBox);
     applyDialogTheme(this);
+    // Input එකේ උපරිම දිගයි; passcode පෙන්වීමේ UI එක custominputdialog.ui හි වෙනස් කරන්න.
     ui->inputBox->setMaxLength(128);
     ui->inputBox->setClearButtonEnabled(true);
     ui->inputBox->setFocus();
     ui->okBtn->setDefault(true);
-    // OK stays greyed out until something has actually been typed.
+    // හිස් text එකක් සමඟ OK කිරීමට ඉඩ නොදී typing කළ විට පමණක් enable කරයි.
     ui->okBtn->setEnabled(false);
     connect(ui->inputBox, &QLineEdit::textChanged, this,
             [this](const QString &text) { ui->okBtn->setEnabled(!text.trimmed().isEmpty()); });
-    // Pressing Enter works the same as clicking OK.
+    // Enter එබූ විට හිස් නැති input එකක් නම් OK කළා සේ dialog එක පිළිගනී.
     connect(ui->inputBox, &QLineEdit::returnPressed, this, [this]() {
         if (!getInput().isEmpty())
             accept();
@@ -30,13 +33,13 @@ CustomInputDialog::CustomInputDialog(const QString &title, const QString &prompt
     connect(ui->cancelBtn, &QPushButton::clicked, this, &QDialog::reject);
 }
 
-// Destructor
+// Input dialog එකේ UI helper එක නිදහස් කරයි.
 CustomInputDialog::~CustomInputDialog()
 {
     delete ui;
 }
 
-// Returns what the user typed, with any spaces removed from both ends.
+// ඇතුළත් කළ text එකේ මුල/අග spaces ඉවත් කර ලබාදෙයි.
 QString CustomInputDialog::getInput() const
 {
     return ui->inputBox->text().trimmed();

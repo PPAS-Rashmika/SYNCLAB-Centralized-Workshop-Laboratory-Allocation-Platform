@@ -1,40 +1,36 @@
+// සාමාන්‍ය Qt calendar එකට booking ගණන් පෙන්වීම එක් කරන class එකයි.
+// එකම header එක කිහිප වරක් include වුවත් definitions එකවරක් පමණක් යෙදීමට මේ guard එක ඇත.
 #ifndef CUSTOMCALENDARWIDGET_H
 #define CUSTOMCALENDARWIDGET_H
 
+// #include වලින් මේ file එකට අවශ්‍ය Qt සහ project declarations ලබාගනී.
 #include <QCalendarWidget>
 #include <QDate>
 #include <QMap>
 #include <QPainter>
 
-// A normal Qt calendar that also draws a small badge on each day showing how
-// many allocations that day has: A = approved, P = pending, R = rejected.
-//
-// INHERITANCE: it is a derived class of QCalendarWidget, so it already behaves
-// like a calendar and we only add what is missing.
-// POLYMORPHISM: paintCell() is a virtual function of QCalendarWidget. By
-// overriding it here, Qt calls our version when it draws each day cell, while
-// still calling the base class version for the day number itself.
+// Qt calendar එකේ paintCell() වෙනුවට අපේ function එක යොදා booking badges එක් කරයි.
 class CustomCalendarWidget : public QCalendarWidget
 {
+    // Qt signals/slots හඳුනාගන්නා ලකුණයි.
     Q_OBJECT
 
+  // අනෙක් code වලින් භාවිත කළ හැකි functions.
   public:
-    // Constructor
+    // Calendar දින නාම, මුල් සතියේ දිනය සහ අවම ප්‍රමාණය සකසයි.
     explicit CustomCalendarWidget(QWidget *parent = nullptr);
 
-    // MainWindow calls this with the allocation counts for the shown month.
+    // එක් දිනක status ගණන් save කර calendar දින නැවත අඳියි.
     void setStatusCounts(const QMap<QDate, QMap<QString, int>> &counts);
 
+  // මෙම class එකට සහ එයින් ලබාගත් classes වලට භාවිත කළ හැකි functions.
   protected:
-    // Override the base class function that paints one day cell.
-    // In Qt 6 the date must be passed by value, not by reference.
+    // දින අංකය සහ A/P/R ගණන් එක calendar කොටුවක අඳියි.
     void paintCell(QPainter *painter, const QRect &rect, QDate date) const override;
 
+  // මෙම class එක තුළ පමණක් භාවිත කරන functions සහ දත්ත.
   private:
-    // Encapsulation: the counts are private. Outside code can only replace all
-    // of them at once through setStatusCounts().
-    // Outer key = the date, inner key = the status, inner value = how many.
-    QMap<QDate, QMap<QString, int>> statusCounts;
+    QMap<QDate, QMap<QString, int>> statusCounts; // දිනය -> status -> booking ගණන ලෙස දත්ත තබන map එක.
 };
 
-#endif // CUSTOMCALENDARWIDGET_H
+#endif

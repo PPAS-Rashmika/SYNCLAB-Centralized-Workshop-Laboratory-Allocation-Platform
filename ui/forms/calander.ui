@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
+ <!-- Date සහ time slots තෝරන පිටුවයි; slot text වෙනස් කළොත් setupDynamicUI() values ද ගළපන්න. -->
  <class>calanderWidget</class>
+ <!-- calanderWidget: ඇතුළත controls තබන කොටස; name එක C++ code එකේද භාවිත විය හැක. -->
  <widget class="QWidget" name="calanderWidget">
+  <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -10,6 +13,7 @@
     <height>780</height>
    </rect>
   </property>
+  <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
   <property name="font">
    <font>
     <family>Segoe UI</family>
@@ -17,10 +21,13 @@
     <bold>false</bold>
    </font>
   </property>
+  <!-- මෙම control එකේ පාට, border, padding සහ radius සඳහා CSS rules මෙහි ඇත. -->
   <property name="styleSheet">
    <string notr="true">QWidget { color:#17243B;   }QMainWindow, QStackedWidget, QWidget#welcomeWidget, QWidget#selectionWidget, QWidget#calanderWidget, QWidget#formWidget, QWidget#adminWidget { background:#F4F7FB; }QScrollArea { border:none; background:transparent; } QScrollArea &gt; QWidget &gt; QWidget { background:#F4F7FB; }QScrollArea#cardsScrollArea &gt; QWidget, QWidget#cardsScrollContents { background:transparent; }QLabel { background:transparent; }QLabel#welcomeTitle { color:#52647D;   }QLabel#syncLabTitle {   }QLabel#syncLabSubtitle {   }QLabel#welcomeDesc, QLabel#selectedDescLabel2, QLabel#adminWsDescLbl { color:#52647D;  }QLabel#selectTitleLabel, QLabel#selectedNameLabel2, QLabel#confirmTitleLbl, QLabel#adminWsTitleLbl {   }QLineEdit, QTextEdit, QComboBox { background:#FFFFFF; border:1px solid #D4DEEB; border-radius:7px; padding:8px; selection-background-color:#2563EB; selection-color:white; }QLineEdit:focus, QTextEdit:focus, QComboBox:focus { border:1px solid #2563EB; }QComboBox QAbstractItemView { background:#FFFFFF; color:#17243B; selection-background-color:#2563EB; selection-color:white; }QPushButton { background:#FFFFFF; color:#17243B; border:1px solid #D4DEEB; border-radius:8px; padding:9px 14px;  }QPushButton:hover, QPushButton:focus { background:#EAF2FF; border-color:#2563EB; }QPushButton:pressed { border:2px solid #2563EB; }QPushButton#allocateNowBtn, QPushButton#nextBtn, QPushButton#nextTo3Btn, QPushButton#submitBtn, QPushButton#updateBtn { background:#2563EB; color:white; border:1px solid #2563EB; }QPushButton#allocateNowBtn:hover, QPushButton#nextBtn:hover, QPushButton#nextTo3Btn:hover, QPushButton#submitBtn:hover, QPushButton#updateBtn:hover { background:#1D4ED8; }QPushButton#deleteBtn, QPushButton#adminDelBtn { color:#BE123C; }QPushButton[timeSlot=true] { padding:10px 8px; }QPushButton:checked { background:#2563EB; color:white; border-color:#2563EB; }QPushButton:disabled { background:#F4F7FB; color:#52647D; border:1px solid #D4DEEB; }QPushButton#allocateNowBtn:disabled, QPushButton#nextBtn:disabled, QPushButton#nextTo3Btn:disabled, QPushButton#submitBtn:disabled, QPushButton#updateBtn:disabled, QPushButton#deleteBtn:disabled, QPushButton#adminDelBtn:disabled { background:#F4F7FB; color:#52647D; border:1px solid #D4DEEB; }QFrame#summaryBox { background:#EAF2FF; border:1px solid #D4DEEB; border-radius:10px; }QLabel#summaryDateLbl { color:#2563EB;  }QTableWidget { background:#FFFFFF; alternate-background-color:#F4F7FB; border:1px solid #D4DEEB; gridline-color:#D4DEEB; selection-background-color:#EAF2FF; selection-color:#17243B; }QHeaderView::section { font-weight:600; background:#EAF2FF; color:#17243B; border:none; padding:10px;  }QTableWidget QLineEdit, QTableWidget QComboBox { padding:4px; border-radius:4px; }QCalendarWidget { background:#FFFFFF; border:1px solid #D4DEEB; border-radius:8px; }QCalendarWidget QWidget#qt_calendar_navigationbar { background:#2563EB; }QCalendarWidget QToolButton { font-weight:600; color:white; background:transparent; padding:6px;  }QCalendarWidget QMenu, QCalendarWidget QSpinBox { background:#FFFFFF; color:#17243B; }QCalendarWidget QAbstractItemView { background:#FFFFFF; color:#17243B; selection-background-color:#2563EB; selection-color:white; outline:0; }QToolTip { background:#FFFFFF; color:#17243B; border:1px solid #D4DEEB; padding:6px; }</string>
   </property>
+  <!-- backTo1Btn: ක්ලික් කළ හැකි button එක; name එක C++ code එකේද භාවිත විය හැක. -->
   <widget class="QPushButton" name="backTo1Btn">
+   <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
    <property name="geometry">
     <rect>
      <x>24</x>
@@ -29,6 +36,7 @@
      <height>37</height>
     </rect>
    </property>
+   <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
    <property name="font">
     <font>
      <family>Segoe UI</family>
@@ -39,11 +47,14 @@
    <property name="cursor">
     <cursorShape>PointingHandCursor</cursorShape>
    </property>
+   <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
    <property name="text">
     <string>Back to Selection</string>
    </property>
   </widget>
+  <!-- selectedImgLabel2: text/image පෙන්වන label එක; name එක C++ code එකේද භාවිත විය හැක. -->
   <widget class="QLabel" name="selectedImgLabel2">
+   <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
    <property name="geometry">
     <rect>
      <x>24</x>
@@ -52,6 +63,7 @@
      <height>160</height>
     </rect>
    </property>
+   <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
    <property name="font">
     <font>
      <family>Segoe UI</family>
@@ -66,7 +78,9 @@
     <set>Qt::AlignmentFlag::AlignCenter</set>
    </property>
   </widget>
+  <!-- selectedNameLabel2: text/image පෙන්වන label එක; name එක C++ code එකේද භාවිත විය හැක. -->
   <widget class="QLabel" name="selectedNameLabel2">
+   <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
    <property name="geometry">
     <rect>
      <x>24</x>
@@ -75,6 +89,7 @@
      <height>51</height>
     </rect>
    </property>
+   <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
    <property name="font">
     <font>
      <family>Segoe UI</family>
@@ -82,6 +97,7 @@
      <bold>true</bold>
     </font>
    </property>
+   <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
    <property name="text">
     <string>Workshop Name</string>
    </property>
@@ -91,11 +107,14 @@
    <property name="alignment">
     <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
    </property>
+   <!-- true නම් ඉඩ මදි text එක ඊළඟ පේළියට යයි. -->
    <property name="wordWrap">
     <bool>true</bool>
    </property>
   </widget>
+  <!-- selectedDescLabel2: text/image පෙන්වන label එක; name එක C++ code එකේද භාවිත විය හැක. -->
   <widget class="QLabel" name="selectedDescLabel2">
+   <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
    <property name="geometry">
     <rect>
      <x>24</x>
@@ -104,6 +123,7 @@
      <height>105</height>
     </rect>
    </property>
+   <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
    <property name="font">
     <font>
      <family>Segoe UI</family>
@@ -111,6 +131,7 @@
      <bold>false</bold>
     </font>
    </property>
+   <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
    <property name="text">
     <string>Select a date, then choose one or more available time slots to continue.</string>
    </property>
@@ -120,11 +141,14 @@
    <property name="alignment">
     <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
    </property>
+   <!-- true නම් ඉඩ මදි text එක ඊළඟ පේළියට යයි. -->
    <property name="wordWrap">
     <bool>true</bool>
    </property>
   </widget>
+  <!-- adminBtn2: ක්ලික් කළ හැකි button එක; name එක C++ code එකේද භාවිත විය හැක. -->
   <widget class="QPushButton" name="adminBtn2">
+   <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
    <property name="geometry">
     <rect>
      <x>24</x>
@@ -133,6 +157,7 @@
      <height>45</height>
     </rect>
    </property>
+   <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
    <property name="font">
     <font>
      <family>Segoe UI</family>
@@ -143,11 +168,14 @@
    <property name="cursor">
     <cursorShape>PointingHandCursor</cursorShape>
    </property>
+   <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
    <property name="text">
     <string>Admin dashboard</string>
    </property>
   </widget>
+  <!-- calendar: A/P/R ගණන් ඇති calendar එක; name එක C++ code එකේද භාවිත විය හැක. -->
   <widget class="CustomCalendarWidget" name="calendar">
+   <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
    <property name="geometry">
     <rect>
      <x>417</x>
@@ -156,6 +184,7 @@
      <height>487</height>
     </rect>
    </property>
+   <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
    <property name="font">
     <font>
      <family>Segoe UI</family>
@@ -167,7 +196,9 @@
     <enum>QCalendarWidget::VerticalHeaderFormat::NoVerticalHeader</enum>
    </property>
   </widget>
+  <!-- calendarLegend: text/image පෙන්වන label එක; name එක C++ code එකේද භාවිත විය හැක. -->
   <widget class="QLabel" name="calendarLegend">
+   <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
    <property name="geometry">
     <rect>
      <x>417</x>
@@ -176,6 +207,7 @@
      <height>17</height>
     </rect>
    </property>
+   <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
    <property name="font">
     <font>
      <family>Segoe UI</family>
@@ -183,14 +215,18 @@
      <bold>false</bold>
     </font>
    </property>
+   <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
    <property name="text">
     <string>Allocation counts: A = approved · P = pending · R = rejected</string>
    </property>
+   <!-- true නම් ඉඩ මදි text එක ඊළඟ පේළියට යයි. -->
    <property name="wordWrap">
     <bool>true</bool>
    </property>
   </widget>
+  <!-- timeSlotsLabel: text/image පෙන්වන label එක; name එක C++ code එකේද භාවිත විය හැක. -->
   <widget class="QLabel" name="timeSlotsLabel">
+   <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
    <property name="geometry">
     <rect>
      <x>417</x>
@@ -199,6 +235,7 @@
      <height>17</height>
     </rect>
    </property>
+   <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
    <property name="font">
     <font>
      <family>Segoe UI</family>
@@ -206,14 +243,18 @@
      <bold>false</bold>
     </font>
    </property>
+   <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
    <property name="text">
     <string>Available time slots · select one or more</string>
    </property>
+   <!-- true නම් ඉඩ මදි text එක ඊළඟ පේළියට යයි. -->
    <property name="wordWrap">
     <bool>true</bool>
    </property>
   </widget>
+  <!-- timeBtn1: ක්ලික් කළ හැකි button එක; name එක C++ code එකේද භාවිත විය හැක. -->
   <widget class="QPushButton" name="timeBtn1">
+   <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
    <property name="geometry">
     <rect>
      <x>417</x>
@@ -222,6 +263,7 @@
      <height>45</height>
     </rect>
    </property>
+   <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
    <property name="font">
     <font>
      <family>Segoe UI</family>
@@ -235,9 +277,11 @@
    <property name="toolTip">
     <string>Choose this time slot. You may select more than one.</string>
    </property>
+   <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
    <property name="text">
     <string>8.30 AM - 10.30 AM</string>
    </property>
+   <!-- true නම් මෙම button එක tick/untick කළ හැක. -->
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -245,7 +289,9 @@
     <bool>true</bool>
    </property>
   </widget>
+  <!-- timeBtn2: ක්ලික් කළ හැකි button එක; name එක C++ code එකේද භාවිත විය හැක. -->
   <widget class="QPushButton" name="timeBtn2">
+   <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
    <property name="geometry">
     <rect>
      <x>794</x>
@@ -254,6 +300,7 @@
      <height>45</height>
     </rect>
    </property>
+   <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
    <property name="font">
     <font>
      <family>Segoe UI</family>
@@ -267,9 +314,11 @@
    <property name="toolTip">
     <string>Choose this time slot. You may select more than one.</string>
    </property>
+   <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
    <property name="text">
     <string>10.30 AM - 12.30 PM</string>
    </property>
+   <!-- true නම් මෙම button එක tick/untick කළ හැක. -->
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -277,7 +326,9 @@
     <bool>true</bool>
    </property>
   </widget>
+  <!-- timeBtn3: ක්ලික් කළ හැකි button එක; name එක C++ code එකේද භාවිත විය හැක. -->
   <widget class="QPushButton" name="timeBtn3">
+   <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
    <property name="geometry">
     <rect>
      <x>417</x>
@@ -286,6 +337,7 @@
      <height>45</height>
     </rect>
    </property>
+   <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
    <property name="font">
     <font>
      <family>Segoe UI</family>
@@ -299,9 +351,11 @@
    <property name="toolTip">
     <string>Choose this time slot. You may select more than one.</string>
    </property>
+   <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
    <property name="text">
     <string>1.30 PM - 3.30 PM</string>
    </property>
+   <!-- true නම් මෙම button එක tick/untick කළ හැක. -->
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -309,7 +363,9 @@
     <bool>true</bool>
    </property>
   </widget>
+  <!-- timeBtn4: ක්ලික් කළ හැකි button එක; name එක C++ code එකේද භාවිත විය හැක. -->
   <widget class="QPushButton" name="timeBtn4">
+   <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
    <property name="geometry">
     <rect>
      <x>794</x>
@@ -318,6 +374,7 @@
      <height>45</height>
     </rect>
    </property>
+   <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
    <property name="font">
     <font>
      <family>Segoe UI</family>
@@ -331,9 +388,11 @@
    <property name="toolTip">
     <string>Choose this time slot. You may select more than one.</string>
    </property>
+   <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
    <property name="text">
     <string>3.30 PM - 5.30 PM</string>
    </property>
+   <!-- true නම් මෙම button එක tick/untick කළ හැක. -->
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -341,7 +400,9 @@
     <bool>true</bool>
    </property>
   </widget>
+  <!-- nextTo3Btn: ක්ලික් කළ හැකි button එක; name එක C++ code එකේද භාවිත විය හැක. -->
   <widget class="QPushButton" name="nextTo3Btn">
+   <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
    <property name="geometry">
     <rect>
      <x>417</x>
@@ -350,6 +411,7 @@
      <height>50</height>
     </rect>
    </property>
+   <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
    <property name="font">
     <font>
      <family>Segoe UI</family>
@@ -360,6 +422,7 @@
    <property name="cursor">
     <cursorShape>PointingHandCursor</cursorShape>
    </property>
+   <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
    <property name="text">
     <string>Next Step</string>
    </property>

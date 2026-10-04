@@ -1,3 +1,5 @@
+// SQLite tables සෑදීම, booking save/edit/delete කිරීම සහ දත්ත කියවීම මෙහි සිදු කරයි.
+// #include වලින් මේ file එකට අවශ්‍ය Qt සහ project declarations ලබාගනී.
 #include "databasemanager.h"
 #include "workshopcatalog.h"
 
@@ -10,13 +12,10 @@
 #include <QUuid>
 #include <QVariant>
 
-// ---------------------------------------------------------------------------
-// Small helper functions. They are only used inside this file, so they live in
-// an unnamed namespace instead of needing their own header file.
-// ---------------------------------------------------------------------------
+// නම් නැති namespace එකේ helpers මේ file එක තුළට පමණක් සීමා වේ.
 namespace
 {
-// "8.30 - 9.30, 9.30 - 10.30" becomes a clean list with no blanks and no repeats.
+// Comma වෙන් කළ slots පිරිසිදු කර හිස් සහ නැවත ඇති values ඉවත් කරයි.
 QStringList splitSlots(const QString &value)
 {
     QStringList slotList;
@@ -28,7 +27,7 @@ QStringList splitSlots(const QString &value)
     return slotList;
 }
 
-// The program only ever stores three statuses. Anything else is refused.
+// ලැබුණු status එක Pending, Approve හෝ Reject නමට ගළපයි; නොදන්නා අගයක් නම් හිස් අගයක් දෙයි.
 QString canonicalStatus(const QString &value)
 {
     const QString status = value.trimmed().toLower();
@@ -41,14 +40,14 @@ QString canonicalStatus(const QString &value)
     return QString();
 }
 
-// Allocation dates are stored as text in ISO form, for example 2026-09-29.
+// දිනය නිවැරදි YYYY-MM-DD අගයක්දැයි පරීක්ෂා කරයි.
 bool validDate(const QString &value)
 {
     const QDate date = QDate::fromString(value, Qt::ISODate);
     return date.isValid() && date.toString(Qt::ISODate) == value;
 }
 
-// Assemble a slot list only when reading for the UI. Stored slots remain atomic.
+// Screen එකට පමණක් slots එක text list එකකට එකතු කරයි; database හි slot එකකට row එක බැගින් ඇත.
 const QString slotListSql =
     "(SELECT group_concat(time_slot, ', ') FROM "
     "(SELECT time_slot FROM booking_slots WHERE record_id = r.id ORDER BY "
@@ -56,20 +55,20 @@ const QString slotListSql =
     "WHEN '10.30 am - 12.30 pm' THEN 1 WHEN '1.30 pm - 3.30 pm' THEN 2 "
     "WHEN '3.30 pm - 5.30 pm' THEN 3 ELSE 4 END, time_slot))";
 
-// The columns every SELECT below asks for.
-// Important: this order must match the value(0)..value(15) order in readRecord().
+// SELECT කරන columns අනුපිළිවෙළයි; readRecord() හි value(index) ද ඒ අනුව ගළපන්න.
 const QString recordColumns =
     "r.id, r.category, s.name, r.index_no, s.department, s.email, r.record_date, " +
     slotListSql + ", r.description, r.passcode, r.created_at, r.status, r.admin_remarks, "
     "r.category, r.supervisor_name, r.project_name";
+// Booking එකේ index_no අනුව student profile එක සම්බන්ධ කරයි.
 const QString recordJoins =
     " FROM records r JOIN students s ON s.index_no = r.index_no ";
 
+// Table එකේ column නම් ලබාගනී; පැරණි database හැඳිනීමට භාවිත කරයි.
 QSet<QString> tableColumns(QSqlDatabase &db, const QString &table)
 {
     QSet<QString> columns;
     QSqlQuery query(db);
-    // table is always an internal constant, never user input.
     if (query.exec("PRAGMA table_info(" + table + ")")) {
         while (query.next())
             columns.insert(query.value(1).toString().toLower());
@@ -77,9 +76,10 @@ QSet<QString> tableColumns(QSqlDatabase &db, const QString &table)
     return columns;
 }
 
-// The same definitions create fresh databases and migration staging tables.
+// Tables හතරේ SQL definitions මෙහි ඇත. Column වෙනස් කිරීම සහ migration එක එකට සැලසුම් කරන්න.
 QStringList schemaStatements(const QString &prefix = QString())
 {
+    // PK එක row හඳුනාගනී; REFERENCES සම්බන්ධ tables වල තිබෙන අගයන් පමණක් භාවිත කිරීමට දෙයි.
     return {
         "CREATE TABLE " + prefix + "workshops (category TEXT NOT NULL PRIMARY KEY, "
         "department TEXT NOT NULL)",
@@ -95,11 +95,12 @@ QStringList schemaStatements(const QString &prefix = QString())
         "CREATE TABLE " + prefix + "booking_slots (record_id INTEGER NOT NULL REFERENCES " +
         prefix + "records(id) ON DELETE CASCADE, time_slot TEXT NOT NULL "
         "CHECK(length(trim(time_slot)) > 0 AND instr(time_slot, ',') = 0), "
+        // එක booking එකක එකම slot දෙවරක් save නොවන composite primary key එකයි.
         "PRIMARY KEY(record_id, time_slot))"
     };
 }
 
-// Turn one SQL row into a StudentRecord object.
+// SQL result එකේ columns StudentRecord fields වලට දමයි; value() අනුපිළිවෙළ recordColumns සමඟ ගළපන්න.
 StudentRecord readRecord(const QSqlQuery &query)
 {
     StudentRecord record;
@@ -121,25 +122,22 @@ StudentRecord readRecord(const QSqlQuery &query)
     record.setProjectName(query.value(15).toString());
     return record;
 }
-} // namespace
+}
 
-// ---------------------------------------------------------------------------
-// Opening and closing the database
-// ---------------------------------------------------------------------------
 
-// Constructor: open the SQLite database file whose path was given.
+// SQLite connection එක සාදා foreign keys ක්‍රියාත්මක කර database file එක විවෘත කරයි.
 SqliteDatabaseManager::SqliteDatabaseManager(const QString &dbName)
     : connectionName("workshop-" + QUuid::createUuid().toString(QUuid::WithoutBraces))
 {
-    // Ask Qt for the SQLite driver. The unique connection name means this
-    // object never clashes with another connection in the same program.
     db = QSqlDatabase::addDatabase("QSQLITE", connectionName);
-    db.setConnectOptions("QSQLITE_BUSY_TIMEOUT=5000"); // wait 5 seconds if the file is locked
+    // Database එක වෙනත් වැඩකින් lock නම් මිලි තත්පර 5000ක් බලා සිටියි.
+    db.setConnectOptions("QSQLITE_BUSY_TIMEOUT=5000");  
     db.setDatabaseName(dbName);
     if (!db.open()) {
         lastError = db.lastError().text();
     } else {
         QSqlQuery query(db);
+        // Foreign key නීති SQLite හි මෙම connection එකට ක්‍රියාත්මක කරයි.
         if (!query.exec("PRAGMA foreign_keys = ON")) {
             lastError = query.lastError().text();
             db.close();
@@ -147,7 +145,7 @@ SqliteDatabaseManager::SqliteDatabaseManager(const QString &dbName)
     }
 }
 
-// Destructor: close the connection and hand the name back to Qt.
+// Database connection එක වසා Qt connection ලැයිස්තුවෙන් ඉවත් කරයි.
 SqliteDatabaseManager::~SqliteDatabaseManager()
 {
     db.close();
@@ -155,7 +153,7 @@ SqliteDatabaseManager::~SqliteDatabaseManager()
     QSqlDatabase::removeDatabase(connectionName);
 }
 
-// Every operation starts here so the user always gets a clear message.
+// Database එක විවෘතදැයි බලයි; නැතිනම් lastError සකසයි.
 bool SqliteDatabaseManager::ensureOpen()
 {
     lastError.clear();
@@ -167,8 +165,7 @@ bool SqliteDatabaseManager::ensureOpen()
     return false;
 }
 
-// Start a transaction. A transaction groups a check and its write together,
-// so an allocation can never be saved while its time slot is already taken.
+// සම්බන්ධ save වැඩ එකම transaction එකකට අරඹයි; වෙනත් writes අවසන් වනතුරු SQLite බලා සිටියි.
 bool SqliteDatabaseManager::beginWrite()
 {
     if (!ensureOpen())
@@ -180,7 +177,7 @@ bool SqliteDatabaseManager::beginWrite()
     return false;
 }
 
-// Save the transaction. If saving fails, undo it so the database is unchanged.
+// Transaction එක සම්පූර්ණයෙන් save කරයි; අසාර්ථක නම් rollback කරයි.
 bool SqliteDatabaseManager::commitWrite()
 {
     if (db.commit())
@@ -190,7 +187,7 @@ bool SqliteDatabaseManager::commitWrite()
     return false;
 }
 
-// Check an allocation before it is written to the database.
+// Database වෙත යවන booking එකේ අනිවාර්ය දත්ත සහ email පරීක්ෂා කරයි.
 bool SqliteDatabaseManager::validateRecord(const StudentRecord &record)
 {
     if (record.getCategory().trimmed().isEmpty() || !validDate(record.getRecordDate()) ||
@@ -206,7 +203,7 @@ bool SqliteDatabaseManager::validateRecord(const StudentRecord &record)
         return false;
     }
 
-    // A simple pattern that accepts ordinary email addresses.
+    // Database වෙත save කරන email එකේ රටාවත් පරීක්ෂා කරයි.
     static const QRegularExpression emailPattern(
         "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
     if (!emailPattern.match(record.getEmail().trimmed()).hasMatch()) {
@@ -216,11 +213,8 @@ bool SqliteDatabaseManager::validateRecord(const StudentRecord &record)
     return true;
 }
 
-// ---------------------------------------------------------------------------
-// Creating the table
-// ---------------------------------------------------------------------------
 
-// Create four 4NF tables, or migrate a wide/hybrid older database atomically.
+// නව tables සාදයි; පැරණි database එකක් නම් දත්ත රැකගෙන නව tables වලට මාරු කරයි.
 bool SqliteDatabaseManager::createTable()
 {
     if (!ensureOpen())
@@ -232,12 +226,14 @@ bool SqliteDatabaseManager::createTable()
         lastError = query.lastError().text();
         return false;
     }
+    // Database schema version එකයි; නව columns එක් කළොත් migration සැලසුමත් යාවත්කාලීන කරන්න.
     const int version = query.value(0).toInt();
     query.finish();
     if (version > 4) {
         lastError = "This database was created by a newer version of SYNCLAB.";
         return false;
     }
+    // දැනට භාවිත schema එක නම් tables/relationships පරීක්ෂා කර අලුතින් නැවත සාදන්නේ නැහැ.
     if (version == 4) {
         const QSet<QString> recordFields = {"id", "category", "index_no", "supervisor_name",
                                             "project_name", "record_date", "description", "passcode",
@@ -266,8 +262,7 @@ bool SqliteDatabaseManager::createTable()
         return false;
     }
 
-    // SQLite makes a consistent backup including any committed WAL contents.
-    // Never overwrite an earlier backup. In-memory test databases need no file.
+    // පරණ database මාරු කිරීමට පෙර backup එකක් ගනී; කලින් backup overwrite නොකරයි.
     if (migrating && db.databaseName() != ":memory:") {
         QString backupPath = db.databaseName() + ".pre-4nf.bak";
         for (int suffix = 1; QFileInfo::exists(backupPath); ++suffix)
@@ -284,19 +279,21 @@ bool SqliteDatabaseManager::createTable()
     if (!beginWrite())
         return false;
 
+    // Migration එකේ අසාර්ථක පියවරකදී වෙනස්කම් rollback කර දෝෂය තබයි.
     auto fail = [this](const QString &message) {
         lastError = message;
         db.rollback();
         return false;
     };
 
+    // Migration සඳහා _4nf_ staging tables භාවිත කරයි; අලුත් database එකට සාමාන්‍ය නම් යොදයි.
     const QString prefix = migrating ? "_4nf_" : "";
     for (const QString &statement : schemaStatements(prefix)) {
         if (!query.exec(statement))
             return fail(query.lastError().text());
     }
 
-    // Keep old master rows even if they do not currently have a booking.
+    // Booking නැති පරණ students/workshops වුවත් අලුත් tables වෙත රැගෙන යයි.
     const QSet<QString> studentColumns = tableColumns(db, "students");
     const QSet<QString> workshopColumns = tableColumns(db, "workshops");
     if (migrating && workshopColumns.contains("category")) {
@@ -315,7 +312,7 @@ bool SqliteDatabaseManager::createTable()
             return fail(query.lastError().text());
     }
 
-    // Catalog department describes the laboratory, never the student's faculty.
+    // Catalog එකේ workshops සහ ඒවායේ departments database එකට දමයි.
     for (const QString &category : workshopCategories()) {
         query.prepare("INSERT INTO " + prefix + "workshops(category, department) VALUES(?, ?) "
                       "ON CONFLICT(category) DO UPDATE SET department=excluded.department");
@@ -326,20 +323,21 @@ bool SqliteDatabaseManager::createTable()
     }
 
     if (migrating) {
+        // මකා දැමූ පරණ ID එකක් නැවත භාවිත නොවීමට AUTOINCREMENT අවසන් අගය මතක තබයි.
         qlonglong previousSequence = 0;
         if (query.exec("SELECT seq FROM sqlite_sequence WHERE name='records'") && query.next())
             previousSequence = query.value(0).toLongLong();
         query.finish();
 
-        // Some older files have both normalized tables and empty legacy columns.
-        // Prefer nonempty booking values, falling back to the stored student.
+        // පරණ column එක තිබේ නම් එහි value ගනී; නැතිනම් empty/NULL අගයක් දෙයි.
         auto oldValue = [&oldColumns](const QString &column) {
-            // Optional notes retain SQL NULL as well as their text contents.
+            // Optional notes වල NULL අගය හිස් text එකකට හරවන්නේ නැහැ.
             if (column == "description" || column == "admin_remarks")
                 return oldColumns.contains(column) ? "r." + column : QString("NULL");
             return oldColumns.contains(column) ? "COALESCE(r." + column + ", '')" : QString("''");
         };
         const bool hasStudents = studentColumns.contains("index_no") && oldColumns.contains("index_no");
+        // පරණ booking profile හි value හිස් නම් student table එකේ value ගනී.
         auto studentValue = [&](const QString &column) {
             const QString legacy = oldValue(column);
             if (hasStudents && studentColumns.contains(column))
@@ -362,6 +360,7 @@ bool SqliteDatabaseManager::createTable()
             legacyRecords.append(readRecord(query));
         query.finish();
 
+        // පරණ normalized slot rows record ID අනුව සටහන් කරයි.
         QMap<int, QStringList> existingSlots;
         const QSet<QString> slotColumns = tableColumns(db, "booking_slots");
         if (slotColumns.contains("record_id") && slotColumns.contains("time_slot")) {
@@ -372,6 +371,7 @@ bool SqliteDatabaseManager::createTable()
             query.finish();
         }
 
+        // පරණ booking එක බැගින් අලුත් workshop/student/record/slot rows වලට මාරු කරයි.
         for (StudentRecord record : legacyRecords) {
             QString category = record.getCategory().trimmed();
             if (category.isEmpty())
@@ -386,8 +386,8 @@ bool SqliteDatabaseManager::createTable()
             if (!query.exec())
                 return fail(query.lastError().text());
 
-            // Ascending IDs mean the newest booking supplies the current profile.
             query.prepare("INSERT INTO _4nf_students(index_no, name, department, email) VALUES(?, ?, ?, ?) "
+                          // එකම index එකේ profile එක update කරයි; migration හි වැඩිම ID එකේ profile අන්තිමට යෙදේ.
                           "ON CONFLICT(index_no) DO UPDATE SET name=excluded.name, "
                           "department=excluded.department, email=excluded.email");
             query.addBindValue(index);
@@ -417,6 +417,7 @@ bool SqliteDatabaseManager::createTable()
             if (!query.exec())
                 return fail(query.lastError().text());
 
+            // පරණ comma list එක තිබේ නම් එය ගනී; නැතිනම් පරණ slot rows ගනී.
             QStringList slotList = splitSlots(record.getTimeSlots());
             if (slotList.isEmpty())
                 slotList = splitSlots(existingSlots.value(record.getId()).join(','));
@@ -432,19 +433,19 @@ bool SqliteDatabaseManager::createTable()
             }
         }
 
-        // Drop children before parents while foreign-key enforcement stays on.
+        // Foreign keys රැකීමට child tables මුලින් සහ parent tables පසුව ඉවත් කරයි.
         for (const QString &table : {QString("booking_slots"), QString("records"),
                                      QString("students"), QString("workshops")}) {
             if (!query.exec("DROP TABLE IF EXISTS " + table))
                 return fail(query.lastError().text());
         }
-        // SQLite updates the referencing foreign keys when each parent is renamed.
+        // සාර්ථක staging tables සාමාන්‍ය නම් වලට මාරු කරයි; SQLite references ද ගළපයි.
         for (const QString &table : {QString("workshops"), QString("students"),
                                      QString("records"), QString("booking_slots")}) {
             if (!query.exec("ALTER TABLE _4nf_" + table + " RENAME TO " + table))
                 return fail(query.lastError().text());
         }
-        // A completely empty legacy table has no staging sequence row yet.
+        // පරණ ඉහළම ID සීමාව අලුත් records table එකටත් රැගෙන යයි.
         query.prepare("INSERT INTO sqlite_sequence(name, seq) SELECT 'records', ? "
                       "WHERE NOT EXISTS(SELECT 1 FROM sqlite_sequence WHERE name='records')");
         query.addBindValue(previousSequence);
@@ -456,6 +457,7 @@ bool SqliteDatabaseManager::createTable()
             return fail(query.lastError().text());
     }
 
+    // Workshop/date අනුව සෙවීම වේගවත් කරන index එකයි.
     if (!query.exec("CREATE INDEX records_category_date ON records(category, record_date)"))
         return fail(query.lastError().text());
     if (!query.exec("PRAGMA foreign_key_check"))
@@ -470,8 +472,7 @@ bool SqliteDatabaseManager::createTable()
     return commitWrite();
 }
 
-// Store each workshop and each student once. Profile edits affect all bookings
-// for that index number. The caller's transaction also contains the booking.
+// Workshop එක සහ student profile එක save කරයි; එකම index එකේ bookings එකම profile එක භාවිත කරයි.
 bool SqliteDatabaseManager::saveRelatedFacts(const StudentRecord &record)
 {
     QSqlQuery query(db);
@@ -498,9 +499,11 @@ bool SqliteDatabaseManager::saveRelatedFacts(const StudentRecord &record)
     return true;
 }
 
+// Booking එකේ පරණ slot rows මකා අලුත් list එකේ slot එකකට row එක බැගින් දමයි.
 bool SqliteDatabaseManager::replaceSlots(int recordId, const QStringList &slotList)
 {
     QSqlQuery query(db);
+    // මේ booking එකට පමණක් අදාළ පරණ slots ඉවත් කරයි.
     query.prepare("DELETE FROM booking_slots WHERE record_id = ?");
     query.addBindValue(recordId);
     if (!query.exec()) {
@@ -519,11 +522,8 @@ bool SqliteDatabaseManager::replaceSlots(int recordId, const QStringList &slotLi
     return true;
 }
 
-// ---------------------------------------------------------------------------
-// Writing: INSERT, UPDATE and DELETE
-// ---------------------------------------------------------------------------
 
-// Insert one new allocation.
+// නව booking එක insert කරයි; key එක සහ slots වෙනත් booking එකක භාවිතදැයිත් බලයි.
 bool SqliteDatabaseManager::addRecord(const StudentRecord &record)
 {
     if (!ensureOpen() || !validateRecord(record))
@@ -539,8 +539,7 @@ bool SqliteDatabaseManager::addRecord(const StudentRecord &record)
 
     QSqlQuery query(db);
 
-    // A prepared query keeps the SQL text and the values separate, which stops
-    // a value from being read as SQL code.
+    // නව allocation key එක වෙනත් booking එකක තිබේ නම් save කිරීම නවතයි.
     query.prepare("SELECT id FROM records WHERE passcode = :passcode LIMIT 1");
     query.bindValue(":passcode", record.getPasscode());
     if (!query.exec()) {
@@ -556,7 +555,7 @@ bool SqliteDatabaseManager::addRecord(const StudentRecord &record)
         return false;
     }
 
-    // A rejected allocation does not hold its time slots, so it is not checked.
+    // Reject booking එකක් slots අල්ලන්නේ නැහැ; අනෙක් statuses සඳහා availability බලයි.
     if (status != "Reject" &&
         !isTimeSlotAvailable(record.getRecordDate(), record.getCategory(),
                              splitSlots(record.getTimeSlots()))) {
@@ -569,7 +568,7 @@ bool SqliteDatabaseManager::addRecord(const StudentRecord &record)
         return false;
     }
 
-    // INSERT only the facts belonging to this booking.
+    // Booking එකට අදාළ fields පමණක් records table එකේ save කරයි.
     query.prepare("INSERT INTO records (category, index_no, supervisor_name, project_name, "
                   "record_date, description, "
                   "passcode, created_at, status, admin_remarks) "
@@ -590,6 +589,7 @@ bool SqliteDatabaseManager::addRecord(const StudentRecord &record)
         db.rollback();
         return false;
     }
+    // SQLite දුන් අලුත් ID එක slot rows සමඟ සම්බන්ධ කිරීමට ගනී.
     const int recordId = query.lastInsertId().toInt();
     query.finish();
     if (!replaceSlots(recordId, splitSlots(record.getTimeSlots()))) {
@@ -599,8 +599,7 @@ bool SqliteDatabaseManager::addRecord(const StudentRecord &record)
     return commitWrite();
 }
 
-// Save changes to an existing allocation.
-// The allocation key, the created date and the admin remarks are never changed here.
+// පවතින booking එක update කරයි. Key, created_at සහ admin_remarks මෙහි වෙනස් නොකරයි.
 bool SqliteDatabaseManager::updateRecord(const StudentRecord &record)
 {
     if (!ensureOpen() || !validateRecord(record))
@@ -616,7 +615,7 @@ bool SqliteDatabaseManager::updateRecord(const StudentRecord &record)
 
     QSqlQuery query(db);
 
-    // First make sure the allocation is still in the database.
+    // Edit කිරීමට පෙර booking ID එක තවම තිබේදැයි බලයි.
     query.prepare("SELECT id FROM records WHERE id = :id");
     query.bindValue(":id", record.getId());
     if (!query.exec()) {
@@ -632,8 +631,6 @@ bool SqliteDatabaseManager::updateRecord(const StudentRecord &record)
         return false;
     }
 
-    // The allocation being edited must not block its own time slots,
-    // so its id is passed in and skipped.
     if (status != "Reject" &&
         !isTimeSlotAvailable(record.getRecordDate(), record.getCategory(),
                              splitSlots(record.getTimeSlots()), record.getId())) {
@@ -646,7 +643,7 @@ bool SqliteDatabaseManager::updateRecord(const StudentRecord &record)
         return false;
     }
 
-    // UPDATE the booking, then replace its slot rows in the same transaction.
+    // Booking details update කරයි; ඉන්පසු slot rows එම transaction එකේම මාරු කරයි.
     query.prepare("UPDATE records SET category=:category, index_no=:index, "
                   "supervisor_name=:supervisor, project_name=:project, record_date=:date, "
                   "description=:desc, status=:status WHERE id=:id");
@@ -671,7 +668,7 @@ bool SqliteDatabaseManager::updateRecord(const StudentRecord &record)
     return commitWrite();
 }
 
-// Delete one allocation by its id.
+// ID එකෙන් booking එක මකා දමයි; එහි slot rows foreign key cascade මගින් මැකේ.
 bool SqliteDatabaseManager::deleteRecord(int id)
 {
     if (!ensureOpen())
@@ -684,6 +681,7 @@ bool SqliteDatabaseManager::deleteRecord(int id)
         lastError = query.lastError().text();
         return false;
     }
+    // එක් booking row එකක්වත් වෙනස් නොවුණොත් booking එක නැති බව දක්වයි.
     if (query.numRowsAffected() != 1) {
         lastError = "The allocation no longer exists. Refresh the allocation list.";
         return false;
@@ -691,7 +689,7 @@ bool SqliteDatabaseManager::deleteRecord(int id)
     return true;
 }
 
-// Change only the status of an allocation (Pending, Approve or Reject).
+// Status එක පමණක් වෙනස් කරයි; Reject නොවන status එකකට යද්දී slots නැවත පරීක්ෂා කරයි.
 bool SqliteDatabaseManager::updateRecordStatus(int id, const QString &value)
 {
     if (!ensureOpen())
@@ -707,7 +705,7 @@ bool SqliteDatabaseManager::updateRecordStatus(int id, const QString &value)
 
     QSqlQuery query(db);
 
-    // Read the date, workshop and slots of this allocation so they can be re-checked.
+    // Status මාරු කිරීමට පෙර එම booking එකේ date/category/slots කියවා පරීක්ෂා කරයි.
     query.prepare("SELECT r.record_date, r.category, " + slotListSql +
                   " FROM records r WHERE r.id = :id");
     query.bindValue(":id", id);
@@ -727,7 +725,6 @@ bool SqliteDatabaseManager::updateRecordStatus(int id, const QString &value)
     const QStringList slotList = splitSlots(query.value(2).toString());
     query.finish();
 
-    // Approving an allocation gives it its slots back, so they must still be free.
     if (status != "Reject" && !isTimeSlotAvailable(date, category, slotList, id)) {
         db.rollback();
         return false;
@@ -744,7 +741,7 @@ bool SqliteDatabaseManager::updateRecordStatus(int id, const QString &value)
     return commitWrite();
 }
 
-// Change only the administrator's remark for an allocation.
+// Booking එකේ admin remark එක පමණක් save කරයි.
 bool SqliteDatabaseManager::updateAdminRemarks(int id, const QString &remarks)
 {
     if (!ensureOpen())
@@ -765,11 +762,8 @@ bool SqliteDatabaseManager::updateAdminRemarks(int id, const QString &remarks)
     return true;
 }
 
-// ---------------------------------------------------------------------------
-// Reading: SELECT
-// ---------------------------------------------------------------------------
 
-// All allocations for one workshop on one date, newest first.
+// Workshop එකක තෝරාගත් දිනයේ bookings අලුත්ම ID එක මුලින් ලබාදෙයි.
 QList<StudentRecord> SqliteDatabaseManager::getRecordsByDateAndCategory(const QString &date,
                                                                         const QString &category)
 {
@@ -792,7 +786,7 @@ QList<StudentRecord> SqliteDatabaseManager::getRecordsByDateAndCategory(const QS
     return records;
 }
 
-// The dates on which a workshop already has allocations that are not rejected.
+// Reject නොකළ bookings ඇති දින ලබාදෙයි.
 QList<QDate> SqliteDatabaseManager::getAllocatedDates(const QString &category)
 {
     QList<QDate> dates;
@@ -816,7 +810,7 @@ QList<QDate> SqliteDatabaseManager::getAllocatedDates(const QString &category)
     return dates;
 }
 
-// True when none of the requested slots is already taken.
+// ඉල්ලූ slots සියල්ල හිස් නම් true දෙයි; edit කරන booking එක excludeRecordId වලින් හැර දමයි.
 bool SqliteDatabaseManager::isTimeSlotAvailable(const QString &date, const QString &category,
                                                 const QStringList &requestedSlots,
                                                 int excludeRecordId)
@@ -843,7 +837,7 @@ bool SqliteDatabaseManager::isTimeSlotAvailable(const QString &date, const QStri
     return true;
 }
 
-// Every slot already allocated for one workshop on one date.
+// එම workshop/date එකේ වෙන්කර ඇති slots ලබාදෙයි; Reject bookings ඉවත් කරයි.
 QStringList SqliteDatabaseManager::getAllocatedTimeSlotsStringList(const QString &date,
                                                                 const QString &category,
                                                                 int excludeRecordId)
@@ -853,6 +847,7 @@ QStringList SqliteDatabaseManager::getAllocatedTimeSlotsStringList(const QString
         return slotList;
 
     QSqlQuery query(db);
+    // Reject නැති bookings හි slots පමණක් ගනී; edit කරන ID එක query එකෙන් හැර දමයි.
     query.prepare("SELECT DISTINCT bs.time_slot FROM booking_slots bs "
                   "JOIN records r ON r.id = bs.record_id "
                   "WHERE r.record_date = :date AND r.category = :category "
@@ -869,7 +864,7 @@ QStringList SqliteDatabaseManager::getAllocatedTimeSlotsStringList(const QString
     return slotList;
 }
 
-// Every allocation of one workshop, most recent date first.
+// Workshop එකේ සියලු bookings අලුත් දිනය මුලින් ලැබෙන ලෙස ගනී.
 QList<StudentRecord> SqliteDatabaseManager::getAllRecordsForCategory(const QString &category)
 {
     QList<StudentRecord> records;
@@ -889,7 +884,7 @@ QList<StudentRecord> SqliteDatabaseManager::getAllRecordsForCategory(const QStri
     return records;
 }
 
-// The reason the last database operation failed.
+// අවසන් database වැඩේ අසාර්ථක වූ හේතුව ලබාදෙයි.
 QString SqliteDatabaseManager::getLastError() const
 {
     return lastError;

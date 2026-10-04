@@ -1,3 +1,5 @@
+// Form එකේ දත්ත නිවැරදිදැයි බලයි. අවශ්‍ය inputs සහ දෝෂ පණිවිඩ මෙහි වෙනස් කරන්න.
+// #include වලින් මේ file එකට අවශ්‍ය Qt සහ project declarations ලබාගනී.
 #include "allocationrules.h"
 
 #include <QDate>
@@ -5,10 +7,10 @@
 #include <QRandomGenerator>
 #include <QRegularExpression>
 
-// Checks the allocation from the top of the form downwards and returns the first
-// problem it finds. The order matters: it is the same order the user filled in.
+// Form එකේ පළමු වැරදි field එක ලබාදෙයි; සියල්ල හරි නම් Field::None දෙයි.
 AllocationRules::Field AllocationRules::validate(const StudentRecord &record, bool departmentSelected)
 {
+    // Field පරීක්ෂාව form එකේ අනුපිළිවෙළින් කරයි; පළමු වැරැද්ද පමණක් ලබාදෙයි.
     if (record.getName().trimmed().isEmpty()) {
         return Field::Name;
     }
@@ -19,13 +21,12 @@ AllocationRules::Field AllocationRules::validate(const StudentRecord &record, bo
         return Field::Department;
     }
 
-    // A simple pattern for "something @ something . something".
+    // Email validation රටාවයි; වෙනස් කළොත් database email පරීක්ෂාවත් ගළපන්න.
     const QRegularExpression emailPattern("^[A-Za-z0-9._%+\\-]+@[A-Za-z0-9.\\-]+\\.[A-Za-z]{2,}$");
     if (!emailPattern.match(record.getEmail().trimmed()).hasMatch()) {
         return Field::Email;
     }
 
-    // The supervisor and the project are both compulsory.
     if (record.getSupervisorName().trimmed().isEmpty()) {
         return Field::Supervisor;
     }
@@ -33,8 +34,7 @@ AllocationRules::Field AllocationRules::validate(const StudentRecord &record, bo
         return Field::Project;
     }
 
-    // The allocation needs a workshop, a date that has not already passed, and at
-    // least one time slot.
+    // අද හෝ ඉදිරි දිනයක්, workshop එකක් සහ slot එකක් අවශ්‍යයි.
     const QDate date = QDate::fromString(record.getRecordDate(), Qt::ISODate);
     if (record.getCategory().isEmpty() || date < QDate::currentDate() ||
         record.getTimeSlots().isEmpty()) {
@@ -43,7 +43,7 @@ AllocationRules::Field AllocationRules::validate(const StudentRecord &record, bo
     return Field::None;
 }
 
-// The sentence that goes with each problem above.
+// වැරදි field එකට පෙන්වන පණිවිඩය තෝරයි. Messages වෙනස් කිරීමට return text වෙනස් කරන්න.
 QString AllocationRules::validationMessage(Field field)
 {
     switch (field) {
@@ -67,22 +67,20 @@ QString AllocationRules::validationMessage(Field field)
     return QString();
 }
 
+// නව booking එකට ඉලක්කම් හතරේ key, created_at සහ Pending status සකසයි.
 void AllocationRules::prepareNewAllocation(StudentRecord &record)
 {
-    // A new allocation receives its own 4-digit allocation key.
-    // bounded(10000) gives a number from 0 to 9999, and rightJustified pads
-    // short numbers with zeros so the key is always four digits, for example 0042.
+    // 0-9999 random අගයයි; rightJustified(4) අඩු ඉලක්කම් ඉදිරියට 0 දමා පුරවයි.
     const int key = QRandomGenerator::global()->bounded(10000);
     record.setPasscode(QString::number(key).rightJustified(4, QChar('0')));
     record.setCreatedAt(QDateTime::currentDateTime().toString(Qt::ISODate));
     record.setStatus("Pending");
 }
 
+// Student කළ edit එකකට නැවත Pending යොදයි; admin edit එකේ status එක තබයි.
 void AllocationRules::prepareUpdatedAllocation(StudentRecord &record, bool studentEdit)
 {
-    // An administrator must review changes submitted by a student again, so the
-    // allocation goes back to "Pending". An administrator's own edit keeps the
-    // status it already had.
+    // Student edit එක නැවත admin review කිරීමට Pending කරයි.
     if (studentEdit) {
         record.setStatus("Pending");
     }

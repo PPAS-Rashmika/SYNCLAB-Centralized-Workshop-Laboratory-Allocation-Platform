@@ -1,3 +1,5 @@
+// Calendar දිනවල A/P/R booking ගණන් අඳියි. Badge පාට සහ ප්‍රමාණය මෙහි වෙනස් කරන්න.
+// #include වලින් මේ file එකට අවශ්‍ය Qt සහ project declarations ලබාගනී.
 #include "customcalendarwidget.h"
 
 #include <QAbstractItemView>
@@ -5,36 +7,33 @@
 #include <QPalette>
 #include <QTextCharFormat>
 
-// Constructor: fixes the look of the calendar once, when it is created.
+// Calendar දින නාම, මුල් සතියේ දිනය සහ අවම ප්‍රමාණය සකසයි.
 CustomCalendarWidget::CustomCalendarWidget(QWidget *parent) : QCalendarWidget(parent)
 {
     setVerticalHeaderFormat(QCalendarWidget::NoVerticalHeader);
     setHorizontalHeaderFormat(QCalendarWidget::ShortDayNames);
+    // සතියේ මුල් දිනය මෙහි තෝරයි; දැනට Monday වේ.
     setFirstDayOfWeek(Qt::Monday);
     setGridVisible(false);
     setMinimumSize(320, 240);
     setAccessibleName(tr("Allocation calendar"));
 
-    // The day bar is the strip of weekday names above the dates. Qt paints it
-    // with the "header text format", so changing that format recolours the bar.
-    // Qt always draws the Saturday and Sunday names in red, so the bar stays a
-    // light colour to keep those two names readable. Change these three lines
-    // to use a different colour.
+    // Calendar දින නාම පෙන්වන ඉහළ bar එකේ පාට සහ font මෙහි සකසයි.
     QTextCharFormat dayBar;
-    dayBar.setBackground(QColor("#DBEAFE")); // light blue strip above the dates
-    dayBar.setForeground(QColor("#1E40AF")); // dark blue weekday names
+    dayBar.setBackground(QColor("#DBEAFE"));  
+    dayBar.setForeground(QColor("#1E40AF"));  
     dayBar.setFontWeight(QFont::Bold);
     setHeaderTextFormat(dayBar);
 }
 
-// Stores new counts and asks Qt to redraw every day cell.
+// එක් දිනක status ගණන් save කර calendar දින නැවත අඳියි.
 void CustomCalendarWidget::setStatusCounts(const QMap<QDate, QMap<QString, int>> &counts)
 {
     statusCounts = counts;
     updateCells();
 }
 
-// Qt calls this once for every day cell that needs drawing.
+// දින අංකය සහ A/P/R ගණන් එක calendar කොටුවක අඳියි.
 void CustomCalendarWidget::paintCell(QPainter *painter, const QRect &rect, QDate date) const
 {
     const auto counts = statusCounts.value(date);
@@ -42,18 +41,20 @@ void CustomCalendarWidget::paintCell(QPainter *painter, const QRect &rect, QDate
     const int pending = counts.value("Pending");
     const int rejected = counts.value("Reject");
 
-    // Nothing to add, or the cell is too small for a badge: draw the plain day.
+    // Bookings නැති හෝ ඉඩ කුඩා දිනයක සාමාන්‍ය day number එක පමණක් අඳියි.
     if (approved + pending + rejected == 0 || rect.height() < 28) {
+        // දින අංකය සහ A/P/R ගණන් එක calendar කොටුවක අඳියි.
         QCalendarWidget::paintCell(painter, rect, date);
         return;
     }
 
-    // save() and restore() make sure our drawing does not leak into other cells.
+    // මේ cell එකේ drawing වෙනස්කම් අන් cells වලට බල නොපාන්න මුල් painter state තබයි.
     painter->save();
     painter->setClipRect(rect);
+    // Status badge strip එකේ උසයි; වැඩි කළොත් date number සඳහා ඇති ඉඩත් ගළපන්න.
     const int badgeHeight = qMin(14, rect.height() / 3);
 
-    // Work out the background colour the cell should already have.
+    // Selected date සහ වෙනම background colours රැකගෙන cell පසුබිම තෝරයි.
     const auto *view = findChild<QAbstractItemView *>("qt_calendar_calendarview");
     const QPalette colors = view ? view->palette() : palette();
     QBrush background = colors.base();
@@ -64,7 +65,8 @@ void CustomCalendarWidget::paintCell(QPainter *painter, const QRect &rect, QDate
         background = colors.highlight();
     painter->fillRect(rect, background);
 
-    // Reserve a separate strip so status counts never cover the day number.
+    // දින අංකය උඩ කොටසේ අඳියි; පහළින් badges සඳහා ඉඩ තබයි.
+    // දින අංකය සහ A/P/R ගණන් එක calendar කොටුවක අඳියි.
     QCalendarWidget::paintCell(painter, rect.adjusted(0, 0, 0, -badgeHeight - 2), date);
 
     QFont badgeFont = painter->font();
@@ -73,9 +75,10 @@ void CustomCalendarWidget::paintCell(QPainter *painter, const QRect &rect, QDate
     painter->setFont(badgeFont);
     painter->setRenderHint(QPainter::Antialiasing, true);
 
-    // The three badges sit side by side along the bottom of the cell.
     const int values[] = {approved, pending, rejected};
+    // A=Approve, P=Pending, R=Reject; එම අනුපිළිවෙළේ colours පහත ඇත.
     const QString prefixes[] = {"A", "P", "R"};
+    // Badges තුනේ green/amber/red පාට මෙහි වෙනස් කරන්න.
     const QColor fills[] = {QColor("#166534"), QColor("#92400E"), QColor("#B91C1C")};
     const int columnWidth = rect.width() / 3;
     for (int column = 0; column < 3; ++column) {
@@ -83,8 +86,8 @@ void CustomCalendarWidget::paintCell(QPainter *painter, const QRect &rect, QDate
             continue;
         const QRect badge(rect.left() + column * columnWidth + 1, rect.bottom() - badgeHeight,
                           columnWidth - 2, badgeHeight);
-        // Very large numbers are shortened so the text still fits.
         const QString value =
+            // ගණන 99 ඉක්මවූ විට 99+ පෙන්වයි; ඉඩ මදි නම් A/P/R අකුර නොපෙන්වයි.
             values[column] > 99 ? QString("99+") : QString::number(values[column]);
         QString label = prefixes[column] + value;
         if (painter->fontMetrics().horizontalAdvance(label) > badge.width() - 2)
