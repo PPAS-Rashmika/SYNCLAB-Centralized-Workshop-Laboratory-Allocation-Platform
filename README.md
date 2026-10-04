@@ -32,7 +32,7 @@ Each page's form class matches its root name (`welcomeWidget`, `selectionWidget`
 `calanderWidget`, `formWidget`, or `adminWidget`), so
 saving a moved control in Designer keeps the generated class compatible with C++.
 
-See [QT_DESIGNER_GUIDE.md](QT_DESIGNER_GUIDE.md) for the editing workflow.
+
 
 ## Booking and administration
 
@@ -61,7 +61,7 @@ The database is normalized to **4NF**, with four tables:
 Student department and workshop department are separate facts. Student profiles
 are shared by index number, so changing a student's details updates what is
 displayed on all their bookings. Slot lists are assembled for the UI; the
-database stores individual slot rows. See [DATABASE_DESIGN.md](DATABASE_DESIGN.md)
+database stores individual slot rows.
 for the schema, dependency reasoning and migration policy.
 
 The normal database path is **data/student_data.db** beside the source files.
