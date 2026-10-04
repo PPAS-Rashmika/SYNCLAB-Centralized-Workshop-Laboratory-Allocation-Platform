@@ -64,12 +64,11 @@ HEADERS += \
 # The screens drawn in Qt Designer. The uic tool turns each one into a
 # ui_<name>.h file that the program includes.
 FORMS += \
-    ui/forms/mainwindow.ui \
-    ui/forms/page0.ui \
-    ui/forms/page1.ui \
-    ui/forms/page2.ui \
-    ui/forms/page3.ui \
-    ui/forms/page4.ui \
+    ui/forms/welcome.ui \
+    ui/forms/selection.ui \
+    ui/forms/calander.ui \
+    ui/forms/form.ui \
+    ui/forms/admin.ui \
     ui/forms/customalertdialog.ui \
     ui/forms/custominputdialog.ui \
     ui/forms/adminsettingsdialog.ui \

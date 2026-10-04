@@ -1,11 +1,11 @@
 // Keeps the existing colours, images, workshop cards, and responsive layout.
 #include "mainwindow.h"
-#include "ui_mainwindow.h"
-#include "ui_page0.h"
-#include "ui_page1.h"
-#include "ui_page2.h"
-#include "ui_page3.h"
-#include "ui_page4.h"
+#include <QStackedWidget>
+#include "ui_welcome.h"
+#include "ui_selection.h"
+#include "ui_calander.h"
+#include "ui_form.h"
+#include "ui_admin.h"
 #include "customdialogs.h"
 #include "workshopcatalog.h"
 #include "apphelpers.h"
@@ -44,8 +44,8 @@ void MainWindow::applyTheme(bool isDark)
     setPalette(palette);
     setStyleSheet(
         QString("QWidget { color:%1; font-family:'Segoe UI'; font-size:13px; }"
-                "QMainWindow, QStackedWidget, QWidget#page0Widget, QWidget#page1Widget, "
-                "QWidget#page2Widget, QWidget#page3Widget, QWidget#page4Widget { background:%2; }"
+                "QMainWindow, QStackedWidget, QWidget#welcomeWidget, QWidget#selectionWidget, "
+                "QWidget#calanderWidget, QWidget#formWidget, QWidget#adminWidget { background:%2; }"
                 "QScrollArea { border:none; background:transparent; } QScrollArea > QWidget > "
                 "QWidget { background:%2; }"
                 "QLabel { background:transparent; }"
@@ -95,7 +95,7 @@ void MainWindow::applyTheme(bool isDark)
                 "selection-background-color:#2563EB; selection-color:white; outline:0; }"
                 "QToolTip { background:%3; color:%1; border:1px solid %5; padding:6px; }")
             .arg(text, bg, surface, muted, border, accent, soft, isDark ? "#FDA4AF" : "#BE123C"));
-    ui0->welcomeImg->setPixmap(workshopImage("SYNCLAB", QSize(110, 110)));
+    welcomeUi->welcomeImg->setPixmap(workshopImage("SYNCLAB", QSize(110, 110)));
     QString wallpaper = QSettings(QSettings::defaultFormat(), QSettings::UserScope,
                                   "StudentWorkshopApp", "ThemeSettings")
                             .value("wallpaper")
@@ -103,7 +103,7 @@ void MainWindow::applyTheme(bool isDark)
     if (QFileInfo::exists(wallpaper)) {
         wallpaper = QDir::fromNativeSeparators(QFileInfo(wallpaper).absoluteFilePath());
         wallpaper.replace('"', "\\\"");
-        for (QWidget *page : {page0Widget, page1Widget, page2Widget, page3Widget, page4Widget})
+        for (QWidget *page : {welcomeWidget, selectionWidget, calanderWidget, formWidget, adminWidget})
             page->setStyleSheet(
                 QString("QWidget#%1 { border-image:url(\"%2\") 0 0 0 0 stretch stretch; }")
                     .arg(page->objectName(), wallpaper));
@@ -119,7 +119,7 @@ void MainWindow::applyTheme(bool isDark)
 QWidget *MainWindow::createCard(const QString &id, const QString &title, const QString &subtitle,
                                 bool)
 {
-    auto *card = new QFrame(page1Widget);
+    auto *card = new QFrame(selectionWidget);
     card->setObjectName("cardFrame");
     card->setProperty("category", id);
     card->setFixedSize(212, 210);
@@ -178,7 +178,7 @@ void MainWindow::selectCard(const QString &category, QFrame *)
                               "border:2px solid #6099F5; background:rgba(80,140,240,18); }");
         button->setAccessibleDescription(selected ? "Selected workshop" : "Select workshop");
     }
-    ui1->nextBtn->setEnabled(!category.isEmpty());
+    selectionUi->nextBtn->setEnabled(!category.isEmpty());
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event)
@@ -189,15 +189,15 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 
 void MainWindow::arrangeCards()
 {
-    if (!page1Widget)
+    if (!selectionWidget)
         return;
-    const auto *area = page1Widget->findChild<QScrollArea *>("cardsScrollArea");
+    const auto *area = selectionWidget->findChild<QScrollArea *>("cardsScrollArea");
     const int available = area ? area->viewport()->width() : width() - 70;
     const int columns = qBound(1, (available - 12) / 228, 5);
     if (columns == m_cardColumns)
         return;
     m_cardColumns = columns;
-    while (auto *item = ui1->cardsLayout->takeAt(0))
+    while (auto *item = selectionUi->cardsLayout->takeAt(0))
         delete item;
     // Keep the additional laboratories below the original ten, even on narrower windows.
     constexpr int originalWorkshopCount = 10;
@@ -206,6 +206,6 @@ void MainWindow::arrangeCards()
         const int offset = i < originalWorkshopCount ? i : i - originalWorkshopCount;
         const int row =
             i < originalWorkshopCount ? offset / columns : additionalRow + offset / columns;
-        ui1->cardsLayout->addWidget(m_cardFrames[i], row, offset % columns);
+        selectionUi->cardsLayout->addWidget(m_cardFrames[i], row, offset % columns);
     }
 }

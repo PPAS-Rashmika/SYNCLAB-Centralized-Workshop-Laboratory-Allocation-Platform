@@ -8,12 +8,12 @@
 //   6. Administrator page    (table, email drafts, printing, settings)
 #include "mainwindow.h"
 #include "designertheme.h"
-#include "ui_mainwindow.h"
-#include "ui_page0.h"
-#include "ui_page1.h"
-#include "ui_page2.h"
-#include "ui_page3.h"
-#include "ui_page4.h"
+#include <QStackedWidget>
+#include "ui_welcome.h"
+#include "ui_selection.h"
+#include "ui_calander.h"
+#include "ui_form.h"
+#include "ui_admin.h"
 #include "customdialogs.h"
 #include "workshopcatalog.h"
 #include "filestorage.h"
@@ -23,6 +23,8 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QHeaderView>
+#include <QFont>
+#include <QIcon>
 #include <QLabel>
 #include <QLineEdit>
 #include <QMap>
@@ -112,73 +114,117 @@ void addDesignerPage(QStackedWidget *stack, QWidget *canvas, int index)
 
 // Constructor
 MainWindow::MainWindow(QWidget *parent, const QString &databasePath)
-    : QMainWindow(parent), ui(new Ui::MainWindow), ui0(new Ui::page0Widget), ui1(new Ui::page1Widget),
-      ui2(new Ui::page2Widget), ui3(new Ui::page3Widget), ui4(new Ui::page4Widget)
+    : QMainWindow(parent), welcomeUi(new Ui::welcomeWidget), selectionUi(new Ui::selectionWidget),
+      calanderUi(new Ui::calanderWidget), formUi(new Ui::formWidget), adminUi(new Ui::adminWidget)
 {
-    // Build the outer window first, then add the five pages to its stack.
-    ui->setupUi(this);
-    page0Widget = new QWidget();
-    ui0->setupUi(page0Widget);
-    addDesignerPage(ui->stackedWidget, page0Widget, 0);
-    page1Widget = new QWidget();
-    ui1->setupUi(page1Widget);
-    addDesignerPage(ui->stackedWidget, page1Widget, 1);
-    page2Widget = new QWidget();
-    ui2->setupUi(page2Widget);
-    addDesignerPage(ui->stackedWidget, page2Widget, 2);
-    page3Widget = new QWidget();
-    ui3->setupUi(page3Widget);
-    addDesignerPage(ui->stackedWidget, page3Widget, 3);
-    page4Widget = new QWidget();
-    ui4->setupUi(page4Widget);
-    addDesignerPage(ui->stackedWidget, page4Widget, 4);
+    // Create the page host directly; only the actual pages need .ui files.
+    setObjectName("MainWindow");
+    resize(1180, 780);
+    setWindowTitle(tr("SYNCLAB | Centralized Workshop & Laboratory Allocation Platform"));
+    setWindowIcon(QIcon(":/branding/logo.png"));
+    setFont(QFont("Segoe UI", 10));
+    setStyleSheet(QStringLiteral(R"CSS(
+QWidget { color:#17243B; }
+QMainWindow, QStackedWidget, QWidget#welcomeWidget, QWidget#selectionWidget, QWidget#calanderWidget, QWidget#formWidget, QWidget#adminWidget { background:#F4F7FB; }
+QScrollArea { border:none; background:transparent; }
+ QScrollArea > QWidget > QWidget { background:#F4F7FB; }
+QScrollArea#cardsScrollArea > QWidget, QWidget#cardsScrollContents { background:transparent; }
+QLabel { background:transparent; }
+QLabel#welcomeTitle { color:#52647D; }
+QLabel#syncLabTitle { }
+QLabel#syncLabSubtitle { }
+QLabel#welcomeDesc, QLabel#selectedDescLabel2, QLabel#adminWsDescLbl { color:#52647D; }
+QLabel#selectTitleLabel, QLabel#selectedNameLabel2, QLabel#confirmTitleLbl, QLabel#adminWsTitleLbl { }
+QLineEdit, QTextEdit, QComboBox { background:#FFFFFF; border:1px solid #D4DEEB; border-radius:7px; padding:8px; selection-background-color:#2563EB; selection-color:white; }
+QLineEdit:focus, QTextEdit:focus, QComboBox:focus { border:1px solid #2563EB; }
+QComboBox QAbstractItemView { background:#FFFFFF; color:#17243B; selection-background-color:#2563EB; selection-color:white; }
+QPushButton { background:#FFFFFF; color:#17243B; border:1px solid #D4DEEB; border-radius:8px; padding:9px 14px; }
+QPushButton:hover, QPushButton:focus { background:#EAF2FF; border-color:#2563EB; }
+QPushButton:pressed { border:2px solid #2563EB; }
+QPushButton#allocateNowBtn, QPushButton#nextBtn, QPushButton#nextTo3Btn, QPushButton#submitBtn, QPushButton#updateBtn { background:#2563EB; color:white; border:1px solid #2563EB; }
+QPushButton#allocateNowBtn:hover, QPushButton#nextBtn:hover, QPushButton#nextTo3Btn:hover, QPushButton#submitBtn:hover, QPushButton#updateBtn:hover { background:#1D4ED8; }
+QPushButton#deleteBtn, QPushButton#adminDelBtn { color:#BE123C; }
+QPushButton[timeSlot=true] { padding:10px 8px; }
+QPushButton:checked { background:#2563EB; color:white; border-color:#2563EB; }
+QPushButton:disabled { background:#F4F7FB; color:#52647D; border:1px solid #D4DEEB; }
+QPushButton#allocateNowBtn:disabled, QPushButton#nextBtn:disabled, QPushButton#nextTo3Btn:disabled, QPushButton#submitBtn:disabled, QPushButton#updateBtn:disabled, QPushButton#deleteBtn:disabled, QPushButton#adminDelBtn:disabled { background:#F4F7FB; color:#52647D; border:1px solid #D4DEEB; }
+QFrame#summaryBox { background:#EAF2FF; border:1px solid #D4DEEB; border-radius:10px; }
+QLabel#summaryDateLbl { color:#2563EB; }
+QTableWidget { background:#FFFFFF; alternate-background-color:#F4F7FB; border:1px solid #D4DEEB; gridline-color:#D4DEEB; selection-background-color:#EAF2FF; selection-color:#17243B; }
+QHeaderView::section { background:#EAF2FF; color:#17243B; border:none; padding:10px; }
+QTableWidget QLineEdit, QTableWidget QComboBox { padding:4px; border-radius:4px; }
+QCalendarWidget { background:#FFFFFF; border:1px solid #D4DEEB; border-radius:8px; }
+QCalendarWidget QWidget#qt_calendar_navigationbar { background:#2563EB; }
+QCalendarWidget QToolButton { color:white; background:transparent; padding:6px; }
+QCalendarWidget QMenu, QCalendarWidget QSpinBox { background:#FFFFFF; color:#17243B; }
+QCalendarWidget QAbstractItemView { background:#FFFFFF; color:#17243B; selection-background-color:#2563EB; selection-color:white; outline:0; }
+QToolTip { background:#FFFFFF; color:#17243B; border:1px solid #D4DEEB; padding:6px; }
+)CSS"));
+    stackedWidget = new QStackedWidget(this);
+    stackedWidget->setObjectName("stackedWidget");
+    setCentralWidget(stackedWidget);
+    welcomeWidget = new QWidget();
+    welcomeUi->setupUi(welcomeWidget);
+    addDesignerPage(stackedWidget, welcomeWidget, 0);
+    selectionWidget = new QWidget();
+    selectionUi->setupUi(selectionWidget);
+    addDesignerPage(stackedWidget, selectionWidget, 1);
+    calanderWidget = new QWidget();
+    calanderUi->setupUi(calanderWidget);
+    addDesignerPage(stackedWidget, calanderWidget, 2);
+    formWidget = new QWidget();
+    formUi->setupUi(formWidget);
+    addDesignerPage(stackedWidget, formWidget, 3);
+    adminWidget = new QWidget();
+    adminUi->setupUi(adminWidget);
+    addDesignerPage(stackedWidget, adminWidget, 4);
 
     // Open the SQLite database and make sure the table exists.
     const QString path = databasePath.isEmpty() ? defaultDatabasePath() : databasePath;
     dbManager = new SqliteDatabaseManager(path);
     databaseReady = dbManager->createTable();
 
-    ui2->backTo1Btn->setProperty("_designerBackText", ui2->backTo1Btn->text());
-    ui3->confirmTitleLbl->setProperty("_designerNewTitle", ui3->confirmTitleLbl->text());
+    calanderUi->backTo1Btn->setProperty("_designerBackText", calanderUi->backTo1Btn->text());
+    formUi->confirmTitleLbl->setProperty("_designerNewTitle", formUi->confirmTitleLbl->text());
     bindWorkshopCards();
     setupDynamicUI();
     applyTheme(QSettings(QSettings::defaultFormat(), QSettings::UserScope, "StudentWorkshopApp",
                          "ThemeSettings")
                    .value("darkMode", false)
                    .toBool());
-    ui->stackedWidget->setCurrentIndex(0);
+    stackedWidget->setCurrentIndex(0);
 
     // Connect every button to the function that should run when it is clicked.
-    connect(ui0->allocateNowBtn, &QPushButton::clicked, this, &MainWindow::startNewAllocation);
-    connect(ui0->editAllocationBtn, &QPushButton::clicked, this, &MainWindow::startEditAllocationFlow);
-    connect(ui0->settingsBtn0, &QPushButton::clicked, this, &MainWindow::openSystemSettings);
-    connect(ui1->backTo0Btn, &QPushButton::clicked, this, &MainWindow::cancelCurrentFlow);
-    connect(ui1->nextBtn, &QPushButton::clicked, this, &MainWindow::onNextClicked);
-    connect(ui2->backTo1Btn, &QPushButton::clicked, this, &MainWindow::goBackTo1);
-    connect(ui2->nextTo3Btn, &QPushButton::clicked, this, &MainWindow::onNextTo3Clicked);
-    connect(ui3->backTo2Btn, &QPushButton::clicked, this, &MainWindow::goBackTo2);
-    connect(ui2->calendar, &QCalendarWidget::selectionChanged, this,
+    connect(welcomeUi->allocateNowBtn, &QPushButton::clicked, this, &MainWindow::startNewAllocation);
+    connect(welcomeUi->editAllocationBtn, &QPushButton::clicked, this, &MainWindow::startEditAllocationFlow);
+    connect(welcomeUi->settingsBtn0, &QPushButton::clicked, this, &MainWindow::openSystemSettings);
+    connect(selectionUi->backTo0Btn, &QPushButton::clicked, this, &MainWindow::cancelCurrentFlow);
+    connect(selectionUi->nextBtn, &QPushButton::clicked, this, &MainWindow::onNextClicked);
+    connect(calanderUi->backTo1Btn, &QPushButton::clicked, this, &MainWindow::goBackTo1);
+    connect(calanderUi->nextTo3Btn, &QPushButton::clicked, this, &MainWindow::onNextTo3Clicked);
+    connect(formUi->backTo2Btn, &QPushButton::clicked, this, &MainWindow::goBackTo2);
+    connect(calanderUi->calendar, &QCalendarWidget::selectionChanged, this,
             &MainWindow::onCalendarSelectionChanged);
-    connect(ui3->submitBtn, &QPushButton::clicked, this, &MainWindow::submitData);
-    connect(ui3->updateBtn, &QPushButton::clicked, this, &MainWindow::updateData);
-    connect(ui3->deleteBtn, &QPushButton::clicked, this, &MainWindow::deleteData);
-    connect(ui2->adminBtn2, &QPushButton::clicked, this, &MainWindow::showRecordsWindow);
-    connect(ui4->adminBackBtn, &QPushButton::clicked, this, &MainWindow::goBackFromAdmin);
-    connect(ui4->adminSettingsBtn, &QPushButton::clicked, this,
+    connect(formUi->submitBtn, &QPushButton::clicked, this, &MainWindow::submitData);
+    connect(formUi->updateBtn, &QPushButton::clicked, this, &MainWindow::updateData);
+    connect(formUi->deleteBtn, &QPushButton::clicked, this, &MainWindow::deleteData);
+    connect(calanderUi->adminBtn2, &QPushButton::clicked, this, &MainWindow::showRecordsWindow);
+    connect(adminUi->adminBackBtn, &QPushButton::clicked, this, &MainWindow::goBackFromAdmin);
+    connect(adminUi->adminSettingsBtn, &QPushButton::clicked, this,
             &MainWindow::openAdminEmailSettings);
-    connect(ui4->adminShowAllBtn, &QPushButton::clicked, this, &MainWindow::adminClearFilter);
-    connect(ui4->adminCalendar, &QCalendarWidget::selectionChanged, this,
-            [this] { adminFilterByDate(ui4->adminCalendar->selectedDate()); });
-    connect(ui4->adminCalendar, &QCalendarWidget::clicked, this, &MainWindow::adminFilterByDate);
-    connect(ui4->mainTable, &QTableWidget::itemSelectionChanged, this,
+    connect(adminUi->adminShowAllBtn, &QPushButton::clicked, this, &MainWindow::adminClearFilter);
+    connect(adminUi->adminCalendar, &QCalendarWidget::selectionChanged, this,
+            [this] { adminFilterByDate(adminUi->adminCalendar->selectedDate()); });
+    connect(adminUi->adminCalendar, &QCalendarWidget::clicked, this, &MainWindow::adminFilterByDate);
+    connect(adminUi->mainTable, &QTableWidget::itemSelectionChanged, this,
             &MainWindow::refreshAdminActions);
 
     // Administrator: open the selected allocation in the form.
-    connect(ui4->adminEditBtn, &QPushButton::clicked, this, [this] {
-        const int row = ui4->mainTable->currentRow();
+    connect(adminUi->adminEditBtn, &QPushButton::clicked, this, [this] {
+        const int row = adminUi->mainTable->currentRow();
         if (row < 0)
             return;
-        const int id = ui4->mainTable->item(row, 0)->data(Qt::UserRole).toInt();
+        const int id = adminUi->mainTable->item(row, 0)->data(Qt::UserRole).toInt();
         const auto records = dbManager->getAllRecordsForCategory(currentCategory);
         if (!dbManager->getLastError().isEmpty()) {
             showDatabaseError();
@@ -193,11 +239,11 @@ MainWindow::MainWindow(QWidget *parent, const QString &databasePath)
     });
 
     // Administrator: delete the selected allocation.
-    connect(ui4->adminDelBtn, &QPushButton::clicked, this, [this] {
-        const int row = ui4->mainTable->currentRow();
+    connect(adminUi->adminDelBtn, &QPushButton::clicked, this, [this] {
+        const int row = adminUi->mainTable->currentRow();
         if (row < 0)
             return;
-        const int id = ui4->mainTable->item(row, 0)->data(Qt::UserRole).toInt();
+        const int id = adminUi->mainTable->item(row, 0)->data(Qt::UserRole).toInt();
         if (CustomAlertDialog("Delete allocation", "Permanently delete the selected allocation?",
                               CustomAlertDialog::Question, this)
                 .exec() != QDialog::Accepted)
@@ -210,15 +256,15 @@ MainWindow::MainWindow(QWidget *parent, const QString &databasePath)
         updateCalendarHighlights();
     });
 
-    connect(ui4->pendingEmailBtn, &QPushButton::clicked, this,
+    connect(adminUi->pendingEmailBtn, &QPushButton::clicked, this,
             [this] { composeStatusEmail("Pending"); });
-    connect(ui4->rejectEmailBtn, &QPushButton::clicked, this,
+    connect(adminUi->rejectEmailBtn, &QPushButton::clicked, this,
             [this] { composeStatusEmail("Reject"); });
 
     // If the database could not be opened, allocation must be switched off.
     if (!databaseReady) {
-        ui0->allocateNowBtn->setEnabled(false);
-        ui0->editAllocationBtn->setEnabled(false);
+        welcomeUi->allocateNowBtn->setEnabled(false);
+        welcomeUi->editAllocationBtn->setEnabled(false);
         QTimer::singleShot(0, this, &MainWindow::showDatabaseError);
     }
 }
@@ -227,12 +273,11 @@ MainWindow::MainWindow(QWidget *parent, const QString &databasePath)
 MainWindow::~MainWindow()
 {
     delete dbManager;
-    delete ui;
-    delete ui0;
-    delete ui1;
-    delete ui2;
-    delete ui3;
-    delete ui4;
+    delete welcomeUi;
+    delete selectionUi;
+    delete calanderUi;
+    delete formUi;
+    delete adminUi;
 }
 
 // Connects dynamic behavior and configures input limits. Static text, fonts,
@@ -240,48 +285,48 @@ MainWindow::~MainWindow()
 void MainWindow::setupDynamicUI()
 {
     // Let the page wallpaper show through the space around the workshop cards.
-    ui1->cardsScrollArea->viewport()->setAutoFillBackground(false);
-    ui1->cardsScrollContents->setAutoFillBackground(false);
+    selectionUi->cardsScrollArea->viewport()->setAutoFillBackground(false);
+    selectionUi->cardsScrollContents->setAutoFillBackground(false);
 
     // Remember the booking values associated with the four authored buttons.
     timeSlotValues = {"8.30 am - 10.30 am", "10.30 am - 12.30 pm", "1.30 pm - 3.30 pm",
                       "3.30 pm - 5.30 pm"};
-    timeSlotButtons = {ui2->timeBtn1, ui2->timeBtn2, ui2->timeBtn3, ui2->timeBtn4};
+    timeSlotButtons = {calanderUi->timeBtn1, calanderUi->timeBtn2, calanderUi->timeBtn3, calanderUi->timeBtn4};
     for (int i = 0; i < timeSlotButtons.size(); ++i) {
         // The stylesheet uses [timeSlot=true] to recognise these buttons.
         timeSlotButtons[i]->setProperty("timeSlot", true);
         connect(timeSlotButtons[i], &QPushButton::toggled, this, &MainWindow::onTimeSlotClicked);
     }
 
-    ui2->calendar->setMinimumDate(QDate::currentDate());
-    ui2->calendar->setVerticalHeaderFormat(QCalendarWidget::NoVerticalHeader);
-    ui4->adminCalendar->setVerticalHeaderFormat(QCalendarWidget::NoVerticalHeader);
+    calanderUi->calendar->setMinimumDate(QDate::currentDate());
+    calanderUi->calendar->setVerticalHeaderFormat(QCalendarWidget::NoVerticalHeader);
+    adminUi->adminCalendar->setVerticalHeaderFormat(QCalendarWidget::NoVerticalHeader);
 
     // The administrator table has eleven columns.
-    ui4->mainTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
+    adminUi->mainTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
     const QList<int> widths = {155, 150, 100, 150, 200, 200, 140, 210, 200, 190, 130};
     for (int i = 0; i < widths.size(); ++i)
-        ui4->mainTable->setColumnWidth(i, widths[i]);
-    ui4->mainTable->horizontalHeader()->setStretchLastSection(true);
-    ui4->mainTable->verticalHeader()->hide();
-    ui4->mainTable->verticalHeader()->setDefaultSectionSize(44);
-    ui4->mainTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    ui4->mainTable->setSelectionBehavior(QAbstractItemView::SelectRows);
-    ui4->mainTable->setSelectionMode(QAbstractItemView::SingleSelection);
-    ui4->mainTable->setAlternatingRowColors(true);
-    ui4->mainTable->setWordWrap(false);
-    ui4->mainTable->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
+        adminUi->mainTable->setColumnWidth(i, widths[i]);
+    adminUi->mainTable->horizontalHeader()->setStretchLastSection(true);
+    adminUi->mainTable->verticalHeader()->hide();
+    adminUi->mainTable->verticalHeader()->setDefaultSectionSize(44);
+    adminUi->mainTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    adminUi->mainTable->setSelectionBehavior(QAbstractItemView::SelectRows);
+    adminUi->mainTable->setSelectionMode(QAbstractItemView::SingleSelection);
+    adminUi->mainTable->setAlternatingRowColors(true);
+    adminUi->mainTable->setWordWrap(false);
+    adminUi->mainTable->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
 
-    ui3->deptInput->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLengthWithIcon);
-    ui3->deptInput->setMinimumContentsLength(16);
-    ui3->nameInput->setMaxLength(160);
-    ui3->indexInput->setMaxLength(80);
-    ui3->emailInput->setMaxLength(254);
-    ui3->supervisorInput->setMaxLength(160);
-    ui3->projectInput->setMaxLength(200);
-    ui3->descriptionInput->setAcceptRichText(false);
-    ui3->summaryDateLbl->setWordWrap(true);
-    ui3->summaryTimeLbl->setWordWrap(true);
+    formUi->deptInput->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLengthWithIcon);
+    formUi->deptInput->setMinimumContentsLength(16);
+    formUi->nameInput->setMaxLength(160);
+    formUi->indexInput->setMaxLength(80);
+    formUi->emailInput->setMaxLength(254);
+    formUi->supervisorInput->setMaxLength(160);
+    formUi->projectInput->setMaxLength(200);
+    formUi->descriptionInput->setAcceptRichText(false);
+    formUi->summaryDateLbl->setWordWrap(true);
+    formUi->summaryTimeLbl->setWordWrap(true);
     setFormButtonsMode(false);
     refreshAdminActions();
 }
@@ -304,7 +349,7 @@ void MainWindow::showDatabaseError()
 void MainWindow::applyTheme(bool darkMode)
 {
     isDarkTheme = darkMode;
-    // Designer owns every widget's normal style, font, geometry and static text.
+    // Designer owns the page controls' normal style, font, geometry and static text.
     // The theme helper only changes recognised palette colours for dark mode.
     applyDesignerTheme(this, darkMode);
 
@@ -316,7 +361,7 @@ void MainWindow::applyTheme(bool darkMode)
     if (QFileInfo::exists(wallpaper)) {
         wallpaper = QDir::fromNativeSeparators(QFileInfo(wallpaper).absoluteFilePath());
         wallpaper.replace('"', "\\\"");
-        for (QWidget *page : {page0Widget, page1Widget, page2Widget, page3Widget, page4Widget})
+        for (QWidget *page : {welcomeWidget, selectionWidget, calanderWidget, formWidget, adminWidget})
             page->setStyleSheet(
                 QString("QWidget#%1 { border-image:url(\"%2\") 0 0 0 0 stretch stretch; }")
                     .arg(page->objectName(), wallpaper) + page->styleSheet());
@@ -328,11 +373,11 @@ void MainWindow::applyTheme(bool darkMode)
     updateAdminCalendarHighlights();
 }
 
-// Connect the cards stored in page1.ui. Their position, size, pictures and
+// Connect the cards stored in selection.ui. Their position, size, pictures and
 // labels are authored in Designer and are never reconstructed at runtime.
 void MainWindow::bindWorkshopCards()
 {
-    for (QFrame *card : ui1->cardsScrollContents->findChildren<QFrame *>()) {
+    for (QFrame *card : selectionUi->cardsScrollContents->findChildren<QFrame *>()) {
         const QString category = card->property("category").toString();
         if (category.isEmpty())
             continue;
@@ -356,7 +401,7 @@ void MainWindow::selectCard(const QString &category)
         if (auto *button = card->findChild<QPushButton *>())
             button->setAccessibleDescription(selected ? "Selected workshop" : "Select workshop");
     }
-    ui1->nextBtn->setEnabled(!category.isEmpty());
+    selectionUi->nextBtn->setEnabled(!category.isEmpty());
 }
 
 // =====================================================================
@@ -373,12 +418,12 @@ void MainWindow::resetFlow()
     isAdminEditMode = false;
     isStudentEditFlow = false;
     adminFilterDate = QDate();
-    ui2->calendar->setMinimumDate(QDate::currentDate());
-    ui2->calendar->setSelectedDate(QDate::currentDate());
+    calanderUi->calendar->setMinimumDate(QDate::currentDate());
+    calanderUi->calendar->setSelectedDate(QDate::currentDate());
     clearUI();
     selectCard(QString());
-    ui2->adminBtn2->show();
-    ui2->backTo1Btn->setText(ui2->backTo1Btn->property("_designerBackText").toString());
+    calanderUi->adminBtn2->show();
+    calanderUi->backTo1Btn->setText(calanderUi->backTo1Btn->property("_designerBackText").toString());
     setFormButtonsMode(false);
 }
 
@@ -388,7 +433,7 @@ void MainWindow::startNewAllocation()
     if (!databaseReady)
         return;
     resetFlow();
-    ui->stackedWidget->setCurrentIndex(1);
+    stackedWidget->setCurrentIndex(1);
 }
 
 // "Edit allocation" on the welcome page. The student types the allocation key.
@@ -443,29 +488,29 @@ void MainWindow::startEditAllocationFlow()
     currentWorkshopId = currentCategory;
     isStudentEditFlow = true;
     isPasscodeBypassed = true;
-    ui2->adminBtn2->hide();
+    calanderUi->adminBtn2->hide();
     loadRecordIntoUI(currentRecord);
     selectCard(currentCategory);
     const QDate savedDate = QDate::fromString(currentRecord.getRecordDate(), Qt::ISODate);
     // Historical allocations must still expose the delete action and editable details.
-    ui->stackedWidget->setCurrentIndex(savedDate < QDate::currentDate() ? 3 : 1);
+    stackedWidget->setCurrentIndex(savedDate < QDate::currentDate() ? 3 : 1);
 }
 
 // Leaving a allocation that has not been saved yet.
 void MainWindow::cancelCurrentFlow()
 {
     const bool hasDraft =
-        isStudentEditFlow || isAdminEditMode || !ui3->nameInput->text().isEmpty() ||
-        !ui3->indexInput->text().isEmpty() || !ui3->emailInput->text().isEmpty() ||
-        !ui3->supervisorInput->text().isEmpty() || !ui3->projectInput->text().isEmpty() ||
-        !ui3->descriptionInput->toPlainText().isEmpty();
+        isStudentEditFlow || isAdminEditMode || !formUi->nameInput->text().isEmpty() ||
+        !formUi->indexInput->text().isEmpty() || !formUi->emailInput->text().isEmpty() ||
+        !formUi->supervisorInput->text().isEmpty() || !formUi->projectInput->text().isEmpty() ||
+        !formUi->descriptionInput->toPlainText().isEmpty();
     if (hasDraft &&
         CustomAlertDialog("Discard changes", "Leave this allocation and discard unsaved changes?",
                           CustomAlertDialog::Question, this)
                 .exec() != QDialog::Accepted)
         return;
     resetFlow();
-    ui->stackedWidget->setCurrentIndex(0);
+    stackedWidget->setCurrentIndex(0);
 }
 
 // "Next" on the workshop selection page.
@@ -487,19 +532,19 @@ void MainWindow::openSecondInterface(const QString &category)
         adminFilterDate = QDate();
     currentCategory = category;
     currentWorkshopId = category;
-    ui2->selectedNameLabel2->setText(workshopTitle(category));
-    ui2->selectedDescLabel2->setText(
+    calanderUi->selectedNameLabel2->setText(workshopTitle(category));
+    calanderUi->selectedDescLabel2->setText(
         workshopDepartment(category) +
         "\n\nChoose a date and one or more available time slots.\nGrey slots are unavailable.");
-    ui4->adminWsTitleLbl->setText(workshopTitle(category));
+    adminUi->adminWsTitleLbl->setText(workshopTitle(category));
     // Fit each selected-workshop picture inside its Designer-authored label.
-    ui2->selectedImgLabel2->setPixmap(
-        workshopImage(category, QSize(160, 100).boundedTo(ui2->selectedImgLabel2->size())));
-    ui4->adminImgLabel->setPixmap(
-        workshopImage(category, QSize(160, 100).boundedTo(ui4->adminImgLabel->size())));
+    calanderUi->selectedImgLabel2->setPixmap(
+        workshopImage(category, QSize(160, 100).boundedTo(calanderUi->selectedImgLabel2->size())));
+    adminUi->adminImgLabel->setPixmap(
+        workshopImage(category, QSize(160, 100).boundedTo(adminUi->adminImgLabel->size())));
     updateCalendarHighlights();
     onCalendarSelectionChanged();
-    ui->stackedWidget->setCurrentIndex(2);
+    stackedWidget->setCurrentIndex(2);
 }
 
 // "Next" on the date and time page.
@@ -509,11 +554,11 @@ void MainWindow::onNextTo3Clicked()
     const QStringList selectedSlots = getSelectedTimeSlotsList();
     if (selectedSlots.isEmpty())
         return;
-    ui3->summaryDateLbl->setText(workshopTitle(currentCategory) + "  |  " +
-                                 ui2->calendar->selectedDate().toString("dddd, d MMMM yyyy"));
-    ui3->summaryTimeLbl->setText(selectedSlots.join("  |  "));
-    ui->stackedWidget->setCurrentIndex(3);
-    ui3->nameInput->setFocus();
+    formUi->summaryDateLbl->setText(workshopTitle(currentCategory) + "  |  " +
+                                 calanderUi->calendar->selectedDate().toString("dddd, d MMMM yyyy"));
+    formUi->summaryTimeLbl->setText(selectedSlots.join("  |  "));
+    stackedWidget->setCurrentIndex(3);
+    formUi->nameInput->setFocus();
 }
 
 // "Back" on the date and time page.
@@ -525,23 +570,23 @@ void MainWindow::goBackTo1()
         currentRecord = StudentRecord();
         clearUI();
         loadAdminData();
-        ui->stackedWidget->setCurrentIndex(4);
+        stackedWidget->setCurrentIndex(4);
     } else {
-        ui->stackedWidget->setCurrentIndex(1);
+        stackedWidget->setCurrentIndex(1);
     }
 }
 
 // "Back" on the allocation form page.
 void MainWindow::goBackTo2()
 {
-    ui->stackedWidget->setCurrentIndex(2);
+    stackedWidget->setCurrentIndex(2);
 }
 
 // "Back" on the administrator page.
 void MainWindow::goBackFromAdmin()
 {
     resetFlow();
-    ui->stackedWidget->setCurrentIndex(0);
+    stackedWidget->setCurrentIndex(0);
 }
 
 // =====================================================================
@@ -574,7 +619,7 @@ void MainWindow::setTimeSlotsInUI(const QString &timeString)
 // The Next button only works when at least one time slot is chosen.
 void MainWindow::onTimeSlotClicked()
 {
-    ui2->nextTo3Btn->setEnabled(!getSelectedTimeSlotsList().isEmpty());
+    calanderUi->nextTo3Btn->setEnabled(!getSelectedTimeSlotsList().isEmpty());
 }
 
 // Runs every time the student picks a different date.
@@ -582,10 +627,10 @@ void MainWindow::onTimeSlotClicked()
 void MainWindow::onCalendarSelectionChanged()
 {
     if (currentCategory.isEmpty()) {
-        ui2->nextTo3Btn->setEnabled(false);
+        calanderUi->nextTo3Btn->setEnabled(false);
         return;
     }
-    const QDate date = ui2->calendar->selectedDate();
+    const QDate date = calanderUi->calendar->selectedDate();
     // The student's own allocation is excluded, so editing it does not block itself.
     const auto allocated = dbManager->getAllocatedTimeSlotsStringList(
         date.toString(Qt::ISODate), currentCategory, currentRecord.getId());
@@ -609,7 +654,7 @@ void MainWindow::updateCalendarHighlights()
 {
     if (!databaseReady || currentCategory.isEmpty())
         return;
-    ui2->calendar->setDateTextFormat(QDate(), QTextCharFormat());
+    calanderUi->calendar->setDateTextFormat(QDate(), QTextCharFormat());
     // Count how many approved, pending and rejected allocations fall on each date.
     QMap<QDate, QMap<QString, int>> counts;
     for (const auto &record : dbManager->getAllRecordsForCategory(currentCategory)) {
@@ -617,7 +662,7 @@ void MainWindow::updateCalendarHighlights()
         if (date.isValid())
             counts[date][record.getStatus()]++;
     }
-    ui2->calendar->setStatusCounts(counts);
+    calanderUi->calendar->setStatusCounts(counts);
 }
 
 // The same badges, but on the administrator's calendar.
@@ -625,14 +670,14 @@ void MainWindow::updateAdminCalendarHighlights()
 {
     if (!databaseReady || currentCategory.isEmpty())
         return;
-    ui4->adminCalendar->setDateTextFormat(QDate(), QTextCharFormat());
+    adminUi->adminCalendar->setDateTextFormat(QDate(), QTextCharFormat());
     QMap<QDate, QMap<QString, int>> counts;
     for (const auto &record : dbManager->getAllRecordsForCategory(currentCategory)) {
         const QDate date = QDate::fromString(record.getRecordDate(), Qt::ISODate);
         if (date.isValid())
             counts[date][record.getStatus()]++;
     }
-    ui4->adminCalendar->setStatusCounts(counts);
+    adminUi->adminCalendar->setStatusCounts(counts);
 }
 
 // =====================================================================
@@ -642,23 +687,23 @@ void MainWindow::updateAdminCalendarHighlights()
 // Empties every field on the form.
 void MainWindow::clearUI()
 {
-    ui3->nameInput->clear();
-    ui3->indexInput->clear();
-    ui3->deptInput->setCurrentIndex(0);
-    ui3->emailInput->clear();
-    ui3->supervisorInput->clear();
-    ui3->projectInput->clear();
-    ui3->descriptionInput->clear();
+    formUi->nameInput->clear();
+    formUi->indexInput->clear();
+    formUi->deptInput->setCurrentIndex(0);
+    formUi->emailInput->clear();
+    formUi->supervisorInput->clear();
+    formUi->projectInput->clear();
+    formUi->descriptionInput->clear();
     setTimeSlotsInUI(QString());
 }
 
 // Shows either "Submit" (new allocation) or "Update" and "Delete" (existing one).
 void MainWindow::setFormButtonsMode(bool edit)
 {
-    ui3->submitBtn->setVisible(!edit);
-    ui3->updateBtn->setVisible(edit);
-    ui3->deleteBtn->setVisible(edit);
-    ui3->confirmTitleLbl->setText(edit ? "Edit your allocation" : ui3->confirmTitleLbl->property("_designerNewTitle").toString());
+    formUi->submitBtn->setVisible(!edit);
+    formUi->updateBtn->setVisible(edit);
+    formUi->deleteBtn->setVisible(edit);
+    formUi->confirmTitleLbl->setText(edit ? "Edit your allocation" : formUi->confirmTitleLbl->property("_designerNewTitle").toString());
 }
 
 // Puts a saved allocation back onto the pages so it can be read or changed.
@@ -667,22 +712,22 @@ void MainWindow::loadRecordIntoUI(const StudentRecord &record)
     currentRecord = record;
     const QDate date = QDate::fromString(record.getRecordDate(), Qt::ISODate);
     // Old allocations remain viewable/deletable, but resubmission requires a current date.
-    ui2->calendar->setMinimumDate(
+    calanderUi->calendar->setMinimumDate(
         qMin(date.isValid() ? date : QDate::currentDate(), QDate::currentDate()));
-    ui2->calendar->setSelectedDate(date);
+    calanderUi->calendar->setSelectedDate(date);
     onCalendarSelectionChanged();
     setTimeSlotsInUI(record.getTimeSlots());
-    ui3->nameInput->setText(record.getName());
-    ui3->indexInput->setText(record.getIndexNo());
-    ui3->deptInput->setCurrentIndex(0);
-    ui3->deptInput->setCurrentText(record.getDepartment());
-    ui3->emailInput->setText(record.getEmail());
-    ui3->supervisorInput->setText(record.getSupervisorName());
-    ui3->projectInput->setText(record.getProjectName());
-    ui3->descriptionInput->setPlainText(record.getDescription());
-    ui3->summaryDateLbl->setText(workshopTitle(currentCategory) + "  |  " +
+    formUi->nameInput->setText(record.getName());
+    formUi->indexInput->setText(record.getIndexNo());
+    formUi->deptInput->setCurrentIndex(0);
+    formUi->deptInput->setCurrentText(record.getDepartment());
+    formUi->emailInput->setText(record.getEmail());
+    formUi->supervisorInput->setText(record.getSupervisorName());
+    formUi->projectInput->setText(record.getProjectName());
+    formUi->descriptionInput->setPlainText(record.getDescription());
+    formUi->summaryDateLbl->setText(workshopTitle(currentCategory) + "  |  " +
                                  date.toString("dddd, d MMMM yyyy"));
-    ui3->summaryTimeLbl->setText(record.getTimeSlots());
+    formUi->summaryTimeLbl->setText(record.getTimeSlots());
     setFormButtonsMode(true);
 }
 
@@ -695,26 +740,26 @@ void MainWindow::loadRecordForEdit(const StudentRecord &record)
     currentRecord = record;
     openSecondInterface(record.getCategory());
     loadRecordIntoUI(record);
-    ui2->backTo1Btn->setText("Back to dashboard");
-    ui2->adminBtn2->hide();
-    ui->stackedWidget->setCurrentIndex(3);
+    calanderUi->backTo1Btn->setText("Back to dashboard");
+    calanderUi->adminBtn2->hide();
+    stackedWidget->setCurrentIndex(3);
 }
 
 // Reads what is on screen into a StudentRecord object.
 StudentRecord MainWindow::readFormRecord()
 {
     StudentRecord record = currentRecord;
-    record.setName(ui3->nameInput->text().trimmed());
-    record.setIndexNo(ui3->indexInput->text().trimmed());
-    record.setDepartment(ui3->deptInput->currentText());
-    record.setEmail(ui3->emailInput->text().trimmed());
-    record.setSupervisorName(ui3->supervisorInput->text().trimmed());
-    record.setProjectName(ui3->projectInput->text().trimmed());
+    record.setName(formUi->nameInput->text().trimmed());
+    record.setIndexNo(formUi->indexInput->text().trimmed());
+    record.setDepartment(formUi->deptInput->currentText());
+    record.setEmail(formUi->emailInput->text().trimmed());
+    record.setSupervisorName(formUi->supervisorInput->text().trimmed());
+    record.setProjectName(formUi->projectInput->text().trimmed());
     record.setCategory(currentCategory);
     record.setWorkshopId(currentWorkshopId);
-    record.setRecordDate(ui2->calendar->selectedDate().toString(Qt::ISODate));
+    record.setRecordDate(calanderUi->calendar->selectedDate().toString(Qt::ISODate));
     record.setTimeSlots(getSelectedTimeSlotsList().join(", "));
-    record.setDescription(ui3->descriptionInput->toPlainText().trimmed());
+    record.setDescription(formUi->descriptionInput->toPlainText().trimmed());
     return record;
 }
 
@@ -723,7 +768,7 @@ StudentRecord MainWindow::readFormRecord()
 bool MainWindow::validateForm()
 {
     const AllocationRules::Field field =
-        AllocationRules::validate(readFormRecord(), ui3->deptInput->currentIndex() > 0);
+        AllocationRules::validate(readFormRecord(), formUi->deptInput->currentIndex() > 0);
     if (field == AllocationRules::Field::None) {
         return true;
     }
@@ -733,25 +778,25 @@ bool MainWindow::validateForm()
     // Only the UI controller is responsible for keyboard focus and page changes.
     switch (field) {
     case AllocationRules::Field::Name:
-        ui3->nameInput->setFocus();
+        formUi->nameInput->setFocus();
         break;
     case AllocationRules::Field::Index:
-        ui3->indexInput->setFocus();
+        formUi->indexInput->setFocus();
         break;
     case AllocationRules::Field::Department:
-        ui3->deptInput->setFocus();
+        formUi->deptInput->setFocus();
         break;
     case AllocationRules::Field::Email:
-        ui3->emailInput->setFocus();
+        formUi->emailInput->setFocus();
         break;
     case AllocationRules::Field::Supervisor:
-        ui3->supervisorInput->setFocus();
+        formUi->supervisorInput->setFocus();
         break;
     case AllocationRules::Field::Project:
-        ui3->projectInput->setFocus();
+        formUi->projectInput->setFocus();
         break;
     case AllocationRules::Field::Schedule:
-        ui->stackedWidget->setCurrentIndex(2);
+        stackedWidget->setCurrentIndex(2);
         break;
     case AllocationRules::Field::None:
         break;
@@ -785,7 +830,7 @@ void MainWindow::submitData()
     saved.highlightText(record.getPasscode());
     saved.exec();
     resetFlow();
-    ui->stackedWidget->setCurrentIndex(0);
+    stackedWidget->setCurrentIndex(0);
 }
 
 // "Update" on the allocation form: UPDATE the existing record.
@@ -809,10 +854,10 @@ void MainWindow::updateData()
         isAdminEditMode = false;
         clearUI();
         loadAdminData();
-        ui->stackedWidget->setCurrentIndex(4);
+        stackedWidget->setCurrentIndex(4);
     } else {
         resetFlow();
-        ui->stackedWidget->setCurrentIndex(0);
+        stackedWidget->setCurrentIndex(0);
     }
     updateCalendarHighlights();
 }
@@ -835,10 +880,10 @@ void MainWindow::deleteData()
         isAdminEditMode = false;
         clearUI();
         loadAdminData();
-        ui->stackedWidget->setCurrentIndex(4);
+        stackedWidget->setCurrentIndex(4);
     } else {
         resetFlow();
-        ui->stackedWidget->setCurrentIndex(0);
+        stackedWidget->setCurrentIndex(0);
     }
     updateCalendarHighlights();
 }
@@ -874,7 +919,7 @@ void MainWindow::showRecordsWindow()
     }
     adminFilterDate = QDate();
     loadAdminData();
-    ui->stackedWidget->setCurrentIndex(4);
+    stackedWidget->setCurrentIndex(4);
 }
 
 // The administrator clicked a date on their calendar.
@@ -890,8 +935,8 @@ void MainWindow::adminFilterByDate(const QDate &date)
 void MainWindow::adminClearFilter()
 {
     adminFilterDate = QDate();
-    const QSignalBlocker blocker(ui4->adminCalendar);
-    ui4->adminCalendar->setSelectedDate(QDate::currentDate());
+    const QSignalBlocker blocker(adminUi->adminCalendar);
+    adminUi->adminCalendar->setSelectedDate(QDate::currentDate());
     loadAdminData();
 }
 
@@ -944,9 +989,9 @@ void MainWindow::openAdminEmailSettings()
 void MainWindow::refreshAdminActions()
 {
     const bool selected =
-        ui4->mainTable->currentRow() >= 0 && !ui4->mainTable->selectedItems().isEmpty();
+        adminUi->mainTable->currentRow() >= 0 && !adminUi->mainTable->selectedItems().isEmpty();
     for (QPushButton *button :
-         {ui4->adminEditBtn, ui4->adminDelBtn, ui4->pendingEmailBtn, ui4->rejectEmailBtn})
+         {adminUi->adminEditBtn, adminUi->adminDelBtn, adminUi->pendingEmailBtn, adminUi->rejectEmailBtn})
         button->setEnabled(selected);
 }
 
@@ -963,11 +1008,11 @@ void MainWindow::loadAdminData()
     }
     // Blocking signals stops the table telling us the selection changed while
     // we are still filling it in.
-    const QSignalBlocker tableBlocker(ui4->mainTable);
-    ui4->mainTable->setRowCount(0);
+    const QSignalBlocker tableBlocker(adminUi->mainTable);
+    adminUi->mainTable->setRowCount(0);
     for (int row = 0; row < records.size(); ++row) {
         const StudentRecord record = records[row];
-        ui4->mainTable->insertRow(row);
+        adminUi->mainTable->insertRow(row);
         const QStringList values = {record.getPasscode(),   record.getCreatedAt(),
                                     record.getIndexNo(),    record.getName(),
                                     record.getDepartment(), record.getEmail(),
@@ -977,10 +1022,10 @@ void MainWindow::loadAdminData()
         for (int column = 0; column < values.size(); ++column) {
             auto *item = new QTableWidgetItem(values[column]);
             item->setToolTip(values[column]);
-            ui4->mainTable->setItem(row, column, item);
+            adminUi->mainTable->setItem(row, column, item);
         }
         // The real database id is hidden inside the first cell.
-        ui4->mainTable->item(row, 0)->setData(Qt::UserRole, record.getId());
+        adminUi->mainTable->item(row, 0)->setData(Qt::UserRole, record.getId());
 
         // Remarks can be typed straight into the table.
         auto *remarks = new QLineEdit(record.getAdminRemarks());
@@ -997,7 +1042,7 @@ void MainWindow::loadAdminData()
                 remarks->setProperty("savedText", remarks->text());
             }
         });
-        ui4->mainTable->setCellWidget(row, 9, remarks);
+        adminUi->mainTable->setCellWidget(row, 9, remarks);
 
         // The status drop-down writes to the database as soon as it changes.
         auto *status = new QComboBox();
@@ -1018,14 +1063,14 @@ void MainWindow::loadAdminData()
                     updateCalendarHighlights();
                     updateAdminCalendarHighlights();
                 });
-        ui4->mainTable->setCellWidget(row, 10, status);
+        adminUi->mainTable->setCellWidget(row, 10, status);
     }
-    ui4->adminWsDescLbl->setText(
+    adminUi->adminWsDescLbl->setText(
         workshopDepartment(currentCategory) + "\n" + QString::number(records.size()) +
         (records.size() == 1 ? " allocation" : " allocations") +
         (adminFilterDate.isValid() ? " on " + adminFilterDate.toString("d MMM yyyy")
                                    : " · All dates"));
-    ui4->adminShowAllBtn->setEnabled(adminFilterDate.isValid());
+    adminUi->adminShowAllBtn->setEnabled(adminFilterDate.isValid());
     refreshAdminActions();
     updateAdminCalendarHighlights();
 }
@@ -1033,10 +1078,10 @@ void MainWindow::loadAdminData()
 // Saves the new status and opens an email draft telling the student about it.
 void MainWindow::composeStatusEmail(const QString &status)
 {
-    const int row = ui4->mainTable->currentRow();
+    const int row = adminUi->mainTable->currentRow();
     if (row < 0)
         return;
-    const int id = ui4->mainTable->item(row, 0)->data(Qt::UserRole).toInt();
+    const int id = adminUi->mainTable->item(row, 0)->data(Qt::UserRole).toInt();
     const auto records = dbManager->getAllRecordsForCategory(currentCategory);
     if (!dbManager->getLastError().isEmpty()) {
         showDatabaseError();

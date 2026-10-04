@@ -10,10 +10,14 @@ A native C++17 / Qt 6 Widgets application using SQLite through Qt SQL.
 
 ## Edit the interface in Qt Designer
 
-Open `ui/forms/page0.ui` through `page4.ui`, or one of the four dialog forms,
-in Qt Creator's **Design** view. Their controls use explicit geometry without
+The C++ controller creates the main window and central page stack directly.
+The nine `.ui` files contain only the five pages and four dialogs.
+
+Open `welcome.ui`, `selection.ui`, `calander.ui`, `form.ui`, or `admin.ui`
+in `ui/forms`, or one of the four dialog forms, in Qt Creator's **Design** view.
+Their controls use explicit geometry without
 layouts, so you can drag, resize and restyle them directly. The 10 workshop
-cards, their pictures and labels are stored in `page1.ui` as two rows of five,
+cards, their pictures and labels are stored in `selection.ui` as two rows of five,
 covering all four departments without scrolling.
 
 The selection page starts at **1180 × 650**, and the other pages at
@@ -24,7 +28,8 @@ Designer fonts, static text and custom styles are retained at runtime. Dark
 mode translates the supplied palette colors and switching back restores the
 original styles. Booking values, calendar counts and table rows remain dynamic.
 Keep existing control names and workshop `category` properties when editing.
-Each page's form class matches its root name (`page0Widget`–`page4Widget`), so
+Each page's form class matches its root name (`welcomeWidget`, `selectionWidget`,
+`calanderWidget`, `formWidget`, or `adminWidget`), so
 saving a moved control in Designer keeps the generated class compatible with C++.
 
 See [QT_DESIGNER_GUIDE.md](QT_DESIGNER_GUIDE.md) for the editing workflow.

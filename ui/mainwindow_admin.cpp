@@ -1,11 +1,11 @@
 // Handles administrator access, filters, table edits, email drafts, settings, and printing.
 #include "mainwindow.h"
-#include "ui_mainwindow.h"
-#include "ui_page0.h"
-#include "ui_page1.h"
-#include "ui_page2.h"
-#include "ui_page3.h"
-#include "ui_page4.h"
+#include <QStackedWidget>
+#include "ui_welcome.h"
+#include "ui_selection.h"
+#include "ui_calander.h"
+#include "ui_form.h"
+#include "ui_admin.h"
 #include "customdialogs.h"
 #include "workshopcatalog.h"
 #include "apphelpers.h"
@@ -74,7 +74,7 @@ void MainWindow::showRecordsWindow()
     }
     adminFilterDate = QDate();
     loadAdminData();
-    ui->stackedWidget->setCurrentIndex(4);
+    stackedWidget->setCurrentIndex(4);
 }
 
 void MainWindow::adminFilterByDate(const QDate &date)
@@ -88,8 +88,8 @@ void MainWindow::adminFilterByDate(const QDate &date)
 void MainWindow::adminClearFilter()
 {
     adminFilterDate = QDate();
-    const QSignalBlocker blocker(ui4->adminCalendar);
-    ui4->adminCalendar->setSelectedDate(QDate::currentDate());
+    const QSignalBlocker blocker(adminUi->adminCalendar);
+    adminUi->adminCalendar->setSelectedDate(QDate::currentDate());
     loadAdminData();
 }
 
@@ -102,9 +102,9 @@ void MainWindow::openAdminEmailSettings()
 void MainWindow::refreshAdminActions()
 {
     const bool selected =
-        ui4->mainTable->currentRow() >= 0 && !ui4->mainTable->selectedItems().isEmpty();
+        adminUi->mainTable->currentRow() >= 0 && !adminUi->mainTable->selectedItems().isEmpty();
     for (QPushButton *button :
-         {ui4->adminEditBtn, ui4->adminDelBtn, ui4->pendingEmailBtn, ui4->rejectEmailBtn})
+         {adminUi->adminEditBtn, adminUi->adminDelBtn, adminUi->pendingEmailBtn, adminUi->rejectEmailBtn})
         button->setEnabled(selected);
 }
 
@@ -118,11 +118,11 @@ void MainWindow::loadAdminData()
         showDatabaseError();
         return;
     }
-    const QSignalBlocker tableBlocker(ui4->mainTable);
-    ui4->mainTable->setRowCount(0);
+    const QSignalBlocker tableBlocker(adminUi->mainTable);
+    adminUi->mainTable->setRowCount(0);
     for (int row = 0; row < records.size(); ++row) {
         const StudentRecord record = records[row];
-        ui4->mainTable->insertRow(row);
+        adminUi->mainTable->insertRow(row);
         const QStringList values = {record.getPasscode(),
                                     record.getCreatedAt(),
                                     record.getIndexNo(),
@@ -140,11 +140,11 @@ void MainWindow::loadAdminData()
         for (int column = 0; column < values.size(); ++column) {
             auto *item = new QTableWidgetItem(values[column]);
             item->setToolTip(values[column]);
-            ui4->mainTable->setItem(row, column, item);
+            adminUi->mainTable->setItem(row, column, item);
         }
-        ui4->mainTable->item(row, 0)->setData(Qt::UserRole, record.getId());
-        ui4->mainTable->item(row, 6)->setData(Qt::UserRole, record.getPdfPath());
-        ui4->mainTable->item(row, 6)->setToolTip(
+        adminUi->mainTable->item(row, 0)->setData(Qt::UserRole, record.getId());
+        adminUi->mainTable->item(row, 6)->setData(Qt::UserRole, record.getPdfPath());
+        adminUi->mainTable->item(row, 6)->setToolTip(
             record.getPdfPath().isEmpty() ? "No PDF attached" : "Double-click to open the PDF");
         auto *remarks = new QLineEdit(record.getAdminRemarks());
         remarks->setMaxLength(1000);
@@ -160,7 +160,7 @@ void MainWindow::loadAdminData()
                 remarks->setProperty("savedText", remarks->text());
             }
         });
-        ui4->mainTable->setCellWidget(row, 10, remarks);
+        adminUi->mainTable->setCellWidget(row, 10, remarks);
         auto *status = new QComboBox();
         status->addItem("Pending", "Pending");
         status->addItem("Approved", "Approve");
@@ -179,24 +179,24 @@ void MainWindow::loadAdminData()
                     updateCalendarHighlights();
                     updateAdminCalendarHighlights();
                 });
-        ui4->mainTable->setCellWidget(row, 11, status);
+        adminUi->mainTable->setCellWidget(row, 11, status);
     }
-    ui4->adminWsDescLbl->setText(
+    adminUi->adminWsDescLbl->setText(
         workshopDepartment(currentCategory) + "\n\n" + QString::number(records.size()) +
         (records.size() == 1 ? " booking" : " bookings") +
         (adminFilterDate.isValid() ? " on " + adminFilterDate.toString("d MMM yyyy")
                                    : " · All dates"));
-    ui4->adminShowAllBtn->setEnabled(adminFilterDate.isValid());
+    adminUi->adminShowAllBtn->setEnabled(adminFilterDate.isValid());
     refreshAdminActions();
     updateAdminCalendarHighlights();
 }
 
 void MainWindow::composeStatusEmail(const QString &status)
 {
-    const int row = ui4->mainTable->currentRow();
+    const int row = adminUi->mainTable->currentRow();
     if (row < 0)
         return;
-    const int id = ui4->mainTable->item(row, 0)->data(Qt::UserRole).toInt();
+    const int id = adminUi->mainTable->item(row, 0)->data(Qt::UserRole).toInt();
     const auto records = dbManager->getAllRecordsForCategory(currentCategory);
     if (!dbManager->getLastError().isEmpty()) {
         showDatabaseError();

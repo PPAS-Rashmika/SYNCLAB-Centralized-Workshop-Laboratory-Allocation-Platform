@@ -12,16 +12,16 @@
 QT_BEGIN_NAMESPACE
 namespace Ui
 {
-class MainWindow;
-class page0Widget;
-class page1Widget;
-class page2Widget;
-class page3Widget;
-class page4Widget;
+class welcomeWidget;
+class selectionWidget;
+class calanderWidget;
+class formWidget;
+class adminWidget;
 } // namespace Ui
 QT_END_NAMESPACE
 
 class QPushButton;
+class QStackedWidget;
 
 // This is the controller class of the whole program.
 // One window holds the five pages, and every button on those pages is
@@ -96,18 +96,20 @@ class MainWindow : public QMainWindow
     bool validateForm();
     bool checkPasscode();
 
+    // Qt owns this central page host; the pages come from Designer forms.
+    QStackedWidget *stackedWidget = nullptr;
+
     // ---- The five pages built by Qt Designer ----
-    Ui::MainWindow *ui; // the outer window
-    Ui::page0Widget *ui0;     // welcome page
-    Ui::page1Widget *ui1;     // choose a workshop
-    Ui::page2Widget *ui2;     // choose a date and time slots
-    Ui::page3Widget *ui3;     // fill in the allocation form
-    Ui::page4Widget *ui4;     // administrator page
-    QWidget *page0Widget = nullptr;
-    QWidget *page1Widget = nullptr;
-    QWidget *page2Widget = nullptr;
-    QWidget *page3Widget = nullptr;
-    QWidget *page4Widget = nullptr;
+    Ui::welcomeWidget *welcomeUi;     // welcome page
+    Ui::selectionWidget *selectionUi;     // choose a workshop
+    Ui::calanderWidget *calanderUi;     // choose a date and time slots
+    Ui::formWidget *formUi;     // fill in the allocation form
+    Ui::adminWidget *adminUi;     // administrator page
+    QWidget *welcomeWidget = nullptr;
+    QWidget *selectionWidget = nullptr;
+    QWidget *calanderWidget = nullptr;
+    QWidget *formWidget = nullptr;
+    QWidget *adminWidget = nullptr;
 
     // ---- Database ----
     // Polymorphism: the pointer type is the base interface, but the object it
