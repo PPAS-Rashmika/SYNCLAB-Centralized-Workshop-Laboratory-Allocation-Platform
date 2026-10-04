@@ -168,7 +168,7 @@ Tables දැනට schema version 4 භාවිත කරයි. Column වෙ
 
 ## Administrator settings
 
-මුල් master passcode එක `0000` වේ. මුල් workshop admin passcode එක `0000000` වේ.
+Master admin සහ workshops සියල්ලේ මුල් admin passcode එක `0000` වේ.
 Save කර ඇති passcode එකක් තිබේ නම් program එක එය භාවිත කරයි.
 Settings dialog එකෙන් workshop හෝ System administrator තෝරා නව passcode එක save කරන්න.
 

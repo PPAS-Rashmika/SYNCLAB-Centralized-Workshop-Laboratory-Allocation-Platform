@@ -923,8 +923,8 @@ void MainWindow::showRecordsWindow()
         return;
     if (authentication.getInput() != QSettings(QSettings::defaultFormat(), QSettings::UserScope,
                                                "StudentWorkshopApp", "Passcodes")
-                                         // Save කළ admin passcode නැත්නම් මුල් passcode එක 0000000 වේ.
-                                         .value(currentCategory + "_passcode", "0000000")
+                                         // Save කළ admin passcode නැත්නම් සියලු workshops වල මුල් passcode එක 0000 වේ.
+                                         .value(currentCategory + "_passcode", "0000")
                                          .toString()) {
         // Title/message සහ OK/Cancel සකසයි; message වර්ගයට ගැළපෙන පාට තෝරයි.
         CustomAlertDialog("Access denied", "Incorrect administrator passcode.",
