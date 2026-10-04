@@ -1,18 +1,18 @@
 <!DOCTYPE RCC>
 <RCC version="1.0">
     <qresource prefix="/branding">
-        <file>logo.png</file>
+        <file alias="logo.png">logo/logo.png</file>
     </qresource>
     <qresource prefix="/workshops">
-        <file>Biochemistry.png</file>
-        <file>Electronics.png</file>
-        <file>Computer.png</file>
-        <file>Geotechnical.png</file>
-        <file>Surveying.png</file>
-        <file>Concrete.png</file>
-        <file>Drawing Office.png</file>
-        <file>Manufacturing.png</file>
-        <file>Electrical Machines &amp; Communications Laboratory.png</file>
-        <file>Measurement Laboratory.png</file>
+        <file alias="Biochemistry.png">workshops and laboratory/Biochemistry.png</file>
+        <file alias="Electronics.png">workshops and laboratory/Electronics.png</file>
+        <file alias="Computer.png">workshops and laboratory/Computer.png</file>
+        <file alias="Geotechnical.png">workshops and laboratory/Geotechnical.png</file>
+        <file alias="Surveying.png">workshops and laboratory/Surveying.png</file>
+        <file alias="Concrete.png">workshops and laboratory/Concrete.png</file>
+        <file alias="Drawing Office.png">workshops and laboratory/Drawing Office.png</file>
+        <file alias="Manufacturing.png">workshops and laboratory/Manufacturing.png</file>
+        <file alias="Electrical Machines &amp; Communications Laboratory.png">workshops and laboratory/Electrical Machines &amp; Communications Laboratory.png</file>
+        <file alias="Measurement Laboratory.png">workshops and laboratory/Measurement Laboratory.png</file>
     </qresource>
 </RCC>

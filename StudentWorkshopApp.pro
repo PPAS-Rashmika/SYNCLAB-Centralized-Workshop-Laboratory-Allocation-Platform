@@ -3,8 +3,7 @@
 # Qt modules the program needs:
 #   core, gui, widgets - the windows, buttons, tables and calendars
 #   sql                - the SQLite database
-#   printsupport       - the administrator's "Print list" button
-QT += core gui widgets sql printsupport
+QT += core gui widgets sql
 lessThan(QT_MAJOR_VERSION, 6): error("This project requires Qt 6 or newer.")
 CONFIG += c++17
 TEMPLATE = app
@@ -78,18 +77,3 @@ FORMS += \
 # program finds them from any folder; workshopImage() loads them by category.
 RESOURCES += resources/images.qrc
 
-# Files kept with the project but not compiled. The SQL files are for reference;
-# the program creates its own tables when it first runs. CODE_GUIDE.md explains
-# the whole project.
-DISTFILES += \
-    QT_DESIGNER_GUIDE.md \
-    tests/designer_save_tests.cpp \
-    tests/designer_save_tests.pro \
-    CODE_GUIDE.md \
-    DATABASE_DESIGN.md \
-    DATABASE_ASSIGNMENT.md \
-    sql/create_tables.sql \
-    sql/sample_data_small.sql \
-    sql/schema.sql \
-    sql/sample_data.sql \
-    sql/queries.sql

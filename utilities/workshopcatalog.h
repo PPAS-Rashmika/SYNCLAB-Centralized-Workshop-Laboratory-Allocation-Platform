@@ -15,15 +15,15 @@
 // The names of all workshops, in the order they appear on the home page.
 QStringList workshopCategories();
 
-// The heading shown for a workshop, for example "Physics Lab".
+// The heading shown for a workshop, for example "Computer Lab".
 QString workshopTitle(const QString &category);
 
 // The department that runs the workshop.
 QString workshopDepartment(const QString &category);
 
 // The picture shown on a workshop card.
-// It uses assets/<workshop>.png when that file exists. Otherwise it draws a
-// simple coloured badge with the initials of the workshop.
+// It loads the embedded image mapped from resources/workshops and laboratory.
+// If the resource is missing, it draws a coloured badge with the workshop initials.
 QPixmap workshopImage(const QString &category, const QSize &size);
 
 #endif // WORKSHOPCATALOG_H

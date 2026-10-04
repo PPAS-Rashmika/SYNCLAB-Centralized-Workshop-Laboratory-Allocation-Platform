@@ -5,7 +5,7 @@
 //   3. Moving between pages
 //   4. Date and time page
 //   5. Allocation form page
-//   6. Administrator page    (table, email drafts, printing, settings)
+//   6. Administrator page    (table, email drafts, settings)
 #include "mainwindow.h"
 #include "designertheme.h"
 #include <QStackedWidget>
@@ -30,8 +30,6 @@
 #include <QMap>
 #include <QPalette>
 #include <QPixmap>
-#include <QPrintDialog>
-#include <QPrinter>
 #include <QPushButton>
 #include <QScrollArea>
 #include <QSettings>
@@ -39,7 +37,6 @@
 #include <QStatusBar>
 #include <QTableWidget>
 #include <QTextCharFormat>
-#include <QTextDocument>
 #include <QTimer>
 #include <QUrl>
 #include <QUrlQuery>
@@ -1137,36 +1134,3 @@ void MainWindow::composeStatusEmail(const QString &status)
     }
 }
 
-// Prints the allocations that are currently listed in the table.
-void MainWindow::printAllRecords()
-{
-    const auto records = adminFilterDate.isValid()
-                             ? dbManager->getRecordsByDateAndCategory(
-                                   adminFilterDate.toString(Qt::ISODate), currentCategory)
-                             : dbManager->getAllRecordsForCategory(currentCategory);
-    if (!dbManager->getLastError().isEmpty()) {
-        showDatabaseError();
-        return;
-    }
-    // Build the report as simple HTML and hand it to the printer.
-    QString html =
-        "<h1>" + workshopTitle(currentCategory).toHtmlEscaped() + "</h1><p>" +
-        (adminFilterDate.isValid() ? adminFilterDate.toString("d MMM yyyy") : "All dates") +
-        "</p><table border='1' cellspacing='0' "
-        "cellpadding='5'><tr><th>Date</th><th>Name</th><th>Index</th><th>Time "
-        "slots</th><th>Status</th></tr>";
-    for (const auto &record : records)
-        html += "<tr><td>" + record.getRecordDate().toHtmlEscaped() + "</td><td>" +
-                record.getName().toHtmlEscaped() + "</td><td>" +
-                record.getIndexNo().toHtmlEscaped() + "</td><td>" +
-                record.getTimeSlots().toHtmlEscaped() + "</td><td>" +
-                record.getStatus().toHtmlEscaped() + "</td></tr>";
-    html += "</table>";
-    QPrinter printer(QPrinter::HighResolution);
-    QPrintDialog dialog(&printer, this);
-    if (dialog.exec() != QDialog::Accepted)
-        return;
-    QTextDocument document;
-    document.setHtml(html);
-    document.print(&printer);
-}

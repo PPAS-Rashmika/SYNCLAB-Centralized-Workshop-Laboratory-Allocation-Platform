@@ -31,24 +31,22 @@ QString workshopTitle(const QString &category)
 
 QString workshopDepartment(const QString &category)
 {
-    // Explicit membership keeps the owning department stable when cards are
-    // removed or reordered. Former categories retain their historical mapping.
-    if (QStringList{"Biochemistry", "Electronics", "Computer", "Advanced Material"}.contains(category))
+    // Explicit membership keeps the owning department stable when cards are reordered.
+    if (QStringList{"Biochemistry", "Electronics", "Computer"}.contains(category))
         return "Department of Nano Science Technology";
-    if (QStringList{"Geotechnical", "Surveying", "Concrete",
-                    "Environment and Water Resources Laboratory", "Highway Laboratory"}.contains(category))
+    if (QStringList{"Geotechnical", "Surveying", "Concrete"}.contains(category))
         return "Department of Construction Technology";
     if (QStringList{"Electrical Machines & Communications Laboratory", "Measurement Laboratory"}.contains(category))
         return "Department of Electrotechnology";
-    if (QStringList{"Physics", "Drawing Office", "Manufacturing", "Structures Laboratory"}.contains(category))
+    if (QStringList{"Drawing Office", "Manufacturing"}.contains(category))
         return "Department of Mechanical and Manufacturing Technology";
     return QString();
 }
 
 QPixmap workshopImage(const QString &category, const QSize &size)
 {
-    // The workshop pictures are compiled into the program from the resources
-    // folder (see resources/images.qrc), so they are found from any directory.
+    // resources/images.qrc embeds pictures from "resources/workshops and laboratory"
+    // under /workshops, so they are found from any run directory.
     const QPixmap supplied(QString(":/workshops/%1.png").arg(category));
     if (!supplied.isNull())
         return supplied.scaled(size, Qt::KeepAspectRatio, Qt::SmoothTransformation);

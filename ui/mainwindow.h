@@ -67,7 +67,6 @@ class MainWindow : public QMainWindow
     void updateAdminCalendarHighlights();
     void composeStatusEmail(const QString &status);
     void openAdminEmailSettings();
-    void printAllRecords();
 
     // ---- Settings ----
     void openSystemSettings();
