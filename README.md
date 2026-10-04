@@ -1,63 +1,105 @@
 # SYNCLAB — Qt 6 workshop bookings
 
 A native C++17 / Qt 6 Widgets application using SQLite through Qt SQL.
-No Python, JavaScript, QML, web service, or additional application framework is required.
 
 ## Open in Qt Creator
 
 1. Open **StudentWorkshopApp.pro**.
-2. Choose a Qt 6 desktop kit with Widgets, SQL, PrintSupport, and the SQLite driver.
-3. Build and run. This project was verified with Qt 6.11.2 and MinGW 13.1, 64-bit.
+2. Choose a Qt 6 desktop kit with Widgets, SQL, PrintSupport and the SQLite driver.
+3. Build and run.
 
-The existing Qt Designer .ui files remain editable in Qt Creator.
+## Edit the interface in Qt Designer
 
-Verification: Qt 6.11.2 release build succeeded; database tests and UI tests each
-reported 14 passed, 0 failed (including setup/cleanup). UI previews were checked
-at 1100×760 and 900×650, including dark mode.
+Open `ui/forms/page0.ui` through `page4.ui`, or one of the four dialog forms,
+in Qt Creator's **Design** view. Their controls use explicit geometry without
+layouts, so you can drag, resize and restyle them directly. The 10 workshop
+cards, their pictures and labels are stored in `page1.ui` as two rows of five,
+covering all four departments without scrolling.
+
+The selection page starts at **1180 × 650**, and the other pages at
+**1180 × 780**. The application opens maximized
+and expands page controls proportionally to fill larger windows. Smaller windows
+scroll the original canvas to keep controls readable.
+Designer fonts, static text and custom styles are retained at runtime. Dark
+mode translates the supplied palette colors and switching back restores the
+original styles. Booking values, calendar counts and table rows remain dynamic.
+Keep existing control names and workshop `category` properties when editing.
+Each page's form class matches its root name (`page0Widget`–`page4Widget`), so
+saving a moved control in Designer keeps the generated class compatible with C++.
+
+See [QT_DESIGNER_GUIDE.md](QT_DESIGNER_GUIDE.md) for the editing workflow.
 
 ## Booking and administration
 
-- Choose a workshop, a date, and one or more time slots, then enter student details.
+- Choose a workshop, a date and one or more time slots, then enter student details.
 - Save the allocation key shown after booking. The confirmation text can be selected and copied.
-- Use **Edit Booking** with that key. Changes submitted by a student return to **Pending**.
+- Use **Edit allocation** with that key. Changes submitted by a student return to **Pending**.
 - Rejected bookings release their time slots. Reactivation and workshop transfers check availability again when saving.
-- The administrator dashboard provides date filtering, editable remarks/status, PDF opening on double-click, and printing.
-- Email buttons open a draft in the configured email application; the application does not send email automatically.
-- Settings includes the actual workshop list, light/dark mode, wallpaper, and configurable administrator/master passcodes.
+- The administrator dashboard provides date filtering, editable remarks/status and printing.
+- Email buttons open a draft in the configured email application.
+- Settings includes the workshop list, light/dark mode, wallpaper and configurable administrator/master passcodes.
 
-Existing defaults remain compatible: master passcode **0000**, workshop administrator passcode **0000000**.
+Default master passcode: **0000**. Default workshop administrator passcode: **0000000**.
 Use **Settings → Administrator passcodes** to change these; choose **System administrator** for the master passcode.
 
-## Data locations
+## Database and existing data
 
-An existing student_data.db in the run working directory or beside the executable is reused.
-For a new installation, the database is created in Qt's writable local application data folder
-(StudentWorkshopApp/SYNCLAB on Windows). PDFs are copied into uploads/pdfs beside the selected database.
-Replacing an attachment never overwrites its previous file before the booking saves.
-Previously stored attachment files are retained when a booking is changed or deleted.
+The database is normalized to **4NF**, with four tables:
 
-This workspace's existing database is at
-build/Desktop_Qt_6_11_2_MinGW_64_bit_Debug/debug/student_data.db.
-To keep using that database from a different build, set Qt Creator's run working directory to that folder.
-The existing database and its contents were not used by the automated tests.
+| Table | Stores |
+|---|---|
+| `workshops` | The 10 available workshop categories and their owning departments |
+| `students` | One current profile per student index number |
+| `records` | Booking details and references to a student and workshop |
+| `booking_slots` | One row per selected slot, keyed by booking ID and slot |
 
-## Regression tests
+Student department and workshop department are separate facts. Student profiles
+are shared by index number, so changing a student's details updates what is
+displayed on all their bookings. Slot lists are assembled for the UI; the
+database stores individual slot rows. See [DATABASE_DESIGN.md](DATABASE_DESIGN.md)
+for the schema, dependency reasoning and migration policy.
 
-Open either test project in Qt Creator with the same Qt 6 kit:
+The normal database path is **data/student_data.db** beside the source files.
+Existing databases in the run working directory, beside the executable or in
+Qt's local application data folder are reused when the source-folder database
+does not exist. A new installation falls back to local application data if the
+source data folder cannot be created.
 
-- tests/database_tests.pro: SQLite migration, validation, availability, simultaneous booking attempts,
-  rejected-slot release, status changes, transaction rollback, and workshop transfers.
-- tests/ui_tests.pro: new/edit/back navigation, draft preservation, validation, attachments,
-  ambiguous old allocation keys, administration, themes, historical bookings, and compact layouts.
+On opening an older or partially normalized database, the program creates a
+backup named **student_data.db.pre-4nf.bak** beside that database, with a suffix
+if necessary, then migrates within a transaction. Booking IDs and keys are
+retained. If old profiles disagree, the highest booking ID for that index
+number supplies the current student details, with existing student-table
+values filling missing fields. A missing student department stays empty until
+edited. Existing duplicate allocation keys are preserved; new bookings check
+key uniqueness in the application.
 
-Tests use temporary databases and temporary INI settings. The Qt Test module is required only for tests.
-For an offscreen test run on Windows, set QT_QPA_PLATFORM=offscreen and
-QT_QPA_FONTDIR=C:\Windows\Fonts. Set UI_SCREENSHOT_DIR to an output folder to capture UI previews.
+## Database regression tests
 
-## What was corrected
+Open **tests/database_tests.pro** in Qt Creator with the same Qt 6 desktop kit,
+then build and run it. The Qt Test module is required only for tests. Tests use
+temporary databases, keeping saved bookings separate from test fixtures.
 
-- Responsive workshop cards, scrollable forms, clear full time ranges, readable calendars, and consistent themes.
-- Student edit navigation, backward navigation, preserved form drafts, and historical booking access.
-- Allocation-key ambiguity, missing validation, silent database failures, and unsafe PDF replacement.
-- Atomic booking writes, accurate rejected-booking availability, editable workshop/category, and status rollback.
-- Administrator filter/selection state, matching settings categories, and functional print/PDF actions.
+## Designer interface regression tests
+
+Open **tests/designer_ui_tests.pro** in Qt Creator with the same Qt 6 desktop
+kit, then build and run. The Qt Test and XML modules are required. These tests
+check authored geometry, fonts, text and styles across theme changes, all 10
+workshop cards, scrolling, dialog actions and allocation saving. They use
+temporary databases and settings.
+
+## Reference SQL
+
+The assignment report is **DATABASE_ASSIGNMENT.md** and
+**output/pdf/SYNCLAB_Database_Assignment.pdf**. It includes an ER diagram,
+entities and attributes, relationship cardinalities, primary/foreign keys,
+a short normalization note, and executable SQL examples. Diagram exports are
+in **output/diagrams/** (PNG, SVG and editable Mermaid).
+
+For a small demonstration, run **sql/create_tables.sql**, followed by
+**sql/sample_data_small.sql**, in a new empty database. This example contains
+two students, three bookings and four separate slot rows.
+
+Use **sql/schema.sql**, then **sql/sample_data.sql**, in a separate empty
+demonstration database. **sql/queries.sql** contains five example reports.
+The application creates its own tables and handles migration automatically.

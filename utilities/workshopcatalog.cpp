@@ -10,16 +10,11 @@ QStringList workshopCategories()
     return {"Biochemistry",
             "Electronics",
             "Computer",
-            "Advanced Material",
             "Geotechnical",
             "Surveying",
             "Concrete",
-            "Environment and Water Resources Laboratory",
-            "Highway Laboratory",
-            "Physics",
             "Drawing Office",
             "Manufacturing",
-            "Structures Laboratory",
             "Electrical Machines & Communications Laboratory",
             "Measurement Laboratory"};
 }
@@ -36,17 +31,18 @@ QString workshopTitle(const QString &category)
 
 QString workshopDepartment(const QString &category)
 {
-    // The department depends on where the workshop sits in the list above.
-    const int index = workshopCategories().indexOf(category);
-    if (index < 0)
-        return QString();
-    if (index < 4)
+    // Explicit membership keeps the owning department stable when cards are
+    // removed or reordered. Former categories retain their historical mapping.
+    if (QStringList{"Biochemistry", "Electronics", "Computer", "Advanced Material"}.contains(category))
         return "Department of Nano Science Technology";
-    if (index <= 8)
+    if (QStringList{"Geotechnical", "Surveying", "Concrete",
+                    "Environment and Water Resources Laboratory", "Highway Laboratory"}.contains(category))
         return "Department of Construction Technology";
-    if (index >= 13)
+    if (QStringList{"Electrical Machines & Communications Laboratory", "Measurement Laboratory"}.contains(category))
         return "Department of Electrotechnology";
-    return "Department of Mechanical and Manufacturing Technology";
+    if (QStringList{"Physics", "Drawing Office", "Manufacturing", "Structures Laboratory"}.contains(category))
+        return "Department of Mechanical and Manufacturing Technology";
+    return QString();
 }
 
 QPixmap workshopImage(const QString &category, const QSize &size)

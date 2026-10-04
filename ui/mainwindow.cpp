@@ -42,18 +42,66 @@
 #include <QUrl>
 #include <QUrlQuery>
 #include <QStyle>
+#include <QResizeEvent>
 
 namespace {
-// Each .ui page is a free-positioned canvas. Smaller windows scroll it instead
-// of moving authored controls; larger windows center the original canvas.
+// Preserve Designer coordinates as the baseline, expanding the authored
+// containers and controls to use the available window space. Small windows
+// retain readable control sizes and scroll the baseline canvas.
+class DesignerPageScroll final : public QScrollArea
+{
+public:
+    DesignerPageScroll(QWidget *parent, QWidget *canvas)
+        : QScrollArea(parent), baseSize(canvas->size())
+    {
+        capture(canvas);
+        setFrameShape(QFrame::NoFrame);
+        setWidgetResizable(false);
+        setAlignment(Qt::AlignLeft | Qt::AlignTop);
+        setWidget(canvas);
+    }
+
+protected:
+    void resizeEvent(QResizeEvent *event) override
+    {
+        QScrollArea::resizeEvent(event);
+        const QSize target = maximumViewportSize().expandedTo(baseSize);
+        const double sx = double(target.width()) / baseSize.width();
+        const double sy = double(target.height()) / baseSize.height();
+        widget()->resize(target);
+        for (const auto &item : items) {
+            const QRect &r = item.geometry;
+            item.widget->setGeometry(qRound(r.x() * sx), qRound(r.y() * sy),
+                                     qRound(r.width() * sx), qRound(r.height() * sy));
+        }
+    }
+
+private:
+    struct Item { QWidget *widget; QRect geometry; };
+    QSize baseSize;
+    QList<Item> items;
+
+    void capture(QWidget *container)
+    {
+        for (QWidget *child : container->findChildren<QWidget *>(QString(), Qt::FindDirectChildrenOnly)) {
+            items.append({child, child->geometry()});
+            if (auto *scroll = qobject_cast<QScrollArea *>(child)) {
+                if (scroll->widget()) {
+                    items.append({scroll->widget(), scroll->widget()->geometry()});
+                    capture(scroll->widget());
+                }
+            } else if (child->metaObject()->className() == QByteArray("QWidget")
+                       || child->metaObject()->className() == QByteArray("QFrame")) {
+                capture(child);
+            }
+        }
+    }
+};
+
 void addDesignerPage(QStackedWidget *stack, QWidget *canvas, int index)
 {
-    auto *scroll = new QScrollArea(stack);
+    auto *scroll = new DesignerPageScroll(stack, canvas);
     scroll->setObjectName("designerPageScroll" + QString::number(index));
-    scroll->setFrameShape(QFrame::NoFrame);
-    scroll->setWidgetResizable(false);
-    scroll->setAlignment(Qt::AlignCenter);
-    scroll->setWidget(canvas);
     stack->addWidget(scroll);
 }
 }

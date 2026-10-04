@@ -3,22 +3,15 @@
     <qresource prefix="/branding">
         <file>logo.png</file>
     </qresource>
-    <!-- The picture for each workshop, in the same order as workshopCategories().
-         The rcc tool compiles these files into the exe under :/workshops/. -->
     <qresource prefix="/workshops">
         <file>Biochemistry.png</file>
         <file>Electronics.png</file>
         <file>Computer.png</file>
-        <file>Advanced Material.png</file>
         <file>Geotechnical.png</file>
         <file>Surveying.png</file>
         <file>Concrete.png</file>
-        <file>Environment and Water Resources Laboratory.png</file>
-        <file>Highway Laboratory.png</file>
-        <file>Physics.png</file>
         <file>Drawing Office.png</file>
         <file>Manufacturing.png</file>
-        <file>Structures Laboratory.png</file>
         <file>Electrical Machines &amp; Communications Laboratory.png</file>
         <file>Measurement Laboratory.png</file>
     </qresource>

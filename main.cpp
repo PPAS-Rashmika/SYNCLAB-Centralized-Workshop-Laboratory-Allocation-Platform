@@ -21,6 +21,6 @@ int main(int argc, char *argv[])
     // on individual widgets remain editable and take precedence.
     a.setFont(QFont("Segoe UI", 10));
     MainWindow w;
-    w.show();
+    w.showMaximized();
     return a.exec();
 }
