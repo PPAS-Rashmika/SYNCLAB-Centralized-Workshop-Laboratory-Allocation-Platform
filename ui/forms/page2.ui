@@ -1,313 +1,369 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <ui version="4.0">
- <class>Page2</class>
+ <class>page2Widget</class>
  <widget class="QWidget" name="page2Widget">
-  <layout class="QVBoxLayout" name="verticalLayout_page2">
-   <property name="spacing">
-    <number>16</number>
+  <property name="font">
+   <font>
+    <family>Segoe UI</family>
+    <pointsize>10</pointsize>
+    <bold>false</bold>
+   </font>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QWidget { color:#17243B;   }QMainWindow, QStackedWidget, QWidget#page0Widget, QWidget#page1Widget, QWidget#page2Widget, QWidget#page3Widget, QWidget#page4Widget { background:#F4F7FB; }QScrollArea { border:none; background:transparent; } QScrollArea &gt; QWidget &gt; QWidget { background:#F4F7FB; }QScrollArea#cardsScrollArea &gt; QWidget, QWidget#cardsScrollContents { background:transparent; }QLabel { background:transparent; }QLabel#welcomeTitle { color:#52647D;   }QLabel#syncLabTitle {   }QLabel#syncLabSubtitle {   }QLabel#welcomeDesc, QLabel#selectedDescLabel2, QLabel#adminWsDescLbl { color:#52647D;  }QLabel#selectTitleLabel, QLabel#selectedNameLabel2, QLabel#confirmTitleLbl, QLabel#adminWsTitleLbl {   }QLineEdit, QTextEdit, QComboBox { background:#FFFFFF; border:1px solid #D4DEEB; border-radius:7px; padding:8px; selection-background-color:#2563EB; selection-color:white; }QLineEdit:focus, QTextEdit:focus, QComboBox:focus { border:1px solid #2563EB; }QComboBox QAbstractItemView { background:#FFFFFF; color:#17243B; selection-background-color:#2563EB; selection-color:white; }QPushButton { background:#FFFFFF; color:#17243B; border:1px solid #D4DEEB; border-radius:8px; padding:9px 14px;  }QPushButton:hover, QPushButton:focus { background:#EAF2FF; border-color:#2563EB; }QPushButton:pressed { border:2px solid #2563EB; }QPushButton#allocateNowBtn, QPushButton#nextBtn, QPushButton#nextTo3Btn, QPushButton#submitBtn, QPushButton#updateBtn { background:#2563EB; color:white; border:1px solid #2563EB; }QPushButton#allocateNowBtn:hover, QPushButton#nextBtn:hover, QPushButton#nextTo3Btn:hover, QPushButton#submitBtn:hover, QPushButton#updateBtn:hover { background:#1D4ED8; }QPushButton#deleteBtn, QPushButton#adminDelBtn { color:#BE123C; }QPushButton[timeSlot=true] { padding:10px 8px; }QPushButton:checked { background:#2563EB; color:white; border-color:#2563EB; }QPushButton:disabled { background:#F4F7FB; color:#52647D; border:1px solid #D4DEEB; }QPushButton#allocateNowBtn:disabled, QPushButton#nextBtn:disabled, QPushButton#nextTo3Btn:disabled, QPushButton#submitBtn:disabled, QPushButton#updateBtn:disabled, QPushButton#deleteBtn:disabled, QPushButton#adminDelBtn:disabled { background:#F4F7FB; color:#52647D; border:1px solid #D4DEEB; }QFrame#summaryBox { background:#EAF2FF; border:1px solid #D4DEEB; border-radius:10px; }QLabel#summaryDateLbl { color:#2563EB;  }QTableWidget { background:#FFFFFF; alternate-background-color:#F4F7FB; border:1px solid #D4DEEB; gridline-color:#D4DEEB; selection-background-color:#EAF2FF; selection-color:#17243B; }QHeaderView::section { font-weight:600; background:#EAF2FF; color:#17243B; border:none; padding:10px;  }QTableWidget QLineEdit, QTableWidget QComboBox { padding:4px; border-radius:4px; }QCalendarWidget { background:#FFFFFF; border:1px solid #D4DEEB; border-radius:8px; }QCalendarWidget QWidget#qt_calendar_navigationbar { background:#2563EB; }QCalendarWidget QToolButton { font-weight:600; color:white; background:transparent; padding:6px;  }QCalendarWidget QMenu, QCalendarWidget QSpinBox { background:#FFFFFF; color:#17243B; }QCalendarWidget QAbstractItemView { background:#FFFFFF; color:#17243B; selection-background-color:#2563EB; selection-color:white; outline:0; }QToolTip { background:#FFFFFF; color:#17243B; border:1px solid #D4DEEB; padding:6px; }</string>
+  </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1180</width>
+    <height>780</height>
+   </rect>
+  </property>
+  <widget class="QPushButton" name="backTo1Btn">
+   <property name="font">
+    <font>
+     <family>Segoe UI</family>
+     <pointsize>10</pointsize>
+     <bold>true</bold>
+    </font>
    </property>
-   <property name="leftMargin">
-    <number>24</number>
+   <property name="geometry">
+    <rect>
+     <x>24</x>
+     <y>24</y>
+     <width>151</width>
+     <height>37</height>
+    </rect>
    </property>
-   <property name="topMargin">
-    <number>24</number>
+   <property name="text">
+    <string>&lt;- Back to Selection</string>
    </property>
-   <property name="rightMargin">
-    <number>24</number>
+   <property name="cursor">
+    <cursorShape>PointingHandCursor</cursorShape>
    </property>
-   <property name="bottomMargin">
-    <number>24</number>
+  </widget>
+  <widget class="QLabel" name="selectedImgLabel2">
+   <property name="font">
+    <font>
+     <family>Segoe UI</family>
+     <pointsize>10</pointsize>
+     <bold>false</bold>
+    </font>
    </property>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_page2Content" stretch="1,2">
-     <property name="spacing">
-      <number>24</number>
-     </property>
-     <item>
-      <layout class="QVBoxLayout" name="leftInfoLayout">
-       <property name="spacing">
-        <number>10</number>
-       </property>
-       <item alignment="Qt::AlignLeft|Qt::AlignTop">
-        <widget class="QPushButton" name="backTo1Btn">
-         <property name="text">
-          <string>&lt;- Back to Selection</string>
-         </property>
-         <property name="cursor">
-          <cursorShape>PointingHandCursor</cursorShape>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">QPushButton { background-color: #FFFFFF; color: #2563EB; font-size: 15px; font-weight: bold; border: 2px solid #E2E8F0; text-align: center; border-radius: 8px; padding: 6px 12px; } QPushButton:hover { background-color: #EFF6FF; border-color: #2563EB; }</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="vs_img_top">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>15</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <widget class="QLabel" name="selectedImgLabel2">
-         <property name="textFormat">
-          <enum>Qt::PlainText</enum>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>240</width>
-           <height>160</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>240</width>
-           <height>160</height>
-          </size>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="selectedNameLabel2">
-         <property name="wordWrap">
-          <bool>true</bool>
-         </property>
-         <property name="textFormat">
-          <enum>Qt::PlainText</enum>
-         </property>
-         <property name="text">
-          <string>Workshop Name</string>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">font-size: 28px; font-weight: 900; color: #0F172A;</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="selectedDescLabel2">
-         <property name="textFormat">
-          <enum>Qt::PlainText</enum>
-         </property>
-         <property name="text">
-          <string>Select a date, then choose one or more available time slots to continue.</string>
-         </property>
-         <property name="wordWrap">
-          <bool>true</bool>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">font-size: 15px; color: #64748B; line-height: 1.6;</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="vs_info2">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <widget class="QPushButton" name="adminBtn2">
-         <property name="text">
-          <string>Admin dashboard</string>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>45</height>
-          </size>
-         </property>
-         <property name="cursor">
-          <cursorShape>PointingHandCursor</cursorShape>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">QPushButton { background-color: #FFFFFF; border: 2px solid #E2E8F0; color: #2563EB; border-radius: 22px; font-size: 15px; font-weight: bold; } QPushButton:hover { border-color: #2563EB; background-color: #EFF6FF; }</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QVBoxLayout" name="rightCalLayout">
-       <property name="spacing">
-        <number>14</number>
-       </property>
-       <item>
-        <widget class="CustomCalendarWidget" name="calendar">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">CustomCalendarWidget { background-color: #FFFFFF; color: #0F172A; border: 1px solid #E2E8F0; border-radius: 12px; } CustomCalendarWidget QAbstractItemView { selection-background-color: #2563EB; selection-color: white; background-color: #FFFFFF; color: #0F172A; border: none; font-size: 14px; outline: none; }</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="calendarLegend">
-         <property name="text">
-          <string>Allocation counts: A = approved · P = pending · R = rejected</string>
-         </property>
-         <property name="wordWrap">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="timeSlotsLabel">
-         <property name="text">
-          <string>Available time slots · select one or more</string>
-         </property>
-         <property name="wordWrap">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <layout class="QGridLayout" name="timeButtonsLayout">
-         <property name="spacing">
-          <number>15</number>
-         </property>
-         <item row="0" column="0">
-          <widget class="QPushButton" name="timeBtn1">
-           <property name="toolTip">
-            <string>Choose this time slot. You may select more than one.</string>
-           </property>
-           <property name="text">
-            <string>08:30 - 10:30</string>
-           </property>
-           <property name="checkable">
-            <bool>true</bool>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>45</height>
-            </size>
-           </property>
-           <property name="cursor">
-            <cursorShape>PointingHandCursor</cursorShape>
-           </property>
-           <property name="styleSheet">
-            <string notr="true">QPushButton { background-color: #FFFFFF; border: 2px solid #E2E8F0; color: #2563EB; border-radius: 20px; font-weight: bold; font-size: 14px; padding: 5px; } QPushButton:hover { border-color: #2563EB; color: #2563EB; background-color: #EFF6FF; } QPushButton:checked { background-color: #2563EB; color: white; border-color: #2563EB; } QPushButton:disabled { background-color: #F1F5F9; border: 2px solid #E2E8F0; color: #94A3B8; }</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QPushButton" name="timeBtn2">
-           <property name="toolTip">
-            <string>Choose this time slot. You may select more than one.</string>
-           </property>
-           <property name="text">
-            <string>10:30 - 12:30</string>
-           </property>
-           <property name="checkable">
-            <bool>true</bool>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>45</height>
-            </size>
-           </property>
-           <property name="cursor">
-            <cursorShape>PointingHandCursor</cursorShape>
-           </property>
-           <property name="styleSheet">
-            <string notr="true">QPushButton { background-color: #FFFFFF; border: 2px solid #E2E8F0; color: #2563EB; border-radius: 20px; font-weight: bold; font-size: 14px; padding: 5px; } QPushButton:hover { border-color: #2563EB; color: #2563EB; background-color: #EFF6FF; } QPushButton:checked { background-color: #2563EB; color: white; border-color: #2563EB; } QPushButton:disabled { background-color: #F1F5F9; border: 2px solid #E2E8F0; color: #94A3B8; }</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QPushButton" name="timeBtn3">
-           <property name="toolTip">
-            <string>Choose this time slot. You may select more than one.</string>
-           </property>
-           <property name="text">
-            <string>13:30 - 15:30</string>
-           </property>
-           <property name="checkable">
-            <bool>true</bool>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>45</height>
-            </size>
-           </property>
-           <property name="cursor">
-            <cursorShape>PointingHandCursor</cursorShape>
-           </property>
-           <property name="styleSheet">
-            <string notr="true">QPushButton { background-color: #FFFFFF; border: 2px solid #E2E8F0; color: #2563EB; border-radius: 20px; font-weight: bold; font-size: 14px; padding: 5px; } QPushButton:hover { border-color: #2563EB; color: #2563EB; background-color: #EFF6FF; } QPushButton:checked { background-color: #2563EB; color: white; border-color: #2563EB; } QPushButton:disabled { background-color: #F1F5F9; border: 2px solid #E2E8F0; color: #94A3B8; }</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QPushButton" name="timeBtn4">
-           <property name="toolTip">
-            <string>Choose this time slot. You may select more than one.</string>
-           </property>
-           <property name="text">
-            <string>15:30 - 17:30</string>
-           </property>
-           <property name="checkable">
-            <bool>true</bool>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>45</height>
-            </size>
-           </property>
-           <property name="cursor">
-            <cursorShape>PointingHandCursor</cursorShape>
-           </property>
-           <property name="styleSheet">
-            <string notr="true">QPushButton { background-color: #FFFFFF; border: 2px solid #E2E8F0; color: #2563EB; border-radius: 20px; font-weight: bold; font-size: 14px; padding: 5px; } QPushButton:hover { border-color: #2563EB; color: #2563EB; background-color: #EFF6FF; } QPushButton:checked { background-color: #2563EB; color: white; border-color: #2563EB; } QPushButton:disabled { background-color: #F1F5F9; border: 2px solid #E2E8F0; color: #94A3B8; }</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <widget class="QPushButton" name="nextTo3Btn">
-         <property name="text">
-          <string>Next Step →</string>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>50</height>
-          </size>
-         </property>
-         <property name="cursor">
-          <cursorShape>PointingHandCursor</cursorShape>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">QPushButton { background-color: #2563EB; color: white; border-radius: 25px; font-size: 16px; font-weight: bold; padding: 12px 24px; border: none; } QPushButton:hover { background-color: #1D4ED8; }</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-    </layout>
-   </item>
-  </layout>
+   <property name="geometry">
+    <rect>
+     <x>24</x>
+     <y>261</y>
+     <width>240</width>
+     <height>160</height>
+    </rect>
+   </property>
+   <property name="textFormat">
+    <enum>Qt::PlainText</enum>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="selectedNameLabel2">
+   <property name="font">
+    <font>
+     <family>Segoe UI</family>
+     <pointsize>19</pointsize>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="geometry">
+    <rect>
+     <x>24</x>
+     <y>431</y>
+     <width>369</width>
+     <height>90</height>
+    </rect>
+   </property>
+   <property name="wordWrap">
+    <bool>true</bool>
+   </property>
+   <property name="textFormat">
+    <enum>Qt::PlainText</enum>
+   </property>
+   <property name="text">
+    <string>Workshop Name</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="selectedDescLabel2">
+   <property name="font">
+    <font>
+     <family>Segoe UI</family>
+     <pointsize>11</pointsize>
+     <bold>false</bold>
+    </font>
+   </property>
+   <property name="geometry">
+    <rect>
+     <x>24</x>
+     <y>531</y>
+     <width>369</width>
+     <height>105</height>
+    </rect>
+   </property>
+   <property name="textFormat">
+    <enum>Qt::PlainText</enum>
+   </property>
+   <property name="text">
+    <string>Select a date, then choose one or more available time slots to continue.</string>
+   </property>
+   <property name="wordWrap">
+    <bool>true</bool>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="adminBtn2">
+   <property name="font">
+    <font>
+     <family>Segoe UI</family>
+     <pointsize>10</pointsize>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="geometry">
+    <rect>
+     <x>24</x>
+     <y>711</y>
+     <width>369</width>
+     <height>45</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Admin dashboard</string>
+   </property>
+   <property name="cursor">
+    <cursorShape>PointingHandCursor</cursorShape>
+   </property>
+  </widget>
+  <widget class="CustomCalendarWidget" name="calendar">
+   <property name="font">
+    <font>
+     <family>Segoe UI</family>
+     <pointsize>10</pointsize>
+     <bold>false</bold>
+    </font>
+   </property>
+   <property name="verticalHeaderFormat">
+    <enum>QCalendarWidget::NoVerticalHeader</enum>
+   </property>
+   <property name="geometry">
+    <rect>
+     <x>417</x>
+     <y>24</y>
+     <width>739</width>
+     <height>487</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="calendarLegend">
+   <property name="font">
+    <font>
+     <family>Segoe UI</family>
+     <pointsize>10</pointsize>
+     <bold>false</bold>
+    </font>
+   </property>
+   <property name="geometry">
+    <rect>
+     <x>417</x>
+     <y>525</y>
+     <width>739</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Allocation counts: A = approved · P = pending · R = rejected</string>
+   </property>
+   <property name="wordWrap">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QLabel" name="timeSlotsLabel">
+   <property name="font">
+    <font>
+     <family>Segoe UI</family>
+     <pointsize>10</pointsize>
+     <bold>false</bold>
+    </font>
+   </property>
+   <property name="geometry">
+    <rect>
+     <x>417</x>
+     <y>556</y>
+     <width>739</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Available time slots · select one or more</string>
+   </property>
+   <property name="wordWrap">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="timeBtn1">
+   <property name="timeSlot" stdset="0">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>8.30 AM - 10.30 AM</string>
+   </property>
+   <property name="font">
+    <font>
+     <family>Segoe UI</family>
+     <pointsize>10</pointsize>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="geometry">
+    <rect>
+     <x>417</x>
+     <y>587</y>
+     <width>362</width>
+     <height>45</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>Choose this time slot. You may select more than one.</string>
+   </property>
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="cursor">
+    <cursorShape>PointingHandCursor</cursorShape>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="timeBtn2">
+   <property name="timeSlot" stdset="0">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>10.30 AM - 12.30 PM</string>
+   </property>
+   <property name="font">
+    <font>
+     <family>Segoe UI</family>
+     <pointsize>10</pointsize>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="geometry">
+    <rect>
+     <x>794</x>
+     <y>587</y>
+     <width>362</width>
+     <height>45</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>Choose this time slot. You may select more than one.</string>
+   </property>
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="cursor">
+    <cursorShape>PointingHandCursor</cursorShape>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="timeBtn3">
+   <property name="timeSlot" stdset="0">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>1.30 PM - 3.30 PM</string>
+   </property>
+   <property name="font">
+    <font>
+     <family>Segoe UI</family>
+     <pointsize>10</pointsize>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="geometry">
+    <rect>
+     <x>417</x>
+     <y>647</y>
+     <width>362</width>
+     <height>45</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>Choose this time slot. You may select more than one.</string>
+   </property>
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="cursor">
+    <cursorShape>PointingHandCursor</cursorShape>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="timeBtn4">
+   <property name="timeSlot" stdset="0">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>3.30 PM - 5.30 PM</string>
+   </property>
+   <property name="font">
+    <font>
+     <family>Segoe UI</family>
+     <pointsize>10</pointsize>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="geometry">
+    <rect>
+     <x>794</x>
+     <y>647</y>
+     <width>362</width>
+     <height>45</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>Choose this time slot. You may select more than one.</string>
+   </property>
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="cursor">
+    <cursorShape>PointingHandCursor</cursorShape>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="nextTo3Btn">
+   <property name="font">
+    <font>
+     <family>Segoe UI</family>
+     <pointsize>10</pointsize>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="geometry">
+    <rect>
+     <x>417</x>
+     <y>706</y>
+     <width>739</width>
+     <height>50</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Next Step →</string>
+   </property>
+   <property name="cursor">
+    <cursorShape>PointingHandCursor</cursorShape>
+   </property>
+  </widget>
  </widget>
  <customwidgets>
   <customwidget>

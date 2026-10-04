@@ -13,16 +13,15 @@ QT_BEGIN_NAMESPACE
 namespace Ui
 {
 class MainWindow;
-class Page0;
-class Page1;
-class Page2;
-class Page3;
-class Page4;
+class page0Widget;
+class page1Widget;
+class page2Widget;
+class page3Widget;
+class page4Widget;
 } // namespace Ui
 QT_END_NAMESPACE
 
 class QPushButton;
-class QResizeEvent;
 
 // This is the controller class of the whole program.
 // One window holds the five pages, and every button on those pages is
@@ -74,9 +73,6 @@ class MainWindow : public QMainWindow
     void openSystemSettings();
 
   private:
-    // Called automatically by Qt whenever the window size changes.
-    void resizeEvent(QResizeEvent *event) override;
-
     // ---- First setup ----
     void setupDynamicUI();
     void applyTheme(bool darkMode);
@@ -84,10 +80,8 @@ class MainWindow : public QMainWindow
     void resetFlow();
 
     // ---- Workshop cards ----
-    void drawCards();
-    QWidget *createCard(const QString &id, const QString &title, const QString &subtitle);
+    void bindWorkshopCards();
     void selectCard(const QString &category);
-    void arrangeCards();
 
     // ---- Time slots ----
     QStringList getSelectedTimeSlotsList();
@@ -104,11 +98,11 @@ class MainWindow : public QMainWindow
 
     // ---- The five pages built by Qt Designer ----
     Ui::MainWindow *ui; // the outer window
-    Ui::Page0 *ui0;     // welcome page
-    Ui::Page1 *ui1;     // choose a workshop
-    Ui::Page2 *ui2;     // choose a date and time slots
-    Ui::Page3 *ui3;     // fill in the allocation form
-    Ui::Page4 *ui4;     // administrator page
+    Ui::page0Widget *ui0;     // welcome page
+    Ui::page1Widget *ui1;     // choose a workshop
+    Ui::page2Widget *ui2;     // choose a date and time slots
+    Ui::page3Widget *ui3;     // fill in the allocation form
+    Ui::page4Widget *ui4;     // administrator page
     QWidget *page0Widget = nullptr;
     QWidget *page1Widget = nullptr;
     QWidget *page2Widget = nullptr;
@@ -133,7 +127,6 @@ class MainWindow : public QMainWindow
     // ---- Workshop cards on page 1 ----
     QList<QFrame *> cardFrames;
     QString selectedCategory;
-    int cardColumns = 0;
 
     // ---- Time slot buttons on page 2 ----
     // These two lists always line up: timeSlotValues[i] is the text of

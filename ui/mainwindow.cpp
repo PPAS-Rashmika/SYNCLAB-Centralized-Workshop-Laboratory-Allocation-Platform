@@ -1,12 +1,13 @@
 // MainWindow is the controller of the program.
 // Everything the window does lives in this one file, grouped into sections:
 //   1. Starting the program  (constructor, destructor, first setup)
-//   2. Appearance            (theme, workshop cards, window resizing)
+//   2. Appearance            (theme and workshop card state)
 //   3. Moving between pages
 //   4. Date and time page
 //   5. Allocation form page
 //   6. Administrator page    (table, email drafts, printing, settings)
 #include "mainwindow.h"
+#include "designertheme.h"
 #include "ui_mainwindow.h"
 #include "ui_page0.h"
 #include "ui_page1.h"
@@ -22,7 +23,6 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QHeaderView>
-#include <QIcon>
 #include <QLabel>
 #include <QLineEdit>
 #include <QMap>
@@ -31,7 +31,6 @@
 #include <QPrintDialog>
 #include <QPrinter>
 #include <QPushButton>
-#include <QResizeEvent>
 #include <QScrollArea>
 #include <QSettings>
 #include <QSignalBlocker>
@@ -42,7 +41,22 @@
 #include <QTimer>
 #include <QUrl>
 #include <QUrlQuery>
-#include <QVBoxLayout>
+#include <QStyle>
+
+namespace {
+// Each .ui page is a free-positioned canvas. Smaller windows scroll it instead
+// of moving authored controls; larger windows center the original canvas.
+void addDesignerPage(QStackedWidget *stack, QWidget *canvas, int index)
+{
+    auto *scroll = new QScrollArea(stack);
+    scroll->setObjectName("designerPageScroll" + QString::number(index));
+    scroll->setFrameShape(QFrame::NoFrame);
+    scroll->setWidgetResizable(false);
+    scroll->setAlignment(Qt::AlignCenter);
+    scroll->setWidget(canvas);
+    stack->addWidget(scroll);
+}
+}
 
 // =====================================================================
 // 1. STARTING THE PROGRAM
@@ -50,35 +64,35 @@
 
 // Constructor
 MainWindow::MainWindow(QWidget *parent, const QString &databasePath)
-    : QMainWindow(parent), ui(new Ui::MainWindow), ui0(new Ui::Page0), ui1(new Ui::Page1),
-      ui2(new Ui::Page2), ui3(new Ui::Page3), ui4(new Ui::Page4)
+    : QMainWindow(parent), ui(new Ui::MainWindow), ui0(new Ui::page0Widget), ui1(new Ui::page1Widget),
+      ui2(new Ui::page2Widget), ui3(new Ui::page3Widget), ui4(new Ui::page4Widget)
 {
     // Build the outer window first, then add the five pages to its stack.
     ui->setupUi(this);
     page0Widget = new QWidget();
     ui0->setupUi(page0Widget);
-    ui->stackedWidget->addWidget(page0Widget);
+    addDesignerPage(ui->stackedWidget, page0Widget, 0);
     page1Widget = new QWidget();
     ui1->setupUi(page1Widget);
-    ui->stackedWidget->addWidget(page1Widget);
+    addDesignerPage(ui->stackedWidget, page1Widget, 1);
     page2Widget = new QWidget();
     ui2->setupUi(page2Widget);
-    ui->stackedWidget->addWidget(page2Widget);
+    addDesignerPage(ui->stackedWidget, page2Widget, 2);
     page3Widget = new QWidget();
     ui3->setupUi(page3Widget);
-    ui->stackedWidget->addWidget(page3Widget);
+    addDesignerPage(ui->stackedWidget, page3Widget, 3);
     page4Widget = new QWidget();
     ui4->setupUi(page4Widget);
-    ui->stackedWidget->addWidget(page4Widget);
-
-    setWindowTitle("SYNCLAB | Centralized Workshop & Laboratory Allocation Platform");
-    setWindowIcon(QIcon(":/branding/logo.png"));
+    addDesignerPage(ui->stackedWidget, page4Widget, 4);
 
     // Open the SQLite database and make sure the table exists.
     const QString path = databasePath.isEmpty() ? defaultDatabasePath() : databasePath;
     dbManager = new SqliteDatabaseManager(path);
     databaseReady = dbManager->createTable();
 
+    ui2->backTo1Btn->setProperty("_designerBackText", ui2->backTo1Btn->text());
+    ui3->confirmTitleLbl->setProperty("_designerNewTitle", ui3->confirmTitleLbl->text());
+    bindWorkshopCards();
     setupDynamicUI();
     applyTheme(QSettings(QSettings::defaultFormat(), QSettings::UserScope, "StudentWorkshopApp",
                          "ThemeSettings")
@@ -153,10 +167,7 @@ MainWindow::MainWindow(QWidget *parent, const QString &databasePath)
     connect(ui4->rejectEmailBtn, &QPushButton::clicked, this,
             [this] { composeStatusEmail("Reject"); });
 
-    auto *printButton = new QPushButton("Print list", page4Widget);
-    printButton->setObjectName("printRecordsBtn");
-    ui4->tableActionsLayout->addWidget(printButton);
-    connect(printButton, &QPushButton::clicked, this, &MainWindow::printAllRecords);
+    connect(ui4->printRecordsBtn, &QPushButton::clicked, this, &MainWindow::printAllRecords);
 
     // If the database could not be opened, allocation must be switched off.
     if (!databaseReady) {
@@ -178,23 +189,21 @@ MainWindow::~MainWindow()
     delete ui4;
 }
 
-// Sets up the parts of the interface that Designer cannot store: the time slot
-// values, the table columns and the typing limits on the form.
+// Connects dynamic behavior and configures input limits. Static text, fonts,
+// pictures, widget sizes and positions are stored in the Designer forms.
 void MainWindow::setupDynamicUI()
 {
-    ui1->cardsLayout->setAlignment(Qt::AlignTop | Qt::AlignHCenter);
     // Let the page wallpaper show through the space around the workshop cards.
     ui1->cardsScrollArea->viewport()->setAutoFillBackground(false);
     ui1->cardsScrollContents->setAutoFillBackground(false);
 
-    // Remember the four time slots and label the four buttons with them.
+    // Remember the booking values associated with the four authored buttons.
     timeSlotValues = {"8.30 am - 10.30 am", "10.30 am - 12.30 pm", "1.30 pm - 3.30 pm",
                       "3.30 pm - 5.30 pm"};
     timeSlotButtons = {ui2->timeBtn1, ui2->timeBtn2, ui2->timeBtn3, ui2->timeBtn4};
     for (int i = 0; i < timeSlotButtons.size(); ++i) {
         // The stylesheet uses [timeSlot=true] to recognise these buttons.
         timeSlotButtons[i]->setProperty("timeSlot", true);
-        timeSlotButtons[i]->setText(timeSlotValues[i].toUpper());
         connect(timeSlotButtons[i], &QPushButton::toggled, this, &MainWindow::onTimeSlotClicked);
     }
 
@@ -203,12 +212,8 @@ void MainWindow::setupDynamicUI()
     ui4->adminCalendar->setVerticalHeaderFormat(QCalendarWidget::NoVerticalHeader);
 
     // The administrator table has eleven columns.
-    ui4->mainTable->setColumnCount(11);
-    ui4->mainTable->setHorizontalHeaderLabels({"ALLOCATION KEY", "CREATED", "INDEX", "NAME",
-                                               "DEPARTMENT", "EMAIL", "ALLOCATION DATE",
-                                               "TIME SLOTS", "DESCRIPTION", "REMARKS", "STATUS"});
     ui4->mainTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
-    const QList<int> widths = {155, 150, 100, 150, 200, 200, 120, 210, 200, 190, 130};
+    const QList<int> widths = {155, 150, 100, 150, 200, 200, 140, 210, 200, 190, 130};
     for (int i = 0; i < widths.size(); ++i)
         ui4->mainTable->setColumnWidth(i, widths[i]);
     ui4->mainTable->horizontalHeader()->setStretchLastSection(true);
@@ -246,102 +251,16 @@ void MainWindow::showDatabaseError()
 }
 
 // =====================================================================
-// 2. APPEARANCE: THEME, WORKSHOP CARDS, WINDOW RESIZING
+// 2. APPEARANCE: THEME AND WORKSHOP CARD STATE
 // =====================================================================
 
 // Applies the light or dark colour scheme to the whole window.
 void MainWindow::applyTheme(bool darkMode)
 {
     isDarkTheme = darkMode;
-    // Clear old stylesheets so the new colours are not mixed with the old ones.
-    for (QWidget *widget : findChildren<QWidget *>())
-        widget->setStyleSheet("");
-
-    const QString bg = darkMode ? "#0F172A" : "#F4F7FB";
-    const QString surface = darkMode ? "#1E293B" : "#FFFFFF";
-    const QString text = darkMode ? "#F1F5F9" : "#17243B";
-    const QString muted = darkMode ? "#AABAD0" : "#52647D";
-    const QString border = darkMode ? "#43536B" : "#D4DEEB";
-    const QString accent = darkMode ? "#8DB8FF" : "#2563EB";
-    const QString soft = darkMode ? "#253C61" : "#EAF2FF";
-
-    QPalette palette;
-    palette.setColor(QPalette::Window, QColor(bg));
-    palette.setColor(QPalette::WindowText, QColor(text));
-    palette.setColor(QPalette::Base, QColor(surface));
-    palette.setColor(QPalette::AlternateBase, QColor(bg));
-    palette.setColor(QPalette::Text, QColor(text));
-    palette.setColor(QPalette::Button, QColor(surface));
-    palette.setColor(QPalette::ButtonText, QColor(text));
-    palette.setColor(QPalette::Highlight, QColor("#2563EB"));
-    palette.setColor(QPalette::HighlightedText, Qt::white);
-    palette.setColor(QPalette::PlaceholderText, QColor(muted));
-    palette.setColor(QPalette::Disabled, QPalette::Text, QColor(muted));
-    palette.setColor(QPalette::Disabled, QPalette::ButtonText, QColor(muted));
-    setPalette(palette);
-
-    // One stylesheet for the whole window. %1 to %8 are filled in by arg().
-    setStyleSheet(
-        QString("QWidget { color:%1; font-family:'Segoe UI'; font-size:13px; }"
-                "QMainWindow, QStackedWidget, QWidget#page0Widget, QWidget#page1Widget, "
-                "QWidget#page2Widget, QWidget#page3Widget, QWidget#page4Widget { background:%2; }"
-                "QScrollArea { border:none; background:transparent; } QScrollArea > QWidget > "
-                "QWidget { background:%2; }"
-                "QScrollArea#cardsScrollArea > QWidget, QWidget#cardsScrollContents "
-                "{ background:transparent; }"
-                "QLabel { background:transparent; }"
-                "QLabel#welcomeTitle { color:%4; font-size:16px; font-weight:600; }"
-                "QLabel#syncLabTitle { font-size:52px; font-weight:800; }"
-                "QLabel#syncLabSubtitle { font-size:20px; font-weight:600; }"
-                "QLabel#welcomeDesc, QLabel#selectedDescLabel2, QLabel#adminWsDescLbl { color:%4; "
-                "font-size:14px; }"
-                "QLabel#selectTitleLabel, QLabel#selectedNameLabel2, QLabel#confirmTitleLbl, "
-                "QLabel#adminWsTitleLbl { font-size:25px; font-weight:700; }"
-                "QLineEdit, QTextEdit, QComboBox { background:%3; border:1px solid %5; "
-                "border-radius:7px; padding:8px; selection-background-color:#2563EB; "
-                "selection-color:white; }"
-                "QLineEdit:focus, QTextEdit:focus, QComboBox:focus { border:1px solid %6; }"
-                "QComboBox QAbstractItemView { background:%3; color:%1; "
-                "selection-background-color:#2563EB; selection-color:white; }"
-                "QPushButton { background:%3; color:%1; border:1px solid %5; border-radius:8px; "
-                "padding:9px 14px; font-weight:600; }"
-                "QPushButton:hover, QPushButton:focus { background:%7; border-color:%6; }"
-                "QPushButton:pressed { border:2px solid %6; }"
-                "QPushButton#allocateNowBtn, QPushButton#nextBtn, QPushButton#nextTo3Btn, "
-                "QPushButton#submitBtn, QPushButton#updateBtn { background:#2563EB; color:white; "
-                "border:1px solid #2563EB; }"
-                "QPushButton#allocateNowBtn:hover, QPushButton#nextBtn:hover, "
-                "QPushButton#nextTo3Btn:hover, QPushButton#submitBtn:hover, "
-                "QPushButton#updateBtn:hover { background:#1D4ED8; }"
-                "QPushButton#deleteBtn, QPushButton#adminDelBtn { color:%8; }"
-                "QPushButton[timeSlot=true] { padding:10px 8px; }"
-                "QPushButton:checked { background:#2563EB; color:white; border-color:#2563EB; }"
-                "QPushButton:disabled { background:%2; color:%4; border:1px solid %5; }"
-                "QPushButton#allocateNowBtn:disabled, QPushButton#nextBtn:disabled, "
-                "QPushButton#nextTo3Btn:disabled, QPushButton#submitBtn:disabled, "
-                "QPushButton#updateBtn:disabled, QPushButton#deleteBtn:disabled, "
-                "QPushButton#adminDelBtn:disabled { background:%2; color:%4; border:1px solid %5; }"
-                "QFrame#summaryBox { background:%7; border:1px solid %5; border-radius:10px; }"
-                "QLabel#summaryDateLbl { color:%6; font-weight:700; }"
-                "QTableWidget { background:%3; alternate-background-color:%2; border:1px solid %5; "
-                "gridline-color:%5; selection-background-color:%7; selection-color:%1; }"
-                "QHeaderView::section { background:%7; color:%1; border:none; padding:10px; "
-                "font-weight:600; }"
-                "QTableWidget QLineEdit, QTableWidget QComboBox { padding:4px; border-radius:4px; }"
-                "QCalendarWidget { background:%3; border:1px solid %5; border-radius:8px; }"
-                "QCalendarWidget QWidget#qt_calendar_navigationbar { background:#2563EB; }"
-                "QCalendarWidget QToolButton { color:white; background:transparent; padding:6px; "
-                "font-weight:600; }"
-                "QCalendarWidget QMenu, QCalendarWidget QSpinBox { background:%3; color:%1; }"
-                "QCalendarWidget QAbstractItemView { background:%3; color:%1; "
-                "selection-background-color:#2563EB; selection-color:white; outline:0; }"
-                "QToolTip { background:%3; color:%1; border:1px solid %5; padding:6px; }")
-            .arg(text, bg, surface, muted, border, accent, soft,
-                 darkMode ? "#FDA4AF" : "#BE123C"));
-
-    ui0->welcomeImg->setPixmap(QPixmap(":/branding/logo.png")
-                                   .scaled(QSize(144, 144), Qt::KeepAspectRatio,
-                                           Qt::SmoothTransformation));
+    // Designer owns every widget's normal style, font, geometry and static text.
+    // The theme helper only changes recognised palette colours for dark mode.
+    applyDesignerTheme(this, darkMode);
 
     // If the user chose a background picture, draw it behind each page.
     QString wallpaper = QSettings(QSettings::defaultFormat(), QSettings::UserScope,
@@ -354,126 +273,44 @@ void MainWindow::applyTheme(bool darkMode)
         for (QWidget *page : {page0Widget, page1Widget, page2Widget, page3Widget, page4Widget})
             page->setStyleSheet(
                 QString("QWidget#%1 { border-image:url(\"%2\") 0 0 0 0 stretch stretch; }")
-                    .arg(page->objectName(), wallpaper));
+                    .arg(page->objectName(), wallpaper) + page->styleSheet());
     }
 
-    // The cards are created the first time the theme is applied.
-    if (cardFrames.isEmpty())
-        drawCards();
-    else
-        selectCard(selectedCategory);
+    selectCard(selectedCategory);
 
     updateCalendarHighlights();
     updateAdminCalendarHighlights();
 }
 
-// Builds one workshop card: picture, title, description and a click layer.
-QWidget *MainWindow::createCard(const QString &id, const QString &title, const QString &subtitle)
+// Connect the cards stored in page1.ui. Their position, size, pictures and
+// labels are authored in Designer and are never reconstructed at runtime.
+void MainWindow::bindWorkshopCards()
 {
-    auto *card = new QFrame(page1Widget);
-    card->setObjectName("cardFrame");
-    card->setProperty("category", id);
-    card->setFixedSize(212, 210);
-
-    auto *layout = new QVBoxLayout(card);
-    layout->setContentsMargins(14, 14, 14, 14);
-    layout->setSpacing(8);
-
-    auto *image = new QLabel(card);
-    image->setPixmap(workshopImage(id, QSize(110, 80)));
-    image->setAlignment(Qt::AlignCenter);
-
-    auto *heading = new QLabel(title, card);
-    heading->setAlignment(Qt::AlignCenter);
-    heading->setWordWrap(true);
-    QFont font = heading->font();
-    font.setBold(true);
-    heading->setFont(font);
-
-    auto *description = new QLabel(subtitle, card);
-    description->setAlignment(Qt::AlignCenter);
-    description->setWordWrap(true);
-
-    layout->addWidget(image);
-    layout->addWidget(heading);
-    layout->addWidget(description, 1);
-
-    // A transparent button on top of the card catches the mouse click.
-    auto *overlay = new QPushButton(card);
-    overlay->setObjectName("workshopCard_" + QString(id).replace(' ', '_'));
-    overlay->setAccessibleName(title);
-    overlay->setToolTip(title + "\n" + subtitle);
-    overlay->setGeometry(card->rect());
-    overlay->setCursor(Qt::PointingHandCursor);
-    overlay->raise();
-    connect(overlay, &QPushButton::clicked, this, [this, id] { selectCard(id); });
-
-    cardFrames.append(card);
-    return card;
+    for (QFrame *card : ui1->cardsScrollContents->findChildren<QFrame *>()) {
+        const QString category = card->property("category").toString();
+        if (category.isEmpty())
+            continue;
+        cardFrames.append(card);
+        auto *button = card->findChild<QPushButton *>();
+        if (button)
+            connect(button, &QPushButton::clicked, this, [this, category] { selectCard(category); });
+    }
 }
 
-// Creates a card for every workshop in the catalogue.
-void MainWindow::drawCards()
-{
-    for (const QString &category : workshopCategories())
-        createCard(category, workshopTitle(category), workshopDepartment(category));
-    cardColumns = 0; // force arrangeCards() to lay them out
-    arrangeCards();
-    selectCard(selectedCategory);
-}
-
-// Highlights the chosen card and enables or disables the Next button.
+// A dynamic state selects a Designer-authored CSS rule, without replacing it.
 void MainWindow::selectCard(const QString &category)
 {
     selectedCategory = category;
     for (QFrame *card : cardFrames) {
         const bool selected = card->property("category").toString() == category;
-        card->setStyleSheet(
-            QString("QFrame#cardFrame { background:%1; border:2px solid %2; border-radius:12px; }")
-                .arg(selected ? (isDarkTheme ? "#253C61" : "#EAF2FF")
-                              : (isDarkTheme ? "#1E293B" : "#FFFFFF"),
-                     selected ? "#6099F5" : (isDarkTheme ? "#43536B" : "#D4DEEB")));
-        auto *button = card->findChild<QPushButton *>();
-        button->setStyleSheet("QPushButton { background:transparent; border:2px solid transparent; "
-                              "border-radius:12px; } QPushButton:hover, QPushButton:focus { "
-                              "border:2px solid #6099F5; background:rgba(80,140,240,18); }");
-        button->setAccessibleDescription(selected ? "Selected workshop" : "Select workshop");
+        card->setProperty("selected", selected);
+        card->style()->unpolish(card);
+        card->style()->polish(card);
+        card->update();
+        if (auto *button = card->findChild<QPushButton *>())
+            button->setAccessibleDescription(selected ? "Selected workshop" : "Select workshop");
     }
     ui1->nextBtn->setEnabled(!category.isEmpty());
-}
-
-// Qt calls this whenever the window is resized.
-void MainWindow::resizeEvent(QResizeEvent *event)
-{
-    QMainWindow::resizeEvent(event);
-    // Wait until the resize has finished before moving the cards around.
-    QTimer::singleShot(0, this, &MainWindow::arrangeCards);
-}
-
-// Puts the cards into as many columns as the window width allows.
-void MainWindow::arrangeCards()
-{
-    if (!page1Widget)
-        return;
-    const auto *area = page1Widget->findChild<QScrollArea *>("cardsScrollArea");
-    const int available = area ? area->viewport()->width() : width() - 70;
-    const int columns = qBound(1, (available - 12) / 228, 5);
-    if (columns == cardColumns)
-        return; // nothing changed, so do not rebuild the grid
-    cardColumns = columns;
-
-    while (auto *item = ui1->cardsLayout->takeAt(0))
-        delete item;
-
-    // Keep the additional laboratories below the original ten, even on narrower windows.
-    constexpr int originalWorkshopCount = 10;
-    const int additionalRow = (originalWorkshopCount + columns - 1) / columns;
-    for (int i = 0; i < cardFrames.size(); ++i) {
-        const int offset = i < originalWorkshopCount ? i : i - originalWorkshopCount;
-        const int row =
-            i < originalWorkshopCount ? offset / columns : additionalRow + offset / columns;
-        ui1->cardsLayout->addWidget(cardFrames[i], row, offset % columns);
-    }
 }
 
 // =====================================================================
@@ -495,7 +332,7 @@ void MainWindow::resetFlow()
     clearUI();
     selectCard(QString());
     ui2->adminBtn2->show();
-    ui2->backTo1Btn->setText("Back to workshops");
+    ui2->backTo1Btn->setText(ui2->backTo1Btn->property("_designerBackText").toString());
     setFormButtonsMode(false);
 }
 
@@ -506,7 +343,6 @@ void MainWindow::startNewAllocation()
         return;
     resetFlow();
     ui->stackedWidget->setCurrentIndex(1);
-    arrangeCards();
 }
 
 // "Edit allocation" on the welcome page. The student types the allocation key.
@@ -567,7 +403,6 @@ void MainWindow::startEditAllocationFlow()
     const QDate savedDate = QDate::fromString(currentRecord.getRecordDate(), Qt::ISODate);
     // Historical allocations must still expose the delete action and editable details.
     ui->stackedWidget->setCurrentIndex(savedDate < QDate::currentDate() ? 3 : 1);
-    arrangeCards();
 }
 
 // Leaving a allocation that has not been saved yet.
@@ -611,9 +446,11 @@ void MainWindow::openSecondInterface(const QString &category)
         workshopDepartment(category) +
         "\n\nChoose a date and one or more available time slots.\nGrey slots are unavailable.");
     ui4->adminWsTitleLbl->setText(workshopTitle(category));
-    const QPixmap pix = workshopImage(category, QSize(160, 100));
-    ui2->selectedImgLabel2->setPixmap(pix);
-    ui4->adminImgLabel->setPixmap(pix);
+    // Fit each selected-workshop picture inside its Designer-authored label.
+    ui2->selectedImgLabel2->setPixmap(
+        workshopImage(category, QSize(160, 100).boundedTo(ui2->selectedImgLabel2->size())));
+    ui4->adminImgLabel->setPixmap(
+        workshopImage(category, QSize(160, 100).boundedTo(ui4->adminImgLabel->size())));
     updateCalendarHighlights();
     onCalendarSelectionChanged();
     ui->stackedWidget->setCurrentIndex(2);
@@ -645,7 +482,6 @@ void MainWindow::goBackTo1()
         ui->stackedWidget->setCurrentIndex(4);
     } else {
         ui->stackedWidget->setCurrentIndex(1);
-        arrangeCards();
     }
 }
 
@@ -776,7 +612,7 @@ void MainWindow::setFormButtonsMode(bool edit)
     ui3->submitBtn->setVisible(!edit);
     ui3->updateBtn->setVisible(edit);
     ui3->deleteBtn->setVisible(edit);
-    ui3->confirmTitleLbl->setText(edit ? "Edit your allocation" : "Finalize your allocation");
+    ui3->confirmTitleLbl->setText(edit ? "Edit your allocation" : ui3->confirmTitleLbl->property("_designerNewTitle").toString());
 }
 
 // Puts a saved allocation back onto the pages so it can be read or changed.
@@ -1139,7 +975,7 @@ void MainWindow::loadAdminData()
         ui4->mainTable->setCellWidget(row, 10, status);
     }
     ui4->adminWsDescLbl->setText(
-        workshopDepartment(currentCategory) + "\n\n" + QString::number(records.size()) +
+        workshopDepartment(currentCategory) + "\n" + QString::number(records.size()) +
         (records.size() == 1 ? " allocation" : " allocations") +
         (adminFilterDate.isValid() ? " on " + adminFilterDate.toString("d MMM yyyy")
                                    : " · All dates"));

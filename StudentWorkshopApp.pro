@@ -30,6 +30,7 @@ INCLUDEPATH += \
 SOURCES += \
     main.cpp \
     ui/mainwindow.cpp \
+    ui/designertheme.cpp \
     ui/dialogs/customalertdialog.cpp \
     ui/dialogs/custominputdialog.cpp \
     ui/dialogs/adminsettingsdialog.cpp \
@@ -45,6 +46,7 @@ SOURCES += \
 # tree and so that the moc tool can find the classes that use signals and slots.
 HEADERS += \
     ui/mainwindow.h \
+    ui/designertheme.h \
     ui/dialogs/customdialogs.h \
     ui/dialogs/customalertdialog.h \
     ui/dialogs/custominputdialog.h \
@@ -81,7 +83,14 @@ RESOURCES += resources/images.qrc
 # the program creates its own tables when it first runs. CODE_GUIDE.md explains
 # the whole project.
 DISTFILES += \
+    QT_DESIGNER_GUIDE.md \
+    tests/designer_save_tests.cpp \
+    tests/designer_save_tests.pro \
     CODE_GUIDE.md \
+    DATABASE_DESIGN.md \
+    DATABASE_ASSIGNMENT.md \
+    sql/create_tables.sql \
+    sql/sample_data_small.sql \
     sql/schema.sql \
     sql/sample_data.sql \
     sql/queries.sql

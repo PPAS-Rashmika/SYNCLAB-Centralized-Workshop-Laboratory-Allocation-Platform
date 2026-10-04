@@ -24,7 +24,6 @@ AdminSettingsDialog::AdminSettingsDialog(QWidget *parent)
     : QDialog(parent), ui(new Ui::AdminSettingsDialog)
 {
     ui->setupUi(this);
-    setWindowTitle(tr("Administration email settings"));
     applyDialogTheme(this);
     QSettings settings(QSettings::defaultFormat(), QSettings::UserScope, "StudentWorkshopApp",
                        "AdminSettings");
@@ -35,7 +34,6 @@ AdminSettingsDialog::AdminSettingsDialog(QWidget *parent)
     for (auto *input : {ui->deanEmailInput, ui->depHeadEmailInput}) {
         input->setMaxLength(254);
         input->setClearButtonEnabled(true);
-        input->setPlaceholderText(tr("Optional email address"));
     }
     ui->saveBtn->setDefault(true);
     ui->deanEmailInput->setFocus();

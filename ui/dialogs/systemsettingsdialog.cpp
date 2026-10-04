@@ -14,14 +14,12 @@ SystemSettingsDialog::SystemSettingsDialog(QWidget *parent)
     : QDialog(parent), ui(new Ui::SystemSettingsDialog)
 {
     ui->setupUi(this);
-    setWindowTitle(tr("System settings"));
     applyDialogTheme(this);
     const bool dark = QSettings(QSettings::defaultFormat(), QSettings::UserScope,
                                 "StudentWorkshopApp", "ThemeSettings")
                           .value("darkMode", false)
                           .toBool();
     ui->toggleThemeBtn->setText(dark ? tr("Switch to light mode") : tr("Switch to dark mode"));
-    ui->groupBox->setTitle(tr("Administrator passcodes"));
     // One entry per workshop, plus one for the master passcode.
     for (const QString &category : workshopCategories())
         ui->workshopCombo->addItem(category, category);
@@ -31,7 +29,6 @@ SystemSettingsDialog::SystemSettingsDialog(QWidget *parent)
     ui->lblCat->setBuddy(ui->workshopCombo);
     ui->lblCode->setBuddy(ui->newPasscodeInput);
     ui->newPasscodeInput->setMaxLength(64);
-    ui->newPasscodeInput->setPlaceholderText(tr("At least 4 characters"));
     ui->newPasscodeInput->setClearButtonEnabled(true);
     ui->savePasscodeBtn->setEnabled(false);
     ui->closeBtn->setAutoDefault(false);

@@ -1,7 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <ui version="4.0">
  <class>SystemSettingsDialog</class>
  <widget class="QDialog" name="SystemSettingsDialog">
+  <property name="windowTitle">
+   <string>System settings</string>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -10,186 +13,276 @@
     <height>540</height>
    </rect>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
-   <property name="spacing">
-    <number>12</number>
+  <widget class="QLabel" name="titleLbl">
+   <property name="geometry">
+    <rect>
+     <x>24</x>
+     <y>24</y>
+     <width>512</width>
+     <height>34</height>
+    </rect>
    </property>
-   <property name="leftMargin">
-    <number>24</number>
+   <property name="wordWrap">
+    <bool>true</bool>
    </property>
-   <property name="topMargin">
-    <number>24</number>
+   <property name="textFormat">
+    <enum>Qt::PlainText</enum>
    </property>
-   <property name="rightMargin">
-    <number>24</number>
+   <property name="text">
+    <string>System Settings</string>
    </property>
-   <property name="bottomMargin">
-    <number>24</number>
+   <property name="font">
+    <font>
+     <pointsize>16</pointsize>
+     <bold>true</bold>
+    </font>
    </property>
-   <item>
-    <widget class="QLabel" name="titleLbl">
-     <property name="wordWrap">
-      <bool>true</bool>
-     </property>
-     <property name="textFormat">
-      <enum>Qt::PlainText</enum>
-     </property>
-     <property name="text">
-      <string>System Settings</string>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>16</pointsize>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <spacer name="verticalSpacer1">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>0</width>
-       <height>10</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item>
-    <widget class="QPushButton" name="toggleThemeBtn">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>45</height>
-      </size>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QPushButton" name="changeWallpaperBtn">
-     <property name="text">
-      <string>Change Background Wallpaper</string>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>45</height>
-      </size>
-     </property>
-     <property name="cursor">
-      <cursorShape>PointingHandCursor</cursorShape>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QGroupBox" name="groupBox">
-     <property name="title">
-      <string>Workshop Admin Passcodes</string>
-     </property>
-     <property name="font">
-      <font>
-       <bold>true</bold>
-      </font>
-     </property>
-     <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="0">
-       <widget class="QLabel" name="lblCat">
-        <property name="wordWrap">
-         <bool>true</bool>
-        </property>
-        <property name="textFormat">
-         <enum>Qt::PlainText</enum>
-        </property>
-        <property name="text">
-         <string>&amp;Administrator</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QComboBox" name="workshopCombo">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>35</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="lblCode">
-        <property name="wordWrap">
-         <bool>true</bool>
-        </property>
-        <property name="textFormat">
-         <enum>Qt::PlainText</enum>
-        </property>
-        <property name="text">
-         <string>&amp;New passcode</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QLineEdit" name="newPasscodeInput">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>35</height>
-         </size>
-        </property>
-        <property name="echoMode">
-         <enum>QLineEdit::Password</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0" colspan="2">
-       <widget class="QPushButton" name="savePasscodeBtn">
-        <property name="text">
-         <string>Update Passcode</string>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>40</height>
-         </size>
-        </property>
-        <property name="cursor">
-         <cursorShape>PointingHandCursor</cursorShape>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <spacer name="verticalSpacer2">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-    </spacer>
-   </item>
-   <item>
-    <widget class="QPushButton" name="closeBtn">
-     <property name="text">
-      <string>Close</string>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>45</height>
-      </size>
-     </property>
-     <property name="cursor">
-      <cursorShape>PointingHandCursor</cursorShape>
-     </property>
-    </widget>
-   </item>
-  </layout>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="toggleThemeBtn">
+   <property name="geometry">
+    <rect>
+     <x>24</x>
+     <y>80</y>
+     <width>512</width>
+     <height>46</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>0</width>
+     <height>45</height>
+    </size>
+   </property>
+   <property name="cursor">
+    <cursorShape>PointingHandCursor</cursorShape>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>Switch to dark mode</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="changeWallpaperBtn">
+   <property name="geometry">
+    <rect>
+     <x>24</x>
+     <y>138</y>
+     <width>512</width>
+     <height>46</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Change Background Wallpaper</string>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>0</width>
+     <height>45</height>
+    </size>
+   </property>
+   <property name="cursor">
+    <cursorShape>PointingHandCursor</cursorShape>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+     <bold>true</bold>
+    </font>
+   </property>
+  </widget>
+  <widget class="QGroupBox" name="groupBox">
+   <property name="geometry">
+    <rect>
+     <x>24</x>
+     <y>196</y>
+     <width>512</width>
+     <height>208</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Administrator passcodes</string>
+   </property>
+   <property name="font">
+    <font>
+     <bold>true</bold>
+    </font>
+   </property>
+   <widget class="QLabel" name="lblCat">
+    <property name="geometry">
+     <rect>
+      <x>12</x>
+      <y>39</y>
+      <width>138</width>
+      <height>38</height>
+     </rect>
+    </property>
+    <property name="wordWrap">
+     <bool>true</bool>
+    </property>
+    <property name="textFormat">
+     <enum>Qt::PlainText</enum>
+    </property>
+    <property name="text">
+     <string>&amp;Administrator</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="workshopCombo">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>39</y>
+      <width>340</width>
+      <height>38</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>0</width>
+      <height>35</height>
+     </size>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblCode">
+    <property name="geometry">
+     <rect>
+      <x>12</x>
+      <y>89</y>
+      <width>138</width>
+      <height>38</height>
+     </rect>
+    </property>
+    <property name="wordWrap">
+     <bool>true</bool>
+    </property>
+    <property name="textFormat">
+     <enum>Qt::PlainText</enum>
+    </property>
+    <property name="text">
+     <string>&amp;New passcode</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="newPasscodeInput">
+    <property name="placeholderText">
+     <string>At least 4 characters</string>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>89</y>
+      <width>340</width>
+      <height>38</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>0</width>
+      <height>35</height>
+     </size>
+    </property>
+    <property name="echoMode">
+     <enum>QLineEdit::Password</enum>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="savePasscodeBtn">
+    <property name="geometry">
+     <rect>
+      <x>12</x>
+      <y>145</y>
+      <width>488</width>
+      <height>46</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Update Passcode</string>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>0</width>
+      <height>40</height>
+     </size>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <bold>true</bold>
+     </font>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QPushButton" name="closeBtn">
+   <property name="geometry">
+    <rect>
+     <x>24</x>
+     <y>470</y>
+     <width>512</width>
+     <height>46</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Close</string>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>0</width>
+     <height>45</height>
+    </size>
+   </property>
+   <property name="cursor">
+    <cursorShape>PointingHandCursor</cursorShape>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+     <bold>true</bold>
+    </font>
+   </property>
+  </widget>
+  <property name="styleSheet">
+   <string notr="true">QDialog { background-color: #FFFFFF; color: #0F172A; }
+QLabel { color: #0F172A; background: transparent; }
+QLineEdit, QComboBox { background-color: #F8FAFC; color: #0F172A; border: 1px solid #CBD5E1; border-radius: 7px; padding: 8px; }
+QLineEdit:focus, QComboBox:focus { border: 1px solid #2563EB; }
+QComboBox QAbstractItemView { background-color: #F8FAFC; color: #0F172A; selection-background-color: #2563EB; selection-color: white; border: 1px solid #CBD5E1; }
+QPushButton { background-color: #2563EB; color: white; border: 2px solid transparent; border-radius: 8px; padding: 2px 14px; }
+QPushButton:focus, QPushButton:default { border-color: #0F172A; }
+QPushButton:hover { border-color: #CBD5E1; }
+QPushButton:disabled { background-color: #CBD5E1; color: #0F172A; }
+QPushButton#cancelBtn, QPushButton#closeBtn { background-color: #F8FAFC; color: #0F172A; border-color: #CBD5E1; }
+QGroupBox { color: #0F172A; border: 1px solid #CBD5E1; border-radius: 8px; margin-top: 16px; padding-top: 10px; }
+QGroupBox::title { subcontrol-origin: margin; left: 12px; padding: 0 4px; }</string>
+  </property>
+  <property name="font">
+   <font>
+    <family>Segoe UI</family>
+    <pointsize>10</pointsize>
+   </font>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>560</width>
+    <height>540</height>
+   </size>
+  </property>
  </widget>
  <tabstops>
   <tabstop>toggleThemeBtn</tabstop>

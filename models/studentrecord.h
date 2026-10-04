@@ -59,7 +59,7 @@ class StudentRecord
 
   private:
     int id;                 // row number given by SQLite; -1 means "not saved yet"
-    QString workshopId;     // the workshop, kept for older database rows
+    QString workshopId;     // UI compatibility alias; reconstructed from category
     QString category;       // the workshop, used by all new rows
     QString name;           // student's full name
     QString indexNo;        // student's index number
@@ -68,7 +68,7 @@ class StudentRecord
     QString supervisorName; // the lecturer supervising the project
     QString projectName;    // the project the allocation is for
     QString recordDate;     // the allocated date, stored as "yyyy-MM-dd"
-    QString timeSlots;      // one or more slots joined with ", "
+    QString timeSlots;      // UI display list; the database stores separate slot rows
     QString description;    // what the student wants to do in the laboratory
     QString passcode;       // the 4-digit allocation key given to the student
     QString createdAt;      // when the allocation was first saved

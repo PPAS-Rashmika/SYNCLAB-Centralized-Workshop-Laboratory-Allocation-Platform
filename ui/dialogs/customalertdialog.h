@@ -27,6 +27,7 @@ class CustomAlertDialog : public QDialog
     void resizeEvent(QResizeEvent *event) override;
 
   private:
+    void fitMessage();
     Ui::CustomAlertDialog *ui;
 };
 

@@ -45,6 +45,8 @@ class SqliteDatabaseManager : public IDatabaseManager
     bool beginWrite();                                 // start a transaction
     bool commitWrite();                                // save the transaction
     bool validateRecord(const StudentRecord &record);  // check one allocation before saving
+    bool saveRelatedFacts(const StudentRecord &record); // workshop and shared student profile
+    bool replaceSlots(int recordId, const QStringList &slotList); // one row per chosen slot
 };
 
 #endif // DATABASEMANAGER_H
