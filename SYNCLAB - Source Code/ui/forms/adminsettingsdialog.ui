@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <!-- අනිවාර්ය admin emails දෙකේ dialog පෙනුමයි; validation code adminsettingsdialog.cpp හි ඇත. -->
+ <class>AdminSettingsDialog</class>
+ <!-- AdminSettingsDialog: කුඩා dialog කවුළුව; name එක C++ code එකේද භාවිත විය හැක. -->
+ <widget class="QDialog" name="AdminSettingsDialog">
+  <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>450</width>
+    <height>348</height>
+   </rect>
+  </property>
+  <!-- Control එක මෙයට වඩා කුඩා කිරීමට ඉඩ නොදෙන ප්‍රමාණයයි. -->
+  <property name="minimumSize">
+   <size>
+    <width>450</width>
+    <height>348</height>
+   </size>
+  </property>
+  <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
+  <property name="font">
+   <font>
+    <family>Segoe UI</family>
+    <pointsize>10</pointsize>
+   </font>
+  </property>
+  <property name="windowTitle">
+   <string>Administration email settings</string>
+  </property>
+  <!-- මෙම control එකේ පාට, border, padding සහ radius සඳහා CSS rules මෙහි ඇත. -->
+  <property name="styleSheet">
+   <string notr="true">QDialog { background-color: #FFFFFF; color: #0F172A; }
+QLabel { color: #0F172A; background: transparent; }
+QLineEdit, QComboBox { background-color: #F8FAFC; color: #0F172A; border: 1px solid #CBD5E1; border-radius: 7px; padding: 8px; }
+QLineEdit:focus, QComboBox:focus { border: 1px solid #2563EB; }
+QComboBox QAbstractItemView { background-color: #F8FAFC; color: #0F172A; selection-background-color: #2563EB; selection-color: white; border: 1px solid #CBD5E1; }
+QPushButton { background-color: #2563EB; color: white; border: 2px solid transparent; border-radius: 8px; padding: 2px 14px; }
+QPushButton:focus, QPushButton:default { border-color: #0F172A; }
+QPushButton:hover { border-color: #CBD5E1; }
+QPushButton:disabled { background-color: #CBD5E1; color: #0F172A; }
+QPushButton#cancelBtn, QPushButton#closeBtn { background-color: #F8FAFC; color: #0F172A; border-color: #CBD5E1; }
+QGroupBox { color: #0F172A; border: 1px solid #CBD5E1; border-radius: 8px; margin-top: 16px; padding-top: 10px; }
+QGroupBox::title { subcontrol-origin: margin; left: 12px; padding: 0 4px; }</string>
+  </property>
+  <!-- titleLbl: text/image පෙන්වන label එක; name එක C++ code එකේද භාවිත විය හැක. -->
+  <widget class="QLabel" name="titleLbl">
+   <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
+   <property name="geometry">
+    <rect>
+     <x>24</x>
+     <y>24</y>
+     <width>402</width>
+     <height>34</height>
+    </rect>
+   </property>
+   <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
+   <property name="font">
+    <font>
+     <pointsize>16</pointsize>
+     <bold>true</bold>
+    </font>
+   </property>
+   <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
+   <property name="text">
+    <string>Admin Settings</string>
+   </property>
+   <property name="textFormat">
+    <enum>Qt::TextFormat::PlainText</enum>
+   </property>
+   <!-- true නම් ඉඩ මදි text එක ඊළඟ පේළියට යයි. -->
+   <property name="wordWrap">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <!-- lbl1: text/image පෙන්වන label එක; name එක C++ code එකේද භාවිත විය හැක. -->
+  <widget class="QLabel" name="lbl1">
+   <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
+   <property name="geometry">
+    <rect>
+     <x>24</x>
+     <y>70</y>
+     <width>402</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
+   <property name="text">
+    <string>Lab / Workshop In-charge Email</string>
+   </property>
+   <property name="textFormat">
+    <enum>Qt::TextFormat::PlainText</enum>
+   </property>
+   <!-- true නම් ඉඩ මදි text එක ඊළඟ පේළියට යයි. -->
+   <property name="wordWrap">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <!-- deanEmailInput: එක් පේළියක text input එක; name එක C++ code එකේද භාවිත විය හැක. -->
+  <widget class="QLineEdit" name="deanEmailInput">
+   <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
+   <property name="geometry">
+    <rect>
+     <x>24</x>
+     <y>102</y>
+     <width>402</width>
+     <height>40</height>
+    </rect>
+   </property>
+   <!-- Control එක මෙයට වඩා කුඩා කිරීමට ඉඩ නොදෙන ප්‍රමාණයයි. -->
+   <property name="minimumSize">
+    <size>
+     <width>0</width>
+     <height>40</height>
+    </size>
+   </property>
+   <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+    </font>
+   </property>
+   <!-- Input එක හිස් විට පෙන්වන උදව් text එක මෙහි වෙනස් කරන්න. -->
+   <property name="placeholderText">
+    <string>Required in-charge email address</string>
+   </property>
+  </widget>
+  <!-- lbl2: text/image පෙන්වන label එක; name එක C++ code එකේද භාවිත විය හැක. -->
+  <widget class="QLabel" name="lbl2">
+   <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
+   <property name="geometry">
+    <rect>
+     <x>24</x>
+     <y>154</y>
+     <width>402</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
+   <property name="text">
+    <string>Department or head email</string>
+   </property>
+   <property name="textFormat">
+    <enum>Qt::TextFormat::PlainText</enum>
+   </property>
+   <!-- true නම් ඉඩ මදි text එක ඊළඟ පේළියට යයි. -->
+   <property name="wordWrap">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <!-- depHeadEmailInput: එක් පේළියක text input එක; name එක C++ code එකේද භාවිත විය හැක. -->
+  <widget class="QLineEdit" name="depHeadEmailInput">
+   <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
+   <property name="geometry">
+    <rect>
+     <x>24</x>
+     <y>186</y>
+     <width>402</width>
+     <height>40</height>
+    </rect>
+   </property>
+   <!-- Control එක මෙයට වඩා කුඩා කිරීමට ඉඩ නොදෙන ප්‍රමාණයයි. -->
+   <property name="minimumSize">
+    <size>
+     <width>0</width>
+     <height>40</height>
+    </size>
+   </property>
+   <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+    </font>
+   </property>
+   <!-- Input එක හිස් විට පෙන්වන උදව් text එක මෙහි වෙනස් කරන්න. -->
+   <property name="placeholderText">
+    <string>Required department or head email address</string>
+   </property>
+  </widget>
+  <!-- cancelBtn: ක්ලික් කළ හැකි button එක; name එක C++ code එකේද භාවිත විය හැක. -->
+  <widget class="QPushButton" name="cancelBtn">
+   <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
+   <property name="geometry">
+    <rect>
+     <x>24</x>
+     <y>278</y>
+     <width>195</width>
+     <height>46</height>
+    </rect>
+   </property>
+   <!-- Control එක මෙයට වඩා කුඩා කිරීමට ඉඩ නොදෙන ප්‍රමාණයයි. -->
+   <property name="minimumSize">
+    <size>
+     <width>120</width>
+     <height>40</height>
+    </size>
+   </property>
+   <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="cursor">
+    <cursorShape>PointingHandCursor</cursorShape>
+   </property>
+   <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
+   <property name="text">
+    <string>Cancel</string>
+   </property>
+  </widget>
+  <!-- saveBtn: ක්ලික් කළ හැකි button එක; name එක C++ code එකේද භාවිත විය හැක. -->
+  <widget class="QPushButton" name="saveBtn">
+   <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
+   <property name="geometry">
+    <rect>
+     <x>231</x>
+     <y>278</y>
+     <width>195</width>
+     <height>46</height>
+    </rect>
+   </property>
+   <!-- Control එක මෙයට වඩා කුඩා කිරීමට ඉඩ නොදෙන ප්‍රමාණයයි. -->
+   <property name="minimumSize">
+    <size>
+     <width>120</width>
+     <height>40</height>
+    </size>
+   </property>
+   <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="cursor">
+    <cursorShape>PointingHandCursor</cursorShape>
+   </property>
+   <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
+   <property name="text">
+    <string>Save Settings</string>
+   </property>
+  </widget>
+ </widget>
+ <!-- Tab key මගින් controls අතර යන අනුපිළිවෙළ මෙහි ඇත. -->
+ <tabstops>
+  <tabstop>deanEmailInput</tabstop>
+  <tabstop>depHeadEmailInput</tabstop>
+  <tabstop>saveBtn</tabstop>
+  <tabstop>cancelBtn</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>
