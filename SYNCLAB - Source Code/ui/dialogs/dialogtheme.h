@@ -8,6 +8,6 @@
 #include <QString>
 
 // Save කළ theme එක dialog එකට යොදා warning/error accent එකත් සකසයි.
-void applyDialogTheme(QDialog *dialog, const QString &accent = "#2563EB");
+void applyDialogTheme(QDialog *dialog, const QString &alertType = QString());
 
 #endif

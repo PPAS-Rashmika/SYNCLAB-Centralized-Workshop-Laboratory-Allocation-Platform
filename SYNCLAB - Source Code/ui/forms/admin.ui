@@ -1,10 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <ui version="4.0">
- <!-- Admin dashboard එකයි; table columns සහ buttons මෙහි වෙනස් කරන්න. -->
  <class>adminWidget</class>
- <!-- adminWidget: ඇතුළත controls තබන කොටස; name එක C++ code එකේද භාවිත විය හැක. -->
  <widget class="QWidget" name="adminWidget">
-  <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -13,21 +10,129 @@
     <height>780</height>
    </rect>
   </property>
-  <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
-  <property name="font">
-   <font>
-    <family>Segoe UI</family>
-    <pointsize>10</pointsize>
-    <bold>false</bold>
-   </font>
+  <property name="darkStyleSheet" stdset="0">
+   <string notr="true">QWidget { font-family: "Segoe UI"; font-size: 10pt; }
+QWidget { color:#F1F5F9;   }
+QMainWindow, QStackedWidget, QWidget#welcomeWidget, QWidget#selectionWidget, QWidget#calanderWidget, QWidget#formWidget, QWidget#adminWidget { background:#0F172A; }
+QScrollArea { border:none; background:transparent; }
+QScrollArea &gt; QWidget &gt; QWidget { background:#0F172A; }
+QScrollArea#cardsScrollArea &gt; QWidget, QWidget#cardsScrollContents { background:transparent; }
+QLabel { background:transparent; }
+QLabel#welcomeTitle { color:#AABAD0;   }
+QLabel#syncLabTitle {   }
+QLabel#syncLabSubtitle {   }
+QLabel#welcomeDesc, QLabel#selectedDescLabel2, QLabel#adminWsDescLbl { color:#AABAD0;  }
+QLabel#selectTitleLabel, QLabel#selectedNameLabel2, QLabel#confirmTitleLbl, QLabel#adminWsTitleLbl {   }
+QLineEdit, QTextEdit, QComboBox { background:#1E293B; border:1px solid #43536B; border-radius:7px; padding:8px; selection-background-color:#2563EB; selection-color:white; }
+QLineEdit:focus, QTextEdit:focus, QComboBox:focus { border:1px solid #2563EB; }
+QComboBox QAbstractItemView { background:#1E293B; color:#F1F5F9; selection-background-color:#2563EB; selection-color:white; }
+QPushButton { background:#1E293B; color:#F1F5F9; border:1px solid #43536B; border-radius:8px; padding:9px 14px;  }
+QPushButton:hover, QPushButton:focus { background:#253C61; border-color:#2563EB; }
+QPushButton:pressed { border:2px solid #2563EB; }
+QPushButton#allocateNowBtn, QPushButton#nextBtn, QPushButton#nextTo3Btn, QPushButton#submitBtn, QPushButton#updateBtn { background:#2563EB; color:white; border:1px solid #2563EB; }
+QPushButton#allocateNowBtn:hover, QPushButton#nextBtn:hover, QPushButton#nextTo3Btn:hover, QPushButton#submitBtn:hover, QPushButton#updateBtn:hover { background:#1D4ED8; }
+QPushButton#deleteBtn, QPushButton#adminDelBtn { color:#FDA4AF; }
+QPushButton[timeSlot=true] { padding:10px 8px; }
+QPushButton:checked { background:#2563EB; color:white; border-color:#2563EB; }
+QPushButton:disabled { background:#0F172A; color:#AABAD0; border:1px solid #43536B; }
+QPushButton#allocateNowBtn:disabled, QPushButton#nextBtn:disabled, QPushButton#nextTo3Btn:disabled, QPushButton#submitBtn:disabled, QPushButton#updateBtn:disabled, QPushButton#deleteBtn:disabled, QPushButton#adminDelBtn:disabled { background:#0F172A; color:#AABAD0; border:1px solid #43536B; }
+QFrame#summaryBox { background:#253C61; border:1px solid #43536B; border-radius:10px; }
+QLabel#summaryDateLbl { color:#8DB8FF;  }
+QTableWidget { background:#1E293B; alternate-background-color:#0F172A; border:1px solid #43536B; gridline-color:#43536B; selection-background-color:#253C61; selection-color:#F1F5F9; }
+QHeaderView::section { font-weight:600; background:#253C61; color:#F1F5F9; border:none; padding:10px;  }
+QTableWidget QLineEdit, QTableWidget QComboBox { padding:4px; border-radius:4px; }
+QCalendarWidget { background:#1E293B; border:1px solid #43536B; border-radius:8px; }
+QCalendarWidget QWidget#qt_calendar_navigationbar { background:#2563EB; }
+QCalendarWidget QToolButton { font-weight:600; color:white; background:transparent; padding:6px;  }
+QCalendarWidget QMenu, QCalendarWidget QSpinBox { background:#1E293B; color:#F1F5F9; }
+QCalendarWidget QAbstractItemView { background:#1E293B; color:#F1F5F9; selection-background-color:#2563EB; selection-color:white; outline:0; }
+QToolTip { background:#1E293B; color:#F1F5F9; border:1px solid #43536B; padding:6px; }
+#adminWidget { font-family: "Segoe UI"; font-size: 10pt; font-weight: normal; }
+#adminBackBtn { font-family: "Segoe UI"; font-size: 10pt; font-weight: bold; }
+#adminImgLabel { font-family: "Segoe UI"; font-size: 10pt; font-weight: normal; }
+#adminWsTitleLbl { font-family: "Segoe UI"; font-size: 19pt; font-weight: bold; }
+#adminWsDescLbl { font-family: "Segoe UI"; font-size: 11pt; font-weight: normal; }
+#adminSettingsBtn { font-family: "Segoe UI"; font-size: 10pt; font-weight: bold; }
+#adminShowAllBtn { font-family: "Segoe UI"; font-size: 10pt; font-weight: bold; }
+#adminCalFrame { font-family: "Segoe UI"; font-size: 10pt; font-weight: normal; }
+#adminCalendar { font-family: "Segoe UI"; font-size: 10pt; font-weight: normal; }
+#adminEditBtn { font-family: "Segoe UI"; font-size: 10pt; font-weight: bold; }
+#adminDelBtn { font-family: "Segoe UI"; font-size: 10pt; font-weight: bold; }
+#pendingEmailBtn { font-family: "Segoe UI"; font-size: 10pt; font-weight: bold; }
+#rejectEmailBtn { font-family: "Segoe UI"; font-size: 10pt; font-weight: bold; }
+#mainTable { font-family: "Segoe UI"; font-size: 10pt; font-weight: normal; }
+CustomCalendarWidget {
+ qproperty-approvedColor: #166534;
+ qproperty-pendingColor: #92400E;
+ qproperty-rejectedColor: #B91C1C;
+ qproperty-badgeTextColor: #FFFFFF;
+ qproperty-headerBackground: #DBEAFE;
+ qproperty-headerForeground: #1E40AF;
+ qproperty-badgeFontSize: 11;
+}</string>
   </property>
-  <!-- මෙම control එකේ පාට, border, padding සහ radius සඳහා CSS rules මෙහි ඇත. -->
   <property name="styleSheet">
-   <string notr="true">QWidget { color:#17243B;   }QMainWindow, QStackedWidget, QWidget#welcomeWidget, QWidget#selectionWidget, QWidget#calanderWidget, QWidget#formWidget, QWidget#adminWidget { background:#F4F7FB; }QScrollArea { border:none; background:transparent; } QScrollArea &gt; QWidget &gt; QWidget { background:#F4F7FB; }QScrollArea#cardsScrollArea &gt; QWidget, QWidget#cardsScrollContents { background:transparent; }QLabel { background:transparent; }QLabel#welcomeTitle { color:#52647D;   }QLabel#syncLabTitle {   }QLabel#syncLabSubtitle {   }QLabel#welcomeDesc, QLabel#selectedDescLabel2, QLabel#adminWsDescLbl { color:#52647D;  }QLabel#selectTitleLabel, QLabel#selectedNameLabel2, QLabel#confirmTitleLbl, QLabel#adminWsTitleLbl {   }QLineEdit, QTextEdit, QComboBox { background:#FFFFFF; border:1px solid #D4DEEB; border-radius:7px; padding:8px; selection-background-color:#2563EB; selection-color:white; }QLineEdit:focus, QTextEdit:focus, QComboBox:focus { border:1px solid #2563EB; }QComboBox QAbstractItemView { background:#FFFFFF; color:#17243B; selection-background-color:#2563EB; selection-color:white; }QPushButton { background:#FFFFFF; color:#17243B; border:1px solid #D4DEEB; border-radius:8px; padding:9px 14px;  }QPushButton:hover, QPushButton:focus { background:#EAF2FF; border-color:#2563EB; }QPushButton:pressed { border:2px solid #2563EB; }QPushButton#allocateNowBtn, QPushButton#nextBtn, QPushButton#nextTo3Btn, QPushButton#submitBtn, QPushButton#updateBtn { background:#2563EB; color:white; border:1px solid #2563EB; }QPushButton#allocateNowBtn:hover, QPushButton#nextBtn:hover, QPushButton#nextTo3Btn:hover, QPushButton#submitBtn:hover, QPushButton#updateBtn:hover { background:#1D4ED8; }QPushButton#deleteBtn, QPushButton#adminDelBtn { color:#BE123C; }QPushButton[timeSlot=true] { padding:10px 8px; }QPushButton:checked { background:#2563EB; color:white; border-color:#2563EB; }QPushButton:disabled { background:#F4F7FB; color:#52647D; border:1px solid #D4DEEB; }QPushButton#allocateNowBtn:disabled, QPushButton#nextBtn:disabled, QPushButton#nextTo3Btn:disabled, QPushButton#submitBtn:disabled, QPushButton#updateBtn:disabled, QPushButton#deleteBtn:disabled, QPushButton#adminDelBtn:disabled { background:#F4F7FB; color:#52647D; border:1px solid #D4DEEB; }QFrame#summaryBox { background:#EAF2FF; border:1px solid #D4DEEB; border-radius:10px; }QLabel#summaryDateLbl { color:#2563EB;  }QTableWidget { background:#FFFFFF; alternate-background-color:#F4F7FB; border:1px solid #D4DEEB; gridline-color:#D4DEEB; selection-background-color:#EAF2FF; selection-color:#17243B; }QHeaderView::section { font-weight:600; background:#EAF2FF; color:#17243B; border:none; padding:10px;  }QTableWidget QLineEdit, QTableWidget QComboBox { padding:4px; border-radius:4px; }QCalendarWidget { background:#FFFFFF; border:1px solid #D4DEEB; border-radius:8px; }QCalendarWidget QWidget#qt_calendar_navigationbar { background:#2563EB; }QCalendarWidget QToolButton { font-weight:600; color:white; background:transparent; padding:6px;  }QCalendarWidget QMenu, QCalendarWidget QSpinBox { background:#FFFFFF; color:#17243B; }QCalendarWidget QAbstractItemView { background:#FFFFFF; color:#17243B; selection-background-color:#2563EB; selection-color:white; outline:0; }QToolTip { background:#FFFFFF; color:#17243B; border:1px solid #D4DEEB; padding:6px; }</string>
+   <string notr="true">QWidget { font-family: "Segoe UI"; font-size: 10pt; }
+QWidget { color:#17243B;   }
+QMainWindow, QStackedWidget, QWidget#welcomeWidget, QWidget#selectionWidget, QWidget#calanderWidget, QWidget#formWidget, QWidget#adminWidget { background:#F4F7FB; }
+QScrollArea { border:none; background:transparent; }
+QScrollArea &gt; QWidget &gt; QWidget { background:#F4F7FB; }
+QScrollArea#cardsScrollArea &gt; QWidget, QWidget#cardsScrollContents { background:transparent; }
+QLabel { background:transparent; }
+QLabel#welcomeTitle { color:#52647D;   }
+QLabel#syncLabTitle {   }
+QLabel#syncLabSubtitle {   }
+QLabel#welcomeDesc, QLabel#selectedDescLabel2, QLabel#adminWsDescLbl { color:#52647D;  }
+QLabel#selectTitleLabel, QLabel#selectedNameLabel2, QLabel#confirmTitleLbl, QLabel#adminWsTitleLbl {   }
+QLineEdit, QTextEdit, QComboBox { background:#FFFFFF; border:1px solid #D4DEEB; border-radius:7px; padding:8px; selection-background-color:#2563EB; selection-color:white; }
+QLineEdit:focus, QTextEdit:focus, QComboBox:focus { border:1px solid #2563EB; }
+QComboBox QAbstractItemView { background:#FFFFFF; color:#17243B; selection-background-color:#2563EB; selection-color:white; }
+QPushButton { background:#FFFFFF; color:#17243B; border:1px solid #D4DEEB; border-radius:8px; padding:9px 14px;  }
+QPushButton:hover, QPushButton:focus { background:#EAF2FF; border-color:#2563EB; }
+QPushButton:pressed { border:2px solid #2563EB; }
+QPushButton#allocateNowBtn, QPushButton#nextBtn, QPushButton#nextTo3Btn, QPushButton#submitBtn, QPushButton#updateBtn { background:#2563EB; color:white; border:1px solid #2563EB; }
+QPushButton#allocateNowBtn:hover, QPushButton#nextBtn:hover, QPushButton#nextTo3Btn:hover, QPushButton#submitBtn:hover, QPushButton#updateBtn:hover { background:#1D4ED8; }
+QPushButton#deleteBtn, QPushButton#adminDelBtn { color:#BE123C; }
+QPushButton[timeSlot=true] { padding:10px 8px; }
+QPushButton:checked { background:#2563EB; color:white; border-color:#2563EB; }
+QPushButton:disabled { background:#F4F7FB; color:#52647D; border:1px solid #D4DEEB; }
+QPushButton#allocateNowBtn:disabled, QPushButton#nextBtn:disabled, QPushButton#nextTo3Btn:disabled, QPushButton#submitBtn:disabled, QPushButton#updateBtn:disabled, QPushButton#deleteBtn:disabled, QPushButton#adminDelBtn:disabled { background:#F4F7FB; color:#52647D; border:1px solid #D4DEEB; }
+QFrame#summaryBox { background:#EAF2FF; border:1px solid #D4DEEB; border-radius:10px; }
+QLabel#summaryDateLbl { color:#2563EB;  }
+QTableWidget { background:#FFFFFF; alternate-background-color:#F4F7FB; border:1px solid #D4DEEB; gridline-color:#D4DEEB; selection-background-color:#EAF2FF; selection-color:#17243B; }
+QHeaderView::section { font-weight:600; background:#EAF2FF; color:#17243B; border:none; padding:10px;  }
+QTableWidget QLineEdit, QTableWidget QComboBox { padding:4px; border-radius:4px; }
+QCalendarWidget { background:#FFFFFF; border:1px solid #D4DEEB; border-radius:8px; }
+QCalendarWidget QWidget#qt_calendar_navigationbar { background:#2563EB; }
+QCalendarWidget QToolButton { font-weight:600; color:white; background:transparent; padding:6px;  }
+QCalendarWidget QMenu, QCalendarWidget QSpinBox { background:#FFFFFF; color:#17243B; }
+QCalendarWidget QAbstractItemView { background:#FFFFFF; color:#17243B; selection-background-color:#2563EB; selection-color:white; outline:0; }
+QToolTip { background:#FFFFFF; color:#17243B; border:1px solid #D4DEEB; padding:6px; }
+#adminWidget { font-family: "Segoe UI"; font-size: 10pt; font-weight: normal; }
+#adminBackBtn { font-family: "Segoe UI"; font-size: 10pt; font-weight: bold; }
+#adminImgLabel { font-family: "Segoe UI"; font-size: 10pt; font-weight: normal; }
+#adminWsTitleLbl { font-family: "Segoe UI"; font-size: 19pt; font-weight: bold; }
+#adminWsDescLbl { font-family: "Segoe UI"; font-size: 11pt; font-weight: normal; }
+#adminSettingsBtn { font-family: "Segoe UI"; font-size: 10pt; font-weight: bold; }
+#adminShowAllBtn { font-family: "Segoe UI"; font-size: 10pt; font-weight: bold; }
+#adminCalFrame { font-family: "Segoe UI"; font-size: 10pt; font-weight: normal; }
+#adminCalendar { font-family: "Segoe UI"; font-size: 10pt; font-weight: normal; }
+#adminEditBtn { font-family: "Segoe UI"; font-size: 10pt; font-weight: bold; }
+#adminDelBtn { font-family: "Segoe UI"; font-size: 10pt; font-weight: bold; }
+#pendingEmailBtn { font-family: "Segoe UI"; font-size: 10pt; font-weight: bold; }
+#rejectEmailBtn { font-family: "Segoe UI"; font-size: 10pt; font-weight: bold; }
+#mainTable { font-family: "Segoe UI"; font-size: 10pt; font-weight: normal; }
+CustomCalendarWidget {
+ qproperty-approvedColor: #166534;
+ qproperty-pendingColor: #92400E;
+ qproperty-rejectedColor: #B91C1C;
+ qproperty-badgeTextColor: #FFFFFF;
+ qproperty-headerBackground: #DBEAFE;
+ qproperty-headerForeground: #1E40AF;
+ qproperty-badgeFontSize: 11;
+}</string>
   </property>
-  <!-- adminBackBtn: ක්ලික් කළ හැකි button එක; name එක C++ code එකේද භාවිත විය හැක. -->
   <widget class="QPushButton" name="adminBackBtn">
-   <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
    <property name="geometry">
     <rect>
      <x>24</x>
@@ -36,68 +141,44 @@
      <height>37</height>
     </rect>
    </property>
-   <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
-   <property name="font">
-    <font>
-     <family>Segoe UI</family>
-     <pointsize>10</pointsize>
-     <bold>true</bold>
-    </font>
-   </property>
    <property name="cursor">
     <cursorShape>PointingHandCursor</cursorShape>
    </property>
-   <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
    <property name="text">
     <string> Exit Admin Mode</string>
    </property>
   </widget>
-  <!-- adminImgLabel: text/image පෙන්වන label එක; name එක C++ code එකේද භාවිත විය හැක. -->
   <widget class="QLabel" name="adminImgLabel">
-   <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
    <property name="geometry">
     <rect>
      <x>24</x>
-     <y>89</y>
-     <width>200</width>
-     <height>111</height>
+     <y>80</y>
+     <width>181</width>
+     <height>171</height>
     </rect>
-   </property>
-   <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
-   <property name="font">
-    <font>
-     <family>Segoe UI</family>
-     <pointsize>10</pointsize>
-     <bold>false</bold>
-    </font>
    </property>
    <property name="textFormat">
     <enum>Qt::TextFormat::PlainText</enum>
+   </property>
+   <property name="pixmap">
+    <pixmap resource="../../resources/images.qrc">:/workshops/Biochemistry.png</pixmap>
+   </property>
+   <property name="scaledContents">
+    <bool>true</bool>
    </property>
    <property name="alignment">
     <set>Qt::AlignmentFlag::AlignCenter</set>
    </property>
   </widget>
-  <!-- adminWsTitleLbl: text/image පෙන්වන label එක; name එක C++ code එකේද භාවිත විය හැක. -->
   <widget class="QLabel" name="adminWsTitleLbl">
-   <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
    <property name="geometry">
     <rect>
-     <x>24</x>
-     <y>210</y>
+     <x>30</x>
+     <y>260</y>
      <width>554</width>
      <height>66</height>
     </rect>
    </property>
-   <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
-   <property name="font">
-    <font>
-     <family>Segoe UI</family>
-     <pointsize>19</pointsize>
-     <bold>true</bold>
-    </font>
-   </property>
-   <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
    <property name="text">
     <string>WORKSHOP</string>
    </property>
@@ -107,29 +188,18 @@
    <property name="alignment">
     <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
    </property>
-   <!-- true නම් ඉඩ මදි text එක ඊළඟ පේළියට යයි. -->
    <property name="wordWrap">
     <bool>true</bool>
    </property>
   </widget>
-  <!-- adminWsDescLbl: text/image පෙන්වන label එක; name එක C++ code එකේද භාවිත විය හැක. -->
   <widget class="QLabel" name="adminWsDescLbl">
-   <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
    <property name="geometry">
     <rect>
-     <x>24</x>
-     <y>270</y>
+     <x>30</x>
+     <y>340</y>
      <width>554</width>
      <height>40</height>
     </rect>
-   </property>
-   <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
-   <property name="font">
-    <font>
-     <family>Segoe UI</family>
-     <pointsize>11</pointsize>
-     <bold>false</bold>
-    </font>
    </property>
    <property name="textFormat">
     <enum>Qt::TextFormat::PlainText</enum>
@@ -137,14 +207,11 @@
    <property name="alignment">
     <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
    </property>
-   <!-- true නම් ඉඩ මදි text එක ඊළඟ පේළියට යයි. -->
    <property name="wordWrap">
     <bool>true</bool>
    </property>
   </widget>
-  <!-- adminSettingsBtn: ක්ලික් කළ හැකි button එක; name එක C++ code එකේද භාවිත විය හැක. -->
   <widget class="QPushButton" name="adminSettingsBtn">
-   <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
    <property name="geometry">
     <rect>
      <x>217</x>
@@ -153,25 +220,14 @@
      <height>37</height>
     </rect>
    </property>
-   <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
-   <property name="font">
-    <font>
-     <family>Segoe UI</family>
-     <pointsize>10</pointsize>
-     <bold>true</bold>
-    </font>
-   </property>
    <property name="cursor">
     <cursorShape>PointingHandCursor</cursorShape>
    </property>
-   <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
    <property name="text">
     <string>Email settings</string>
    </property>
   </widget>
-  <!-- adminShowAllBtn: ක්ලික් කළ හැකි button එක; name එක C++ code එකේද භාවිත විය හැක. -->
   <widget class="QPushButton" name="adminShowAllBtn">
-   <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
    <property name="geometry">
     <rect>
      <x>1022</x>
@@ -180,68 +236,27 @@
      <height>37</height>
     </rect>
    </property>
-   <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
-   <property name="font">
-    <font>
-     <family>Segoe UI</family>
-     <pointsize>10</pointsize>
-     <bold>true</bold>
-    </font>
-   </property>
    <property name="cursor">
     <cursorShape>PointingHandCursor</cursorShape>
    </property>
-   <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
    <property name="text">
     <string>Show All Dates</string>
    </property>
   </widget>
-  <!-- adminCalFrame: card හෝ border සහිත කොටස; name එක C++ code එකේද භාවිත විය හැක. -->
-  <widget class="QFrame" name="adminCalFrame">
-   <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
+  <widget class="CustomCalendarWidget" name="adminCalendar">
    <property name="geometry">
     <rect>
-     <x>602</x>
+     <x>595</x>
      <y>77</y>
-     <width>554</width>
+     <width>561</width>
      <height>240</height>
     </rect>
    </property>
-   <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
-   <property name="font">
-    <font>
-     <family>Segoe UI</family>
-     <pointsize>10</pointsize>
-     <bold>false</bold>
-    </font>
+   <property name="verticalHeaderFormat">
+    <enum>QCalendarWidget::VerticalHeaderFormat::NoVerticalHeader</enum>
    </property>
-   <!-- adminCalendar: A/P/R ගණන් ඇති calendar එක; name එක C++ code එකේද භාවිත විය හැක. -->
-   <widget class="CustomCalendarWidget" name="adminCalendar">
-    <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>0</y>
-      <width>554</width>
-      <height>240</height>
-     </rect>
-    </property>
-    <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
-    <property name="font">
-     <font>
-      <family>Segoe UI</family>
-      <pointsize>10</pointsize>
-      <bold>false</bold>
-     </font>
-    </property>
-    <property name="verticalHeaderFormat">
-     <enum>QCalendarWidget::VerticalHeaderFormat::NoVerticalHeader</enum>
-    </property>
-   </widget>
   </widget>
-  <!-- adminEditBtn: ක්ලික් කළ හැකි button එක; name එක C++ code එකේද භාවිත විය හැක. -->
   <widget class="QPushButton" name="adminEditBtn">
-   <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
    <property name="geometry">
     <rect>
      <x>602</x>
@@ -250,25 +265,14 @@
      <height>37</height>
     </rect>
    </property>
-   <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
-   <property name="font">
-    <font>
-     <family>Segoe UI</family>
-     <pointsize>10</pointsize>
-     <bold>true</bold>
-    </font>
-   </property>
    <property name="cursor">
     <cursorShape>PointingHandCursor</cursorShape>
    </property>
-   <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
    <property name="text">
     <string>Edit</string>
    </property>
   </widget>
-  <!-- adminDelBtn: ක්ලික් කළ හැකි button එක; name එක C++ code එකේද භාවිත විය හැක. -->
   <widget class="QPushButton" name="adminDelBtn">
-   <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
    <property name="geometry">
     <rect>
      <x>686</x>
@@ -277,25 +281,14 @@
      <height>37</height>
     </rect>
    </property>
-   <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
-   <property name="font">
-    <font>
-     <family>Segoe UI</family>
-     <pointsize>10</pointsize>
-     <bold>true</bold>
-    </font>
-   </property>
    <property name="cursor">
     <cursorShape>PointingHandCursor</cursorShape>
    </property>
-   <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
    <property name="text">
     <string>Delete</string>
    </property>
   </widget>
-  <!-- pendingEmailBtn: ක්ලික් කළ හැකි button එක; name එක C++ code එකේද භාවිත විය හැක. -->
   <widget class="QPushButton" name="pendingEmailBtn">
-   <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
    <property name="geometry">
     <rect>
      <x>782</x>
@@ -304,25 +297,14 @@
      <height>37</height>
     </rect>
    </property>
-   <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
-   <property name="font">
-    <font>
-     <family>Segoe UI</family>
-     <pointsize>10</pointsize>
-     <bold>true</bold>
-    </font>
-   </property>
    <property name="cursor">
     <cursorShape>PointingHandCursor</cursorShape>
    </property>
-   <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
    <property name="text">
     <string>Pending</string>
    </property>
   </widget>
-  <!-- rejectEmailBtn: ක්ලික් කළ හැකි button එක; name එක C++ code එකේද භාවිත විය හැක. -->
   <widget class="QPushButton" name="rejectEmailBtn">
-   <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
    <property name="geometry">
     <rect>
      <x>902</x>
@@ -331,25 +313,14 @@
      <height>37</height>
     </rect>
    </property>
-   <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
-   <property name="font">
-    <font>
-     <family>Segoe UI</family>
-     <pointsize>10</pointsize>
-     <bold>true</bold>
-    </font>
-   </property>
    <property name="cursor">
     <cursorShape>PointingHandCursor</cursorShape>
    </property>
-   <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
    <property name="text">
     <string>Rejection</string>
    </property>
   </widget>
-  <!-- mainTable: booking දත්ත පෙන්වන table එක; name එක C++ code එකේද භාවිත විය හැක. -->
   <widget class="QTableWidget" name="mainTable">
-   <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
    <property name="geometry">
     <rect>
      <x>24</x>
@@ -357,14 +328,6 @@
      <width>1132</width>
      <height>360</height>
     </rect>
-   </property>
-   <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
-   <property name="font">
-    <font>
-     <family>Segoe UI</family>
-     <pointsize>10</pointsize>
-     <bold>false</bold>
-    </font>
    </property>
    <property name="editTriggers">
     <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
@@ -384,91 +347,79 @@
    <property name="horizontalScrollMode">
     <enum>QAbstractItemView::ScrollMode::ScrollPerPixel</enum>
    </property>
-   <!-- true නම් ඉඩ මදි text එක ඊළඟ පේළියට යයි. -->
    <property name="wordWrap">
     <bool>false</bool>
    </property>
-   <!-- Table එකේ columns ගණනයි; C++ values/widths සමඟ ගළපන්න. -->
    <property name="columnCount">
     <number>11</number>
    </property>
-   <!-- Table column heading එක; C++ row values අනුපිළිවෙළ සමඟ ගළපන්න. -->
    <column>
-    <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
     <property name="text">
      <string>ALLOCATION KEY</string>
     </property>
    </column>
-   <!-- Table column heading එක; C++ row values අනුපිළිවෙළ සමඟ ගළපන්න. -->
    <column>
-    <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
     <property name="text">
      <string>CREATED</string>
     </property>
    </column>
-   <!-- Table column heading එක; C++ row values අනුපිළිවෙළ සමඟ ගළපන්න. -->
    <column>
-    <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
     <property name="text">
-     <string>INDEX</string>
+     <string>USER INDEX</string>
     </property>
    </column>
-   <!-- Table column heading එක; C++ row values අනුපිළිවෙළ සමඟ ගළපන්න. -->
    <column>
-    <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
     <property name="text">
      <string>NAME</string>
     </property>
    </column>
-   <!-- Table column heading එක; C++ row values අනුපිළිවෙළ සමඟ ගළපන්න. -->
    <column>
-    <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
     <property name="text">
      <string>DEPARTMENT</string>
     </property>
    </column>
-   <!-- Table column heading එක; C++ row values අනුපිළිවෙළ සමඟ ගළපන්න. -->
    <column>
-    <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
     <property name="text">
      <string>EMAIL</string>
     </property>
    </column>
-   <!-- Table column heading එක; C++ row values අනුපිළිවෙළ සමඟ ගළපන්න. -->
    <column>
-    <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
     <property name="text">
      <string>ALLOCATION DATE</string>
     </property>
    </column>
-   <!-- Table column heading එක; C++ row values අනුපිළිවෙළ සමඟ ගළපන්න. -->
    <column>
-    <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
     <property name="text">
      <string>TIME SLOTS</string>
     </property>
    </column>
-   <!-- Table column heading එක; C++ row values අනුපිළිවෙළ සමඟ ගළපන්න. -->
    <column>
-    <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
     <property name="text">
      <string>DESCRIPTION</string>
     </property>
    </column>
-   <!-- Table column heading එක; C++ row values අනුපිළිවෙළ සමඟ ගළපන්න. -->
    <column>
-    <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
     <property name="text">
      <string>REMARKS</string>
     </property>
    </column>
-   <!-- Table column heading එක; C++ row values අනුපිළිවෙළ සමඟ ගළපන්න. -->
    <column>
-    <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
     <property name="text">
      <string>STATUS</string>
     </property>
    </column>
+   <property name="columnWidths" stdset="0">
+    <string notr="true">155,150,100,150,200,200,140,210,200,190,130</string>
+   </property>
+   <attribute name="verticalHeaderDefaultSectionSize">
+    <number>44</number>
+   </attribute>
+   <attribute name="horizontalHeaderStretchLastSection">
+    <bool>true</bool>
+   </attribute>
+   <attribute name="verticalHeaderVisible">
+    <bool>false</bool>
+   </attribute>
   </widget>
  </widget>
  <customwidgets>
@@ -478,6 +429,8 @@
    <header>customcalendarwidget.h</header>
   </customwidget>
  </customwidgets>
- <resources/>
- <connections/>
+ <resources>
+  <include location="../../resources/images.qrc" />
+ </resources>
+ <connections />
 </ui>

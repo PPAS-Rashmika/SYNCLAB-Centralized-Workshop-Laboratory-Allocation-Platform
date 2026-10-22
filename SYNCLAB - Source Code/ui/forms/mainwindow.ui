@@ -10,15 +10,90 @@
     <height>780</height>
    </rect>
   </property>
+  <property name="darkStyleSheet" stdset="0">
+   <string notr="true">QWidget { font-family: "Segoe UI"; font-size: 10pt; }
+QWidget { color:#F1F5F9; }
+QMainWindow, QStackedWidget, QWidget#page0Widget, QWidget#page1Widget, QWidget#page2Widget, QWidget#page3Widget, QWidget#page4Widget { background:#0F172A; }
+QScrollArea { border:none; background:transparent; }
+QScrollArea &gt; QWidget &gt; QWidget { background:#0F172A; }
+QScrollArea#cardsScrollArea &gt; QWidget, QWidget#cardsScrollContents { background:transparent; }
+QLabel { background:transparent; }
+QLabel#welcomeTitle { color:#AABAD0; }
+QLabel#syncLabTitle { }
+QLabel#syncLabSubtitle { }
+QLabel#welcomeDesc, QLabel#selectedDescLabel2, QLabel#adminWsDescLbl { color:#AABAD0; }
+QLabel#selectTitleLabel, QLabel#selectedNameLabel2, QLabel#confirmTitleLbl, QLabel#adminWsTitleLbl { }
+QLineEdit, QTextEdit, QComboBox { background:#1E293B; border:1px solid #43536B; border-radius:7px; padding:8px; selection-background-color:#2563EB; selection-color:white; }
+QLineEdit:focus, QTextEdit:focus, QComboBox:focus { border:1px solid #2563EB; }
+QComboBox QAbstractItemView { background:#1E293B; color:#F1F5F9; selection-background-color:#2563EB; selection-color:white; }
+QPushButton { background:#1E293B; color:#F1F5F9; border:1px solid #43536B; border-radius:8px; padding:9px 14px; }
+QPushButton:hover, QPushButton:focus { background:#253C61; border-color:#2563EB; }
+QPushButton:pressed { border:2px solid #2563EB; }
+QPushButton#allocateNowBtn, QPushButton#nextBtn, QPushButton#nextTo3Btn, QPushButton#submitBtn, QPushButton#updateBtn { background:#2563EB; color:white; border:1px solid #2563EB; }
+QPushButton#allocateNowBtn:hover, QPushButton#nextBtn:hover, QPushButton#nextTo3Btn:hover, QPushButton#submitBtn:hover, QPushButton#updateBtn:hover { background:#1D4ED8; }
+QPushButton#deleteBtn, QPushButton#adminDelBtn { color:#FDA4AF; }
+QPushButton[timeSlot=true] { padding:10px 8px; }
+QPushButton:checked { background:#2563EB; color:white; border-color:#2563EB; }
+QPushButton:disabled { background:#0F172A; color:#AABAD0; border:1px solid #43536B; }
+QPushButton#allocateNowBtn:disabled, QPushButton#nextBtn:disabled, QPushButton#nextTo3Btn:disabled, QPushButton#submitBtn:disabled, QPushButton#updateBtn:disabled, QPushButton#deleteBtn:disabled, QPushButton#adminDelBtn:disabled { background:#0F172A; color:#AABAD0; border:1px solid #43536B; }
+QFrame#summaryBox { background:#253C61; border:1px solid #43536B; border-radius:10px; }
+QLabel#summaryDateLbl { color:#8DB8FF; }
+QTableWidget { background:#1E293B; alternate-background-color:#0F172A; border:1px solid #43536B; gridline-color:#43536B; selection-background-color:#253C61; selection-color:#F1F5F9; }
+QHeaderView::section { background:#253C61; color:#F1F5F9; border:none; padding:10px; }
+QTableWidget QLineEdit, QTableWidget QComboBox { padding:4px; border-radius:4px; }
+QCalendarWidget { background:#1E293B; border:1px solid #43536B; border-radius:8px; }
+QCalendarWidget QWidget#qt_calendar_navigationbar { background:#2563EB; }
+QCalendarWidget QToolButton { color:white; background:transparent; padding:6px; }
+QCalendarWidget QMenu, QCalendarWidget QSpinBox { background:#1E293B; color:#F1F5F9; }
+QCalendarWidget QAbstractItemView { background:#1E293B; color:#F1F5F9; selection-background-color:#2563EB; selection-color:white; outline:0; }
+QToolTip { background:#1E293B; color:#F1F5F9; border:1px solid #43536B; padding:6px; }
+#MainWindow { font-family: "Segoe UI"; font-size: 10pt; }</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QWidget { font-family: "Segoe UI"; font-size: 10pt; }
+QWidget { color:#17243B; }
+QMainWindow, QStackedWidget, QWidget#page0Widget, QWidget#page1Widget, QWidget#page2Widget, QWidget#page3Widget, QWidget#page4Widget { background:#F4F7FB; }
+QScrollArea { border:none; background:transparent; }
+QScrollArea &gt; QWidget &gt; QWidget { background:#F4F7FB; }
+QScrollArea#cardsScrollArea &gt; QWidget, QWidget#cardsScrollContents { background:transparent; }
+QLabel { background:transparent; }
+QLabel#welcomeTitle { color:#52647D; }
+QLabel#syncLabTitle { }
+QLabel#syncLabSubtitle { }
+QLabel#welcomeDesc, QLabel#selectedDescLabel2, QLabel#adminWsDescLbl { color:#52647D; }
+QLabel#selectTitleLabel, QLabel#selectedNameLabel2, QLabel#confirmTitleLbl, QLabel#adminWsTitleLbl { }
+QLineEdit, QTextEdit, QComboBox { background:#FFFFFF; border:1px solid #D4DEEB; border-radius:7px; padding:8px; selection-background-color:#2563EB; selection-color:white; }
+QLineEdit:focus, QTextEdit:focus, QComboBox:focus { border:1px solid #2563EB; }
+QComboBox QAbstractItemView { background:#FFFFFF; color:#17243B; selection-background-color:#2563EB; selection-color:white; }
+QPushButton { background:#FFFFFF; color:#17243B; border:1px solid #D4DEEB; border-radius:8px; padding:9px 14px; }
+QPushButton:hover, QPushButton:focus { background:#EAF2FF; border-color:#2563EB; }
+QPushButton:pressed { border:2px solid #2563EB; }
+QPushButton#allocateNowBtn, QPushButton#nextBtn, QPushButton#nextTo3Btn, QPushButton#submitBtn, QPushButton#updateBtn { background:#2563EB; color:white; border:1px solid #2563EB; }
+QPushButton#allocateNowBtn:hover, QPushButton#nextBtn:hover, QPushButton#nextTo3Btn:hover, QPushButton#submitBtn:hover, QPushButton#updateBtn:hover { background:#1D4ED8; }
+QPushButton#deleteBtn, QPushButton#adminDelBtn { color:#BE123C; }
+QPushButton[timeSlot=true] { padding:10px 8px; }
+QPushButton:checked { background:#2563EB; color:white; border-color:#2563EB; }
+QPushButton:disabled { background:#F4F7FB; color:#52647D; border:1px solid #D4DEEB; }
+QPushButton#allocateNowBtn:disabled, QPushButton#nextBtn:disabled, QPushButton#nextTo3Btn:disabled, QPushButton#submitBtn:disabled, QPushButton#updateBtn:disabled, QPushButton#deleteBtn:disabled, QPushButton#adminDelBtn:disabled { background:#F4F7FB; color:#52647D; border:1px solid #D4DEEB; }
+QFrame#summaryBox { background:#EAF2FF; border:1px solid #D4DEEB; border-radius:10px; }
+QLabel#summaryDateLbl { color:#2563EB; }
+QTableWidget { background:#FFFFFF; alternate-background-color:#F4F7FB; border:1px solid #D4DEEB; gridline-color:#D4DEEB; selection-background-color:#EAF2FF; selection-color:#17243B; }
+QHeaderView::section { background:#EAF2FF; color:#17243B; border:none; padding:10px; }
+QTableWidget QLineEdit, QTableWidget QComboBox { padding:4px; border-radius:4px; }
+QCalendarWidget { background:#FFFFFF; border:1px solid #D4DEEB; border-radius:8px; }
+QCalendarWidget QWidget#qt_calendar_navigationbar { background:#2563EB; }
+QCalendarWidget QToolButton { color:white; background:transparent; padding:6px; }
+QCalendarWidget QMenu, QCalendarWidget QSpinBox { background:#FFFFFF; color:#17243B; }
+QCalendarWidget QAbstractItemView { background:#FFFFFF; color:#17243B; selection-background-color:#2563EB; selection-color:white; outline:0; }
+QToolTip { background:#FFFFFF; color:#17243B; border:1px solid #D4DEEB; padding:6px; }
+#MainWindow { font-family: "Segoe UI"; font-size: 10pt; }</string>
+  </property>
   <property name="windowTitle">
    <string>SYNCLAB | Centralized Workshop &amp; Laboratory Allocation Platform</string>
   </property>
   <property name="windowIcon">
    <iconset resource="../../resources/images.qrc">
     <normaloff>:/branding/logo.png</normaloff>:/branding/logo.png</iconset>
-  </property>
-  <property name="styleSheet">
-   <string notr="true">QWidget { color:#17243B; }QMainWindow, QStackedWidget, QWidget#page0Widget, QWidget#page1Widget, QWidget#page2Widget, QWidget#page3Widget, QWidget#page4Widget { background:#F4F7FB; }QScrollArea { border:none; background:transparent; } QScrollArea &gt; QWidget &gt; QWidget { background:#F4F7FB; }QScrollArea#cardsScrollArea &gt; QWidget, QWidget#cardsScrollContents { background:transparent; }QLabel { background:transparent; }QLabel#welcomeTitle { color:#52647D; }QLabel#syncLabTitle { }QLabel#syncLabSubtitle { }QLabel#welcomeDesc, QLabel#selectedDescLabel2, QLabel#adminWsDescLbl { color:#52647D; }QLabel#selectTitleLabel, QLabel#selectedNameLabel2, QLabel#confirmTitleLbl, QLabel#adminWsTitleLbl { }QLineEdit, QTextEdit, QComboBox { background:#FFFFFF; border:1px solid #D4DEEB; border-radius:7px; padding:8px; selection-background-color:#2563EB; selection-color:white; }QLineEdit:focus, QTextEdit:focus, QComboBox:focus { border:1px solid #2563EB; }QComboBox QAbstractItemView { background:#FFFFFF; color:#17243B; selection-background-color:#2563EB; selection-color:white; }QPushButton { background:#FFFFFF; color:#17243B; border:1px solid #D4DEEB; border-radius:8px; padding:9px 14px; }QPushButton:hover, QPushButton:focus { background:#EAF2FF; border-color:#2563EB; }QPushButton:pressed { border:2px solid #2563EB; }QPushButton#allocateNowBtn, QPushButton#nextBtn, QPushButton#nextTo3Btn, QPushButton#submitBtn, QPushButton#updateBtn { background:#2563EB; color:white; border:1px solid #2563EB; }QPushButton#allocateNowBtn:hover, QPushButton#nextBtn:hover, QPushButton#nextTo3Btn:hover, QPushButton#submitBtn:hover, QPushButton#updateBtn:hover { background:#1D4ED8; }QPushButton#deleteBtn, QPushButton#adminDelBtn { color:#BE123C; }QPushButton[timeSlot=true] { padding:10px 8px; }QPushButton:checked { background:#2563EB; color:white; border-color:#2563EB; }QPushButton:disabled { background:#F4F7FB; color:#52647D; border:1px solid #D4DEEB; }QPushButton#allocateNowBtn:disabled, QPushButton#nextBtn:disabled, QPushButton#nextTo3Btn:disabled, QPushButton#submitBtn:disabled, QPushButton#updateBtn:disabled, QPushButton#deleteBtn:disabled, QPushButton#adminDelBtn:disabled { background:#F4F7FB; color:#52647D; border:1px solid #D4DEEB; }QFrame#summaryBox { background:#EAF2FF; border:1px solid #D4DEEB; border-radius:10px; }QLabel#summaryDateLbl { color:#2563EB; }QTableWidget { background:#FFFFFF; alternate-background-color:#F4F7FB; border:1px solid #D4DEEB; gridline-color:#D4DEEB; selection-background-color:#EAF2FF; selection-color:#17243B; }QHeaderView::section { background:#EAF2FF; color:#17243B; border:none; padding:10px; }QTableWidget QLineEdit, QTableWidget QComboBox { padding:4px; border-radius:4px; }QCalendarWidget { background:#FFFFFF; border:1px solid #D4DEEB; border-radius:8px; }QCalendarWidget QWidget#qt_calendar_navigationbar { background:#2563EB; }QCalendarWidget QToolButton { color:white; background:transparent; padding:6px; }QCalendarWidget QMenu, QCalendarWidget QSpinBox { background:#FFFFFF; color:#17243B; }QCalendarWidget QAbstractItemView { background:#FFFFFF; color:#17243B; selection-background-color:#2563EB; selection-color:white; outline:0; }QToolTip { background:#FFFFFF; color:#17243B; border:1px solid #D4DEEB; padding:6px; }</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -46,12 +121,6 @@
     </item>
    </layout>
   </widget>
-  <property name="font">
-   <font>
-    <family>Segoe UI</family>
-    <pointsize>10</pointsize>
-   </font>
-  </property>
  </widget>
  <resources>
   <include location="../../resources/images.qrc" />

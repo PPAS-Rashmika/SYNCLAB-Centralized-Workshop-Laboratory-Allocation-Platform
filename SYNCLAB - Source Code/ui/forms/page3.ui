@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <ui version="4.0">
  <class>page3Widget</class>
  <widget class="QWidget" name="page3Widget">
@@ -10,15 +10,131 @@
     <height>780</height>
    </rect>
   </property>
-  <property name="font">
-   <font>
-    <family>Segoe UI</family>
-    <pointsize>10</pointsize>
-    <bold>false</bold>
-   </font>
+  <property name="darkStyleSheet" stdset="0">
+   <string notr="true">QWidget { font-family: "Segoe UI"; font-size: 10pt; }
+QWidget { color:#F1F5F9;   }
+QMainWindow, QStackedWidget, QWidget#page0Widget, QWidget#page1Widget, QWidget#page2Widget, QWidget#page3Widget, QWidget#page4Widget { background:#0F172A; }
+QScrollArea { border:none; background:transparent; }
+QScrollArea &gt; QWidget &gt; QWidget { background:#0F172A; }
+QScrollArea#cardsScrollArea &gt; QWidget, QWidget#cardsScrollContents { background:transparent; }
+QLabel { background:transparent; }
+QLabel#welcomeTitle { color:#AABAD0;   }
+QLabel#syncLabTitle {   }
+QLabel#syncLabSubtitle {   }
+QLabel#welcomeDesc, QLabel#selectedDescLabel2, QLabel#adminWsDescLbl { color:#AABAD0;  }
+QLabel#selectTitleLabel, QLabel#selectedNameLabel2, QLabel#confirmTitleLbl, QLabel#adminWsTitleLbl {   }
+QLineEdit, QTextEdit, QComboBox { background:#1E293B; border:1px solid #43536B; border-radius:7px; padding:8px; selection-background-color:#2563EB; selection-color:white; }
+QLineEdit:focus, QTextEdit:focus, QComboBox:focus { border:1px solid #2563EB; }
+QComboBox QAbstractItemView { background:#1E293B; color:#F1F5F9; selection-background-color:#2563EB; selection-color:white; }
+QPushButton { background:#1E293B; color:#F1F5F9; border:1px solid #43536B; border-radius:8px; padding:9px 14px;  }
+QPushButton:hover, QPushButton:focus { background:#253C61; border-color:#2563EB; }
+QPushButton:pressed { border:2px solid #2563EB; }
+QPushButton#allocateNowBtn, QPushButton#nextBtn, QPushButton#nextTo3Btn, QPushButton#submitBtn, QPushButton#updateBtn { background:#2563EB; color:white; border:1px solid #2563EB; }
+QPushButton#allocateNowBtn:hover, QPushButton#nextBtn:hover, QPushButton#nextTo3Btn:hover, QPushButton#submitBtn:hover, QPushButton#updateBtn:hover { background:#1D4ED8; }
+QPushButton#deleteBtn, QPushButton#adminDelBtn { color:#FDA4AF; }
+QPushButton[timeSlot=true] { padding:10px 8px; }
+QPushButton:checked { background:#2563EB; color:white; border-color:#2563EB; }
+QPushButton:disabled { background:#0F172A; color:#AABAD0; border:1px solid #43536B; }
+QPushButton#allocateNowBtn:disabled, QPushButton#nextBtn:disabled, QPushButton#nextTo3Btn:disabled, QPushButton#submitBtn:disabled, QPushButton#updateBtn:disabled, QPushButton#deleteBtn:disabled, QPushButton#adminDelBtn:disabled { background:#0F172A; color:#AABAD0; border:1px solid #43536B; }
+QFrame#summaryBox { background:#253C61; border:1px solid #43536B; border-radius:10px; }
+QLabel#summaryDateLbl { color:#8DB8FF;  }
+QTableWidget { background:#1E293B; alternate-background-color:#0F172A; border:1px solid #43536B; gridline-color:#43536B; selection-background-color:#253C61; selection-color:#F1F5F9; }
+QHeaderView::section { font-weight:600; background:#253C61; color:#F1F5F9; border:none; padding:10px;  }
+QTableWidget QLineEdit, QTableWidget QComboBox { padding:4px; border-radius:4px; }
+QCalendarWidget { background:#1E293B; border:1px solid #43536B; border-radius:8px; }
+QCalendarWidget QWidget#qt_calendar_navigationbar { background:#2563EB; }
+QCalendarWidget QToolButton { font-weight:600; color:white; background:transparent; padding:6px;  }
+QCalendarWidget QMenu, QCalendarWidget QSpinBox { background:#1E293B; color:#F1F5F9; }
+QCalendarWidget QAbstractItemView { background:#1E293B; color:#F1F5F9; selection-background-color:#2563EB; selection-color:white; outline:0; }
+QToolTip { background:#1E293B; color:#F1F5F9; border:1px solid #43536B; padding:6px; }
+#page3Widget { font-family: "Segoe UI"; font-size: 10pt; font-weight: normal; }
+#backTo2Btn { font-family: "Segoe UI"; font-size: 10pt; font-weight: bold; }
+#confirmTitleLbl { font-family: "Segoe UI"; font-size: 19pt; font-weight: bold; }
+#summaryBox { font-family: "Segoe UI"; font-size: 10pt; font-weight: normal; }
+#summaryDateLbl { font-family: "Segoe UI"; font-size: 10pt; font-weight: bold; }
+#summaryTimeLbl { font-family: "Segoe UI"; font-size: 10pt; font-weight: normal; }
+#formScrollArea { font-family: "Segoe UI"; font-size: 10pt; font-weight: normal; }
+#formScrollContents { font-family: "Segoe UI"; font-size: 10pt; font-weight: normal; }
+#label { font-family: "Segoe UI"; font-size: 10pt; font-weight: normal; }
+#nameInput { font-family: "Segoe UI"; font-size: 10pt; font-weight: normal; }
+#label_2 { font-family: "Segoe UI"; font-size: 10pt; font-weight: normal; }
+#indexInput { font-family: "Segoe UI"; font-size: 10pt; font-weight: normal; }
+#label_3 { font-family: "Segoe UI"; font-size: 10pt; font-weight: normal; }
+#deptInput { font-family: "Segoe UI"; font-size: 10pt; font-weight: normal; }
+#label_email { font-family: "Segoe UI"; font-size: 10pt; font-weight: normal; }
+#emailInput { font-family: "Segoe UI"; font-size: 10pt; font-weight: normal; }
+#label_supervisor { font-family: "Segoe UI"; font-size: 10pt; font-weight: normal; }
+#supervisorInput { font-family: "Segoe UI"; font-size: 10pt; font-weight: normal; }
+#label_project { font-family: "Segoe UI"; font-size: 10pt; font-weight: normal; }
+#projectInput { font-family: "Segoe UI"; font-size: 10pt; font-weight: normal; }
+#label_6 { font-family: "Segoe UI"; font-size: 10pt; font-weight: normal; }
+#descriptionInput { font-family: "Segoe UI"; font-size: 10pt; font-weight: normal; }
+#deleteBtn { font-family: "Segoe UI"; font-size: 10pt; font-weight: bold; }
+#updateBtn { font-family: "Segoe UI"; font-size: 10pt; font-weight: bold; }
+#submitBtn { font-family: "Segoe UI"; font-size: 10pt; font-weight: bold; }</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">QWidget { color:#17243B;   }QMainWindow, QStackedWidget, QWidget#page0Widget, QWidget#page1Widget, QWidget#page2Widget, QWidget#page3Widget, QWidget#page4Widget { background:#F4F7FB; }QScrollArea { border:none; background:transparent; } QScrollArea &gt; QWidget &gt; QWidget { background:#F4F7FB; }QScrollArea#cardsScrollArea &gt; QWidget, QWidget#cardsScrollContents { background:transparent; }QLabel { background:transparent; }QLabel#welcomeTitle { color:#52647D;   }QLabel#syncLabTitle {   }QLabel#syncLabSubtitle {   }QLabel#welcomeDesc, QLabel#selectedDescLabel2, QLabel#adminWsDescLbl { color:#52647D;  }QLabel#selectTitleLabel, QLabel#selectedNameLabel2, QLabel#confirmTitleLbl, QLabel#adminWsTitleLbl {   }QLineEdit, QTextEdit, QComboBox { background:#FFFFFF; border:1px solid #D4DEEB; border-radius:7px; padding:8px; selection-background-color:#2563EB; selection-color:white; }QLineEdit:focus, QTextEdit:focus, QComboBox:focus { border:1px solid #2563EB; }QComboBox QAbstractItemView { background:#FFFFFF; color:#17243B; selection-background-color:#2563EB; selection-color:white; }QPushButton { background:#FFFFFF; color:#17243B; border:1px solid #D4DEEB; border-radius:8px; padding:9px 14px;  }QPushButton:hover, QPushButton:focus { background:#EAF2FF; border-color:#2563EB; }QPushButton:pressed { border:2px solid #2563EB; }QPushButton#allocateNowBtn, QPushButton#nextBtn, QPushButton#nextTo3Btn, QPushButton#submitBtn, QPushButton#updateBtn { background:#2563EB; color:white; border:1px solid #2563EB; }QPushButton#allocateNowBtn:hover, QPushButton#nextBtn:hover, QPushButton#nextTo3Btn:hover, QPushButton#submitBtn:hover, QPushButton#updateBtn:hover { background:#1D4ED8; }QPushButton#deleteBtn, QPushButton#adminDelBtn { color:#BE123C; }QPushButton[timeSlot=true] { padding:10px 8px; }QPushButton:checked { background:#2563EB; color:white; border-color:#2563EB; }QPushButton:disabled { background:#F4F7FB; color:#52647D; border:1px solid #D4DEEB; }QPushButton#allocateNowBtn:disabled, QPushButton#nextBtn:disabled, QPushButton#nextTo3Btn:disabled, QPushButton#submitBtn:disabled, QPushButton#updateBtn:disabled, QPushButton#deleteBtn:disabled, QPushButton#adminDelBtn:disabled { background:#F4F7FB; color:#52647D; border:1px solid #D4DEEB; }QFrame#summaryBox { background:#EAF2FF; border:1px solid #D4DEEB; border-radius:10px; }QLabel#summaryDateLbl { color:#2563EB;  }QTableWidget { background:#FFFFFF; alternate-background-color:#F4F7FB; border:1px solid #D4DEEB; gridline-color:#D4DEEB; selection-background-color:#EAF2FF; selection-color:#17243B; }QHeaderView::section { font-weight:600; background:#EAF2FF; color:#17243B; border:none; padding:10px;  }QTableWidget QLineEdit, QTableWidget QComboBox { padding:4px; border-radius:4px; }QCalendarWidget { background:#FFFFFF; border:1px solid #D4DEEB; border-radius:8px; }QCalendarWidget QWidget#qt_calendar_navigationbar { background:#2563EB; }QCalendarWidget QToolButton { font-weight:600; color:white; background:transparent; padding:6px;  }QCalendarWidget QMenu, QCalendarWidget QSpinBox { background:#FFFFFF; color:#17243B; }QCalendarWidget QAbstractItemView { background:#FFFFFF; color:#17243B; selection-background-color:#2563EB; selection-color:white; outline:0; }QToolTip { background:#FFFFFF; color:#17243B; border:1px solid #D4DEEB; padding:6px; }</string>
+   <string notr="true">QWidget { font-family: "Segoe UI"; font-size: 10pt; }
+QWidget { color:#17243B;   }
+QMainWindow, QStackedWidget, QWidget#page0Widget, QWidget#page1Widget, QWidget#page2Widget, QWidget#page3Widget, QWidget#page4Widget { background:#F4F7FB; }
+QScrollArea { border:none; background:transparent; }
+QScrollArea &gt; QWidget &gt; QWidget { background:#F4F7FB; }
+QScrollArea#cardsScrollArea &gt; QWidget, QWidget#cardsScrollContents { background:transparent; }
+QLabel { background:transparent; }
+QLabel#welcomeTitle { color:#52647D;   }
+QLabel#syncLabTitle {   }
+QLabel#syncLabSubtitle {   }
+QLabel#welcomeDesc, QLabel#selectedDescLabel2, QLabel#adminWsDescLbl { color:#52647D;  }
+QLabel#selectTitleLabel, QLabel#selectedNameLabel2, QLabel#confirmTitleLbl, QLabel#adminWsTitleLbl {   }
+QLineEdit, QTextEdit, QComboBox { background:#FFFFFF; border:1px solid #D4DEEB; border-radius:7px; padding:8px; selection-background-color:#2563EB; selection-color:white; }
+QLineEdit:focus, QTextEdit:focus, QComboBox:focus { border:1px solid #2563EB; }
+QComboBox QAbstractItemView { background:#FFFFFF; color:#17243B; selection-background-color:#2563EB; selection-color:white; }
+QPushButton { background:#FFFFFF; color:#17243B; border:1px solid #D4DEEB; border-radius:8px; padding:9px 14px;  }
+QPushButton:hover, QPushButton:focus { background:#EAF2FF; border-color:#2563EB; }
+QPushButton:pressed { border:2px solid #2563EB; }
+QPushButton#allocateNowBtn, QPushButton#nextBtn, QPushButton#nextTo3Btn, QPushButton#submitBtn, QPushButton#updateBtn { background:#2563EB; color:white; border:1px solid #2563EB; }
+QPushButton#allocateNowBtn:hover, QPushButton#nextBtn:hover, QPushButton#nextTo3Btn:hover, QPushButton#submitBtn:hover, QPushButton#updateBtn:hover { background:#1D4ED8; }
+QPushButton#deleteBtn, QPushButton#adminDelBtn { color:#BE123C; }
+QPushButton[timeSlot=true] { padding:10px 8px; }
+QPushButton:checked { background:#2563EB; color:white; border-color:#2563EB; }
+QPushButton:disabled { background:#F4F7FB; color:#52647D; border:1px solid #D4DEEB; }
+QPushButton#allocateNowBtn:disabled, QPushButton#nextBtn:disabled, QPushButton#nextTo3Btn:disabled, QPushButton#submitBtn:disabled, QPushButton#updateBtn:disabled, QPushButton#deleteBtn:disabled, QPushButton#adminDelBtn:disabled { background:#F4F7FB; color:#52647D; border:1px solid #D4DEEB; }
+QFrame#summaryBox { background:#EAF2FF; border:1px solid #D4DEEB; border-radius:10px; }
+QLabel#summaryDateLbl { color:#2563EB;  }
+QTableWidget { background:#FFFFFF; alternate-background-color:#F4F7FB; border:1px solid #D4DEEB; gridline-color:#D4DEEB; selection-background-color:#EAF2FF; selection-color:#17243B; }
+QHeaderView::section { font-weight:600; background:#EAF2FF; color:#17243B; border:none; padding:10px;  }
+QTableWidget QLineEdit, QTableWidget QComboBox { padding:4px; border-radius:4px; }
+QCalendarWidget { background:#FFFFFF; border:1px solid #D4DEEB; border-radius:8px; }
+QCalendarWidget QWidget#qt_calendar_navigationbar { background:#2563EB; }
+QCalendarWidget QToolButton { font-weight:600; color:white; background:transparent; padding:6px;  }
+QCalendarWidget QMenu, QCalendarWidget QSpinBox { background:#FFFFFF; color:#17243B; }
+QCalendarWidget QAbstractItemView { background:#FFFFFF; color:#17243B; selection-background-color:#2563EB; selection-color:white; outline:0; }
+QToolTip { background:#FFFFFF; color:#17243B; border:1px solid #D4DEEB; padding:6px; }
+#page3Widget { font-family: "Segoe UI"; font-size: 10pt; font-weight: normal; }
+#backTo2Btn { font-family: "Segoe UI"; font-size: 10pt; font-weight: bold; }
+#confirmTitleLbl { font-family: "Segoe UI"; font-size: 19pt; font-weight: bold; }
+#summaryBox { font-family: "Segoe UI"; font-size: 10pt; font-weight: normal; }
+#summaryDateLbl { font-family: "Segoe UI"; font-size: 10pt; font-weight: bold; }
+#summaryTimeLbl { font-family: "Segoe UI"; font-size: 10pt; font-weight: normal; }
+#formScrollArea { font-family: "Segoe UI"; font-size: 10pt; font-weight: normal; }
+#formScrollContents { font-family: "Segoe UI"; font-size: 10pt; font-weight: normal; }
+#label { font-family: "Segoe UI"; font-size: 10pt; font-weight: normal; }
+#nameInput { font-family: "Segoe UI"; font-size: 10pt; font-weight: normal; }
+#label_2 { font-family: "Segoe UI"; font-size: 10pt; font-weight: normal; }
+#indexInput { font-family: "Segoe UI"; font-size: 10pt; font-weight: normal; }
+#label_3 { font-family: "Segoe UI"; font-size: 10pt; font-weight: normal; }
+#deptInput { font-family: "Segoe UI"; font-size: 10pt; font-weight: normal; }
+#label_email { font-family: "Segoe UI"; font-size: 10pt; font-weight: normal; }
+#emailInput { font-family: "Segoe UI"; font-size: 10pt; font-weight: normal; }
+#label_supervisor { font-family: "Segoe UI"; font-size: 10pt; font-weight: normal; }
+#supervisorInput { font-family: "Segoe UI"; font-size: 10pt; font-weight: normal; }
+#label_project { font-family: "Segoe UI"; font-size: 10pt; font-weight: normal; }
+#projectInput { font-family: "Segoe UI"; font-size: 10pt; font-weight: normal; }
+#label_6 { font-family: "Segoe UI"; font-size: 10pt; font-weight: normal; }
+#descriptionInput { font-family: "Segoe UI"; font-size: 10pt; font-weight: normal; }
+#deleteBtn { font-family: "Segoe UI"; font-size: 10pt; font-weight: bold; }
+#updateBtn { font-family: "Segoe UI"; font-size: 10pt; font-weight: bold; }
+#submitBtn { font-family: "Segoe UI"; font-size: 10pt; font-weight: bold; }</string>
   </property>
   <widget class="QPushButton" name="backTo2Btn">
    <property name="geometry">
@@ -28,13 +144,6 @@
      <width>171</width>
      <height>37</height>
     </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>Segoe UI</family>
-     <pointsize>10</pointsize>
-     <bold>true</bold>
-    </font>
    </property>
    <property name="cursor">
     <cursorShape>PointingHandCursor</cursorShape>
@@ -52,13 +161,6 @@
      <height>33</height>
     </rect>
    </property>
-   <property name="font">
-    <font>
-     <family>Segoe UI</family>
-     <pointsize>19</pointsize>
-     <bold>true</bold>
-    </font>
-   </property>
    <property name="text">
     <string>Finalize your allocation</string>
    </property>
@@ -75,13 +177,6 @@
      <height>72</height>
     </rect>
    </property>
-   <property name="font">
-    <font>
-     <family>Segoe UI</family>
-     <pointsize>10</pointsize>
-     <bold>false</bold>
-    </font>
-   </property>
    <widget class="QLabel" name="summaryDateLbl">
     <property name="geometry">
      <rect>
@@ -90,13 +185,6 @@
       <width>1090</width>
       <height>17</height>
      </rect>
-    </property>
-    <property name="font">
-     <font>
-      <family>Segoe UI</family>
-      <pointsize>10</pointsize>
-      <bold>true</bold>
-     </font>
     </property>
     <property name="text">
      <string>Date: </string>
@@ -116,13 +204,6 @@
       <width>1090</width>
       <height>17</height>
      </rect>
-    </property>
-    <property name="font">
-     <font>
-      <family>Segoe UI</family>
-      <pointsize>10</pointsize>
-      <bold>false</bold>
-     </font>
     </property>
     <property name="text">
      <string>Time: </string>
@@ -144,13 +225,6 @@
      <height>476</height>
     </rect>
    </property>
-   <property name="font">
-    <font>
-     <family>Segoe UI</family>
-     <pointsize>10</pointsize>
-     <bold>false</bold>
-    </font>
-   </property>
    <property name="frameShape">
     <enum>QFrame::Shape::NoFrame</enum>
    </property>
@@ -166,19 +240,6 @@
       <height>476</height>
      </rect>
     </property>
-    <property name="minimumSize">
-     <size>
-      <width>1132</width>
-      <height>476</height>
-     </size>
-    </property>
-    <property name="font">
-     <font>
-      <family>Segoe UI</family>
-      <pointsize>10</pointsize>
-      <bold>false</bold>
-     </font>
-    </property>
     <widget class="QLabel" name="label">
      <property name="geometry">
       <rect>
@@ -187,13 +248,6 @@
        <width>545</width>
        <height>21</height>
       </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Segoe UI</family>
-       <pointsize>10</pointsize>
-       <bold>false</bold>
-      </font>
      </property>
      <property name="text">
       <string>Full name *</string>
@@ -214,13 +268,6 @@
        <height>37</height>
       </rect>
      </property>
-     <property name="font">
-      <font>
-       <family>Segoe UI</family>
-       <pointsize>10</pointsize>
-       <bold>false</bold>
-      </font>
-     </property>
      <property name="maxLength">
       <number>254</number>
      </property>
@@ -240,15 +287,8 @@
        <height>21</height>
       </rect>
      </property>
-     <property name="font">
-      <font>
-       <family>Segoe UI</family>
-       <pointsize>10</pointsize>
-       <bold>false</bold>
-      </font>
-     </property>
      <property name="text">
-      <string>Student index *</string>
+      <string>User Index *</string>
      </property>
      <property name="textFormat">
       <enum>Qt::TextFormat::PlainText</enum>
@@ -266,18 +306,11 @@
        <height>37</height>
       </rect>
      </property>
-     <property name="font">
-      <font>
-       <family>Segoe UI</family>
-       <pointsize>10</pointsize>
-       <bold>false</bold>
-      </font>
-     </property>
      <property name="maxLength">
       <number>254</number>
      </property>
      <property name="placeholderText">
-      <string>Enter your student index number</string>
+      <string>Enter your user index number</string>
      </property>
      <property name="clearButtonEnabled">
       <bool>true</bool>
@@ -291,13 +324,6 @@
        <width>545</width>
        <height>21</height>
       </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Segoe UI</family>
-       <pointsize>10</pointsize>
-       <bold>false</bold>
-      </font>
      </property>
      <property name="text">
       <string>Department *</string>
@@ -317,13 +343,6 @@
        <width>545</width>
        <height>37</height>
       </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Segoe UI</family>
-       <pointsize>10</pointsize>
-       <bold>false</bold>
-      </font>
      </property>
      <property name="currentIndex">
       <number>0</number>
@@ -369,13 +388,6 @@
        <height>21</height>
       </rect>
      </property>
-     <property name="font">
-      <font>
-       <family>Segoe UI</family>
-       <pointsize>10</pointsize>
-       <bold>false</bold>
-      </font>
-     </property>
      <property name="text">
       <string>Email address *</string>
      </property>
@@ -394,13 +406,6 @@
        <width>545</width>
        <height>37</height>
       </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Segoe UI</family>
-       <pointsize>10</pointsize>
-       <bold>false</bold>
-      </font>
      </property>
      <property name="maxLength">
       <number>254</number>
@@ -421,13 +426,6 @@
        <height>21</height>
       </rect>
      </property>
-     <property name="font">
-      <font>
-       <family>Segoe UI</family>
-       <pointsize>10</pointsize>
-       <bold>false</bold>
-      </font>
-     </property>
      <property name="text">
       <string>Supervisor name *</string>
      </property>
@@ -446,13 +444,6 @@
        <width>545</width>
        <height>37</height>
       </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Segoe UI</family>
-       <pointsize>10</pointsize>
-       <bold>false</bold>
-      </font>
      </property>
      <property name="maxLength">
       <number>254</number>
@@ -473,13 +464,6 @@
        <height>21</height>
       </rect>
      </property>
-     <property name="font">
-      <font>
-       <family>Segoe UI</family>
-       <pointsize>10</pointsize>
-       <bold>false</bold>
-      </font>
-     </property>
      <property name="text">
       <string>Project name *</string>
      </property>
@@ -498,13 +482,6 @@
        <width>545</width>
        <height>37</height>
       </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Segoe UI</family>
-       <pointsize>10</pointsize>
-       <bold>false</bold>
-      </font>
      </property>
      <property name="maxLength">
       <number>254</number>
@@ -525,13 +502,6 @@
        <height>21</height>
       </rect>
      </property>
-     <property name="font">
-      <font>
-       <family>Segoe UI</family>
-       <pointsize>10</pointsize>
-       <bold>false</bold>
-      </font>
-     </property>
      <property name="text">
       <string>Description (optional)</string>
      </property>
@@ -550,13 +520,6 @@
        <width>545</width>
        <height>427</height>
       </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Segoe UI</family>
-       <pointsize>10</pointsize>
-       <bold>false</bold>
-      </font>
      </property>
      <property name="tabChangesFocus">
       <bool>true</bool>
@@ -579,13 +542,6 @@
      <height>50</height>
     </rect>
    </property>
-   <property name="font">
-    <font>
-     <family>Segoe UI</family>
-     <pointsize>10</pointsize>
-     <bold>true</bold>
-    </font>
-   </property>
    <property name="cursor">
     <cursorShape>PointingHandCursor</cursorShape>
    </property>
@@ -605,13 +561,6 @@
      <height>50</height>
     </rect>
    </property>
-   <property name="font">
-    <font>
-     <family>Segoe UI</family>
-     <pointsize>10</pointsize>
-     <bold>true</bold>
-    </font>
-   </property>
    <property name="cursor">
     <cursorShape>PointingHandCursor</cursorShape>
    </property>
@@ -630,13 +579,6 @@
      <width>1132</width>
      <height>50</height>
     </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>Segoe UI</family>
-     <pointsize>10</pointsize>
-     <bold>true</bold>
-    </font>
    </property>
    <property name="cursor">
     <cursorShape>PointingHandCursor</cursorShape>
@@ -659,6 +601,6 @@
   <tabstop>updateBtn</tabstop>
   <tabstop>deleteBtn</tabstop>
  </tabstops>
- <resources/>
- <connections/>
+ <resources />
+ <connections />
 </ui>

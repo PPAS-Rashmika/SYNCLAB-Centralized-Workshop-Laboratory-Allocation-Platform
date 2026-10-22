@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <ui version="4.0">
  <class>page1Widget</class>
  <widget class="QWidget" name="page1Widget">
@@ -10,14 +10,155 @@
     <height>750</height>
    </rect>
   </property>
-  <property name="font">
-   <font>
-    <family>Segoe UI</family>
-    <pointsize>10</pointsize>
-   </font>
+  <property name="darkStyleSheet" stdset="0">
+   <string notr="true">QWidget { font-family: "Segoe UI"; font-size: 10pt; }
+QWidget#page1Widget { background:#0F172A; color:#F1F5F9; }
+QLabel { background:transparent; color:#F1F5F9; }
+QWidget#cardsScrollContents, QScrollArea#cardsScrollArea { background:transparent; border:none; }
+QPushButton { background:#1E293B; color:#F1F5F9; border:1px solid #43536B; border-radius:8px; padding:9px 14px; }
+QPushButton:hover, QPushButton:focus { background:#253C61; border-color:#2563EB; }
+QPushButton#nextBtn { background:#2563EB; color:white; border:1px solid #2563EB; }
+QPushButton#nextBtn:hover { background:#1D4ED8; }
+QPushButton#nextBtn:disabled { background:#0F172A; color:#AABAD0; border:1px solid #43536B; }
+#page1Widget { font-family: "Segoe UI"; font-size: 10pt; }
+#backTo0Btn { font-family: "Segoe UI"; font-size: 10pt; font-weight: bold; }
+#selectTitleLabel { font-family: "Segoe UI"; font-size: 19pt; font-weight: bold; }
+QFrame#cardFrame01 { background:#1E293B; border:2px solid #43536B; border-radius:12px; }
+QFrame#cardFrame01[selected="true"] { background:#253C61; border-color:#6099F5; }
+#workshopTitle01 { font-family: "Segoe UI"; font-size: 10pt; font-weight: bold; }
+#workshopDepartment01 { font-family: "Segoe UI"; font-size: 10pt; }
+QPushButton#workshopCard_Biochemistry { background:transparent; border:2px solid transparent; border-radius:12px; padding:0; }
+QPushButton#workshopCard_Biochemistry:hover, QPushButton#workshopCard_Biochemistry:focus { border:2px solid #6099F5; background:rgba(80,140,240,18); }
+QFrame#cardFrame02 { background:#1E293B; border:2px solid #43536B; border-radius:12px; }
+QFrame#cardFrame02[selected="true"] { background:#253C61; border-color:#6099F5; }
+#workshopTitle02 { font-family: "Segoe UI"; font-size: 10pt; font-weight: bold; }
+#workshopDepartment02 { font-family: "Segoe UI"; font-size: 10pt; }
+QPushButton#workshopCard_Electronics { background:transparent; border:2px solid transparent; border-radius:12px; padding:0; }
+QPushButton#workshopCard_Electronics:hover, QPushButton#workshopCard_Electronics:focus { border:2px solid #6099F5; background:rgba(80,140,240,18); }
+QFrame#cardFrame03 { background:#1E293B; border:2px solid #43536B; border-radius:12px; }
+QFrame#cardFrame03[selected="true"] { background:#253C61; border-color:#6099F5; }
+#workshopTitle03 { font-family: "Segoe UI"; font-size: 10pt; font-weight: bold; }
+#workshopDepartment03 { font-family: "Segoe UI"; font-size: 10pt; }
+QPushButton#workshopCard_Computer { background:transparent; border:2px solid transparent; border-radius:12px; padding:0; }
+QPushButton#workshopCard_Computer:hover, QPushButton#workshopCard_Computer:focus { border:2px solid #6099F5; background:rgba(80,140,240,18); }
+QFrame#cardFrame05 { background:#1E293B; border:2px solid #43536B; border-radius:12px; }
+QFrame#cardFrame05[selected="true"] { background:#253C61; border-color:#6099F5; }
+#workshopTitle05 { font-family: "Segoe UI"; font-size: 10pt; font-weight: bold; }
+#workshopDepartment05 { font-family: "Segoe UI"; font-size: 10pt; }
+QPushButton#workshopCard_Geotechnical { background:transparent; border:2px solid transparent; border-radius:12px; padding:0; }
+QPushButton#workshopCard_Geotechnical:hover, QPushButton#workshopCard_Geotechnical:focus { border:2px solid #6099F5; background:rgba(80,140,240,18); }
+QFrame#cardFrame06 { background:#1E293B; border:2px solid #43536B; border-radius:12px; }
+QFrame#cardFrame06[selected="true"] { background:#253C61; border-color:#6099F5; }
+#workshopTitle06 { font-family: "Segoe UI"; font-size: 10pt; font-weight: bold; }
+#workshopDepartment06 { font-family: "Segoe UI"; font-size: 10pt; }
+QPushButton#workshopCard_Surveying { background:transparent; border:2px solid transparent; border-radius:12px; padding:0; }
+QPushButton#workshopCard_Surveying:hover, QPushButton#workshopCard_Surveying:focus { border:2px solid #6099F5; background:rgba(80,140,240,18); }
+QFrame#cardFrame07 { background:#1E293B; border:2px solid #43536B; border-radius:12px; }
+QFrame#cardFrame07[selected="true"] { background:#253C61; border-color:#6099F5; }
+#workshopTitle07 { font-family: "Segoe UI"; font-size: 10pt; font-weight: bold; }
+#workshopDepartment07 { font-family: "Segoe UI"; font-size: 10pt; }
+QPushButton#workshopCard_Concrete { background:transparent; border:2px solid transparent; border-radius:12px; padding:0; }
+QPushButton#workshopCard_Concrete:hover, QPushButton#workshopCard_Concrete:focus { border:2px solid #6099F5; background:rgba(80,140,240,18); }
+QFrame#cardFrame11 { background:#1E293B; border:2px solid #43536B; border-radius:12px; }
+QFrame#cardFrame11[selected="true"] { background:#253C61; border-color:#6099F5; }
+#workshopTitle11 { font-family: "Segoe UI"; font-size: 10pt; font-weight: bold; }
+#workshopDepartment11 { font-family: "Segoe UI"; font-size: 10pt; }
+QPushButton#workshopCard_Drawing_Office { background:transparent; border:2px solid transparent; border-radius:12px; padding:0; }
+QPushButton#workshopCard_Drawing_Office:hover, QPushButton#workshopCard_Drawing_Office:focus { border:2px solid #6099F5; background:rgba(80,140,240,18); }
+QFrame#cardFrame12 { background:#1E293B; border:2px solid #43536B; border-radius:12px; }
+QFrame#cardFrame12[selected="true"] { background:#253C61; border-color:#6099F5; }
+#workshopTitle12 { font-family: "Segoe UI"; font-size: 10pt; font-weight: bold; }
+#workshopDepartment12 { font-family: "Segoe UI"; font-size: 10pt; }
+QPushButton#workshopCard_Manufacturing { background:transparent; border:2px solid transparent; border-radius:12px; padding:0; }
+QPushButton#workshopCard_Manufacturing:hover, QPushButton#workshopCard_Manufacturing:focus { border:2px solid #6099F5; background:rgba(80,140,240,18); }
+QFrame#cardFrame14 { background:#1E293B; border:2px solid #43536B; border-radius:12px; }
+QFrame#cardFrame14[selected="true"] { background:#253C61; border-color:#6099F5; }
+#workshopTitle14 { font-family: "Segoe UI"; font-size: 10pt; font-weight: bold; }
+#workshopDepartment14 { font-family: "Segoe UI"; font-size: 10pt; }
+QPushButton#workshopCard_Electrical_Machines___Communications_Laboratory { background:transparent; border:2px solid transparent; border-radius:12px; padding:0; }
+QPushButton#workshopCard_Electrical_Machines___Communications_Laboratory:hover, QPushButton#workshopCard_Electrical_Machines___Communications_Laboratory:focus { border:2px solid #6099F5; background:rgba(80,140,240,18); }
+QFrame#cardFrame15 { background:#1E293B; border:2px solid #43536B; border-radius:12px; }
+QFrame#cardFrame15[selected="true"] { background:#253C61; border-color:#6099F5; }
+#workshopTitle15 { font-family: "Segoe UI"; font-size: 10pt; font-weight: bold; }
+#workshopDepartment15 { font-family: "Segoe UI"; font-size: 10pt; }
+QPushButton#workshopCard_Measurement_Laboratory { background:transparent; border:2px solid transparent; border-radius:12px; padding:0; }
+QPushButton#workshopCard_Measurement_Laboratory:hover, QPushButton#workshopCard_Measurement_Laboratory:focus { border:2px solid #6099F5; background:rgba(80,140,240,18); }
+#nextBtn { font-family: "Segoe UI"; font-size: 10pt; font-weight: bold; }</string>
   </property>
   <property name="styleSheet">
-   <string>QWidget#page1Widget { background:#F4F7FB; color:#17243B; } QLabel { background:transparent; color:#17243B; } QWidget#cardsScrollContents, QScrollArea#cardsScrollArea { background:transparent; border:none; } QPushButton { background:#FFFFFF; color:#17243B; border:1px solid #D4DEEB; border-radius:8px; padding:9px 14px; } QPushButton:hover, QPushButton:focus { background:#EAF2FF; border-color:#2563EB; } QPushButton#nextBtn { background:#2563EB; color:white; border:1px solid #2563EB; } QPushButton#nextBtn:hover { background:#1D4ED8; } QPushButton#nextBtn:disabled { background:#F4F7FB; color:#52647D; border:1px solid #D4DEEB; }</string>
+   <string notr="true">QWidget { font-family: "Segoe UI"; font-size: 10pt; }
+QWidget#page1Widget { background:#F4F7FB; color:#17243B; }
+QLabel { background:transparent; color:#17243B; }
+QWidget#cardsScrollContents, QScrollArea#cardsScrollArea { background:transparent; border:none; }
+QPushButton { background:#FFFFFF; color:#17243B; border:1px solid #D4DEEB; border-radius:8px; padding:9px 14px; }
+QPushButton:hover, QPushButton:focus { background:#EAF2FF; border-color:#2563EB; }
+QPushButton#nextBtn { background:#2563EB; color:white; border:1px solid #2563EB; }
+QPushButton#nextBtn:hover { background:#1D4ED8; }
+QPushButton#nextBtn:disabled { background:#F4F7FB; color:#52647D; border:1px solid #D4DEEB; }
+#page1Widget { font-family: "Segoe UI"; font-size: 10pt; }
+#backTo0Btn { font-family: "Segoe UI"; font-size: 10pt; font-weight: bold; }
+#selectTitleLabel { font-family: "Segoe UI"; font-size: 19pt; font-weight: bold; }
+QFrame#cardFrame01 { background:#FFFFFF; border:2px solid #D4DEEB; border-radius:12px; }
+QFrame#cardFrame01[selected="true"] { background:#EAF2FF; border-color:#6099F5; }
+#workshopTitle01 { font-family: "Segoe UI"; font-size: 10pt; font-weight: bold; }
+#workshopDepartment01 { font-family: "Segoe UI"; font-size: 10pt; }
+QPushButton#workshopCard_Biochemistry { background:transparent; border:2px solid transparent; border-radius:12px; padding:0; }
+QPushButton#workshopCard_Biochemistry:hover, QPushButton#workshopCard_Biochemistry:focus { border:2px solid #6099F5; background:rgba(80,140,240,18); }
+QFrame#cardFrame02 { background:#FFFFFF; border:2px solid #D4DEEB; border-radius:12px; }
+QFrame#cardFrame02[selected="true"] { background:#EAF2FF; border-color:#6099F5; }
+#workshopTitle02 { font-family: "Segoe UI"; font-size: 10pt; font-weight: bold; }
+#workshopDepartment02 { font-family: "Segoe UI"; font-size: 10pt; }
+QPushButton#workshopCard_Electronics { background:transparent; border:2px solid transparent; border-radius:12px; padding:0; }
+QPushButton#workshopCard_Electronics:hover, QPushButton#workshopCard_Electronics:focus { border:2px solid #6099F5; background:rgba(80,140,240,18); }
+QFrame#cardFrame03 { background:#FFFFFF; border:2px solid #D4DEEB; border-radius:12px; }
+QFrame#cardFrame03[selected="true"] { background:#EAF2FF; border-color:#6099F5; }
+#workshopTitle03 { font-family: "Segoe UI"; font-size: 10pt; font-weight: bold; }
+#workshopDepartment03 { font-family: "Segoe UI"; font-size: 10pt; }
+QPushButton#workshopCard_Computer { background:transparent; border:2px solid transparent; border-radius:12px; padding:0; }
+QPushButton#workshopCard_Computer:hover, QPushButton#workshopCard_Computer:focus { border:2px solid #6099F5; background:rgba(80,140,240,18); }
+QFrame#cardFrame05 { background:#FFFFFF; border:2px solid #D4DEEB; border-radius:12px; }
+QFrame#cardFrame05[selected="true"] { background:#EAF2FF; border-color:#6099F5; }
+#workshopTitle05 { font-family: "Segoe UI"; font-size: 10pt; font-weight: bold; }
+#workshopDepartment05 { font-family: "Segoe UI"; font-size: 10pt; }
+QPushButton#workshopCard_Geotechnical { background:transparent; border:2px solid transparent; border-radius:12px; padding:0; }
+QPushButton#workshopCard_Geotechnical:hover, QPushButton#workshopCard_Geotechnical:focus { border:2px solid #6099F5; background:rgba(80,140,240,18); }
+QFrame#cardFrame06 { background:#FFFFFF; border:2px solid #D4DEEB; border-radius:12px; }
+QFrame#cardFrame06[selected="true"] { background:#EAF2FF; border-color:#6099F5; }
+#workshopTitle06 { font-family: "Segoe UI"; font-size: 10pt; font-weight: bold; }
+#workshopDepartment06 { font-family: "Segoe UI"; font-size: 10pt; }
+QPushButton#workshopCard_Surveying { background:transparent; border:2px solid transparent; border-radius:12px; padding:0; }
+QPushButton#workshopCard_Surveying:hover, QPushButton#workshopCard_Surveying:focus { border:2px solid #6099F5; background:rgba(80,140,240,18); }
+QFrame#cardFrame07 { background:#FFFFFF; border:2px solid #D4DEEB; border-radius:12px; }
+QFrame#cardFrame07[selected="true"] { background:#EAF2FF; border-color:#6099F5; }
+#workshopTitle07 { font-family: "Segoe UI"; font-size: 10pt; font-weight: bold; }
+#workshopDepartment07 { font-family: "Segoe UI"; font-size: 10pt; }
+QPushButton#workshopCard_Concrete { background:transparent; border:2px solid transparent; border-radius:12px; padding:0; }
+QPushButton#workshopCard_Concrete:hover, QPushButton#workshopCard_Concrete:focus { border:2px solid #6099F5; background:rgba(80,140,240,18); }
+QFrame#cardFrame11 { background:#FFFFFF; border:2px solid #D4DEEB; border-radius:12px; }
+QFrame#cardFrame11[selected="true"] { background:#EAF2FF; border-color:#6099F5; }
+#workshopTitle11 { font-family: "Segoe UI"; font-size: 10pt; font-weight: bold; }
+#workshopDepartment11 { font-family: "Segoe UI"; font-size: 10pt; }
+QPushButton#workshopCard_Drawing_Office { background:transparent; border:2px solid transparent; border-radius:12px; padding:0; }
+QPushButton#workshopCard_Drawing_Office:hover, QPushButton#workshopCard_Drawing_Office:focus { border:2px solid #6099F5; background:rgba(80,140,240,18); }
+QFrame#cardFrame12 { background:#FFFFFF; border:2px solid #D4DEEB; border-radius:12px; }
+QFrame#cardFrame12[selected="true"] { background:#EAF2FF; border-color:#6099F5; }
+#workshopTitle12 { font-family: "Segoe UI"; font-size: 10pt; font-weight: bold; }
+#workshopDepartment12 { font-family: "Segoe UI"; font-size: 10pt; }
+QPushButton#workshopCard_Manufacturing { background:transparent; border:2px solid transparent; border-radius:12px; padding:0; }
+QPushButton#workshopCard_Manufacturing:hover, QPushButton#workshopCard_Manufacturing:focus { border:2px solid #6099F5; background:rgba(80,140,240,18); }
+QFrame#cardFrame14 { background:#FFFFFF; border:2px solid #D4DEEB; border-radius:12px; }
+QFrame#cardFrame14[selected="true"] { background:#EAF2FF; border-color:#6099F5; }
+#workshopTitle14 { font-family: "Segoe UI"; font-size: 10pt; font-weight: bold; }
+#workshopDepartment14 { font-family: "Segoe UI"; font-size: 10pt; }
+QPushButton#workshopCard_Electrical_Machines___Communications_Laboratory { background:transparent; border:2px solid transparent; border-radius:12px; padding:0; }
+QPushButton#workshopCard_Electrical_Machines___Communications_Laboratory:hover, QPushButton#workshopCard_Electrical_Machines___Communications_Laboratory:focus { border:2px solid #6099F5; background:rgba(80,140,240,18); }
+QFrame#cardFrame15 { background:#FFFFFF; border:2px solid #D4DEEB; border-radius:12px; }
+QFrame#cardFrame15[selected="true"] { background:#EAF2FF; border-color:#6099F5; }
+#workshopTitle15 { font-family: "Segoe UI"; font-size: 10pt; font-weight: bold; }
+#workshopDepartment15 { font-family: "Segoe UI"; font-size: 10pt; }
+QPushButton#workshopCard_Measurement_Laboratory { background:transparent; border:2px solid transparent; border-radius:12px; padding:0; }
+QPushButton#workshopCard_Measurement_Laboratory:hover, QPushButton#workshopCard_Measurement_Laboratory:focus { border:2px solid #6099F5; background:rgba(80,140,240,18); }
+#nextBtn { font-family: "Segoe UI"; font-size: 10pt; font-weight: bold; }</string>
   </property>
   <widget class="QPushButton" name="backTo0Btn">
    <property name="geometry">
@@ -27,13 +168,6 @@
      <width>111</width>
      <height>37</height>
     </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>Segoe UI</family>
-     <pointsize>10</pointsize>
-     <bold>true</bold>
-    </font>
    </property>
    <property name="cursor">
     <cursorShape>PointingHandCursor</cursorShape>
@@ -50,13 +184,6 @@
      <width>511</width>
      <height>40</height>
     </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>Segoe UI</family>
-     <pointsize>19</pointsize>
-     <bold>true</bold>
-    </font>
    </property>
    <property name="text">
     <string>Choose a workshop or laboratory </string>
@@ -123,9 +250,6 @@
        <height>210</height>
       </rect>
      </property>
-     <property name="styleSheet">
-      <string>QFrame#cardFrame01 { background:#FFFFFF; border:2px solid #D4DEEB; border-radius:12px; } QFrame#cardFrame01[selected=&quot;true&quot;] { background:#EAF2FF; border-color:#6099F5; }</string>
-     </property>
      <property name="frameShape">
       <enum>QFrame::Shape::NoFrame</enum>
      </property>
@@ -160,13 +284,6 @@
         <height>17</height>
        </rect>
       </property>
-      <property name="font">
-       <font>
-        <family>Segoe UI</family>
-        <pointsize>10</pointsize>
-        <bold>true</bold>
-       </font>
-      </property>
       <property name="text">
        <string>Biochemistry Lab</string>
       </property>
@@ -185,12 +302,6 @@
         <width>180</width>
         <height>53</height>
        </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Segoe UI</family>
-        <pointsize>10</pointsize>
-       </font>
       </property>
       <property name="text">
        <string>Department of Nano Science Technology</string>
@@ -221,11 +332,8 @@ Department of Nano Science Technology</string>
       <property name="accessibleName">
        <string>Biochemistry Lab</string>
       </property>
-      <property name="styleSheet">
-       <string>QPushButton { background:transparent; border:2px solid transparent; border-radius:12px; padding:0; } QPushButton:hover, QPushButton:focus { border:2px solid #6099F5; background:rgba(80,140,240,18); }</string>
-      </property>
       <property name="text">
-       <string/>
+       <string />
       </property>
       <property name="flat">
        <bool>true</bool>
@@ -240,9 +348,6 @@ Department of Nano Science Technology</string>
        <width>212</width>
        <height>210</height>
       </rect>
-     </property>
-     <property name="styleSheet">
-      <string>QFrame#cardFrame02 { background:#FFFFFF; border:2px solid #D4DEEB; border-radius:12px; } QFrame#cardFrame02[selected=&quot;true&quot;] { background:#EAF2FF; border-color:#6099F5; }</string>
      </property>
      <property name="frameShape">
       <enum>QFrame::Shape::NoFrame</enum>
@@ -278,13 +383,6 @@ Department of Nano Science Technology</string>
         <height>17</height>
        </rect>
       </property>
-      <property name="font">
-       <font>
-        <family>Segoe UI</family>
-        <pointsize>10</pointsize>
-        <bold>true</bold>
-       </font>
-      </property>
       <property name="text">
        <string>Electronics Lab</string>
       </property>
@@ -303,12 +401,6 @@ Department of Nano Science Technology</string>
         <width>180</width>
         <height>53</height>
        </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Segoe UI</family>
-        <pointsize>10</pointsize>
-       </font>
       </property>
       <property name="text">
        <string>Department of Nano Science Technology</string>
@@ -339,11 +431,8 @@ Department of Nano Science Technology</string>
       <property name="accessibleName">
        <string>Electronics Lab</string>
       </property>
-      <property name="styleSheet">
-       <string>QPushButton { background:transparent; border:2px solid transparent; border-radius:12px; padding:0; } QPushButton:hover, QPushButton:focus { border:2px solid #6099F5; background:rgba(80,140,240,18); }</string>
-      </property>
       <property name="text">
-       <string/>
+       <string />
       </property>
       <property name="flat">
        <bool>true</bool>
@@ -358,9 +447,6 @@ Department of Nano Science Technology</string>
        <width>212</width>
        <height>210</height>
       </rect>
-     </property>
-     <property name="styleSheet">
-      <string>QFrame#cardFrame03 { background:#FFFFFF; border:2px solid #D4DEEB; border-radius:12px; } QFrame#cardFrame03[selected=&quot;true&quot;] { background:#EAF2FF; border-color:#6099F5; }</string>
      </property>
      <property name="frameShape">
       <enum>QFrame::Shape::NoFrame</enum>
@@ -396,13 +482,6 @@ Department of Nano Science Technology</string>
         <height>17</height>
        </rect>
       </property>
-      <property name="font">
-       <font>
-        <family>Segoe UI</family>
-        <pointsize>10</pointsize>
-        <bold>true</bold>
-       </font>
-      </property>
       <property name="text">
        <string>Computer Lab</string>
       </property>
@@ -421,12 +500,6 @@ Department of Nano Science Technology</string>
         <width>180</width>
         <height>53</height>
        </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Segoe UI</family>
-        <pointsize>10</pointsize>
-       </font>
       </property>
       <property name="text">
        <string>Department of Nano Science Technology</string>
@@ -457,11 +530,8 @@ Department of Nano Science Technology</string>
       <property name="accessibleName">
        <string>Computer Lab</string>
       </property>
-      <property name="styleSheet">
-       <string>QPushButton { background:transparent; border:2px solid transparent; border-radius:12px; padding:0; } QPushButton:hover, QPushButton:focus { border:2px solid #6099F5; background:rgba(80,140,240,18); }</string>
-      </property>
       <property name="text">
-       <string/>
+       <string />
       </property>
       <property name="flat">
        <bool>true</bool>
@@ -476,9 +546,6 @@ Department of Nano Science Technology</string>
        <width>212</width>
        <height>210</height>
       </rect>
-     </property>
-     <property name="styleSheet">
-      <string>QFrame#cardFrame05 { background:#FFFFFF; border:2px solid #D4DEEB; border-radius:12px; } QFrame#cardFrame05[selected=&quot;true&quot;] { background:#EAF2FF; border-color:#6099F5; }</string>
      </property>
      <property name="frameShape">
       <enum>QFrame::Shape::NoFrame</enum>
@@ -514,13 +581,6 @@ Department of Nano Science Technology</string>
         <height>17</height>
        </rect>
       </property>
-      <property name="font">
-       <font>
-        <family>Segoe UI</family>
-        <pointsize>10</pointsize>
-        <bold>true</bold>
-       </font>
-      </property>
       <property name="text">
        <string>Geotechnical Lab</string>
       </property>
@@ -539,12 +599,6 @@ Department of Nano Science Technology</string>
         <width>180</width>
         <height>53</height>
        </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Segoe UI</family>
-        <pointsize>10</pointsize>
-       </font>
       </property>
       <property name="text">
        <string>Department of Construction Technology</string>
@@ -575,11 +629,8 @@ Department of Construction Technology</string>
       <property name="accessibleName">
        <string>Geotechnical Lab</string>
       </property>
-      <property name="styleSheet">
-       <string>QPushButton { background:transparent; border:2px solid transparent; border-radius:12px; padding:0; } QPushButton:hover, QPushButton:focus { border:2px solid #6099F5; background:rgba(80,140,240,18); }</string>
-      </property>
       <property name="text">
-       <string/>
+       <string />
       </property>
       <property name="flat">
        <bool>true</bool>
@@ -594,9 +645,6 @@ Department of Construction Technology</string>
        <width>212</width>
        <height>210</height>
       </rect>
-     </property>
-     <property name="styleSheet">
-      <string>QFrame#cardFrame06 { background:#FFFFFF; border:2px solid #D4DEEB; border-radius:12px; } QFrame#cardFrame06[selected=&quot;true&quot;] { background:#EAF2FF; border-color:#6099F5; }</string>
      </property>
      <property name="frameShape">
       <enum>QFrame::Shape::NoFrame</enum>
@@ -632,13 +680,6 @@ Department of Construction Technology</string>
         <height>17</height>
        </rect>
       </property>
-      <property name="font">
-       <font>
-        <family>Segoe UI</family>
-        <pointsize>10</pointsize>
-        <bold>true</bold>
-       </font>
-      </property>
       <property name="text">
        <string>Surveying Lab</string>
       </property>
@@ -657,12 +698,6 @@ Department of Construction Technology</string>
         <width>180</width>
         <height>53</height>
        </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Segoe UI</family>
-        <pointsize>10</pointsize>
-       </font>
       </property>
       <property name="text">
        <string>Department of Construction Technology</string>
@@ -693,11 +728,8 @@ Department of Construction Technology</string>
       <property name="accessibleName">
        <string>Surveying Lab</string>
       </property>
-      <property name="styleSheet">
-       <string>QPushButton { background:transparent; border:2px solid transparent; border-radius:12px; padding:0; } QPushButton:hover, QPushButton:focus { border:2px solid #6099F5; background:rgba(80,140,240,18); }</string>
-      </property>
       <property name="text">
-       <string/>
+       <string />
       </property>
       <property name="flat">
        <bool>true</bool>
@@ -712,9 +744,6 @@ Department of Construction Technology</string>
        <width>212</width>
        <height>210</height>
       </rect>
-     </property>
-     <property name="styleSheet">
-      <string>QFrame#cardFrame07 { background:#FFFFFF; border:2px solid #D4DEEB; border-radius:12px; } QFrame#cardFrame07[selected=&quot;true&quot;] { background:#EAF2FF; border-color:#6099F5; }</string>
      </property>
      <property name="frameShape">
       <enum>QFrame::Shape::NoFrame</enum>
@@ -750,13 +779,6 @@ Department of Construction Technology</string>
         <height>17</height>
        </rect>
       </property>
-      <property name="font">
-       <font>
-        <family>Segoe UI</family>
-        <pointsize>10</pointsize>
-        <bold>true</bold>
-       </font>
-      </property>
       <property name="text">
        <string>Concrete Lab</string>
       </property>
@@ -775,12 +797,6 @@ Department of Construction Technology</string>
         <width>180</width>
         <height>53</height>
        </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Segoe UI</family>
-        <pointsize>10</pointsize>
-       </font>
       </property>
       <property name="text">
        <string>Department of Construction Technology</string>
@@ -811,11 +827,8 @@ Department of Construction Technology</string>
       <property name="accessibleName">
        <string>Concrete Lab</string>
       </property>
-      <property name="styleSheet">
-       <string>QPushButton { background:transparent; border:2px solid transparent; border-radius:12px; padding:0; } QPushButton:hover, QPushButton:focus { border:2px solid #6099F5; background:rgba(80,140,240,18); }</string>
-      </property>
       <property name="text">
-       <string/>
+       <string />
       </property>
       <property name="flat">
        <bool>true</bool>
@@ -830,9 +843,6 @@ Department of Construction Technology</string>
        <width>212</width>
        <height>210</height>
       </rect>
-     </property>
-     <property name="styleSheet">
-      <string>QFrame#cardFrame11 { background:#FFFFFF; border:2px solid #D4DEEB; border-radius:12px; } QFrame#cardFrame11[selected=&quot;true&quot;] { background:#EAF2FF; border-color:#6099F5; }</string>
      </property>
      <property name="frameShape">
       <enum>QFrame::Shape::NoFrame</enum>
@@ -868,13 +878,6 @@ Department of Construction Technology</string>
         <height>17</height>
        </rect>
       </property>
-      <property name="font">
-       <font>
-        <family>Segoe UI</family>
-        <pointsize>10</pointsize>
-        <bold>true</bold>
-       </font>
-      </property>
       <property name="text">
        <string>Drawing Office</string>
       </property>
@@ -893,12 +896,6 @@ Department of Construction Technology</string>
         <width>180</width>
         <height>53</height>
        </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Segoe UI</family>
-        <pointsize>10</pointsize>
-       </font>
       </property>
       <property name="text">
        <string>Department of Mechanical and Manufacturing Technology</string>
@@ -929,11 +926,8 @@ Department of Mechanical and Manufacturing Technology</string>
       <property name="accessibleName">
        <string>Drawing Office</string>
       </property>
-      <property name="styleSheet">
-       <string>QPushButton { background:transparent; border:2px solid transparent; border-radius:12px; padding:0; } QPushButton:hover, QPushButton:focus { border:2px solid #6099F5; background:rgba(80,140,240,18); }</string>
-      </property>
       <property name="text">
-       <string/>
+       <string />
       </property>
       <property name="flat">
        <bool>true</bool>
@@ -948,9 +942,6 @@ Department of Mechanical and Manufacturing Technology</string>
        <width>212</width>
        <height>210</height>
       </rect>
-     </property>
-     <property name="styleSheet">
-      <string>QFrame#cardFrame12 { background:#FFFFFF; border:2px solid #D4DEEB; border-radius:12px; } QFrame#cardFrame12[selected=&quot;true&quot;] { background:#EAF2FF; border-color:#6099F5; }</string>
      </property>
      <property name="frameShape">
       <enum>QFrame::Shape::NoFrame</enum>
@@ -986,13 +977,6 @@ Department of Mechanical and Manufacturing Technology</string>
         <height>17</height>
        </rect>
       </property>
-      <property name="font">
-       <font>
-        <family>Segoe UI</family>
-        <pointsize>10</pointsize>
-        <bold>true</bold>
-       </font>
-      </property>
       <property name="text">
        <string>Manufacturing Lab</string>
       </property>
@@ -1011,12 +995,6 @@ Department of Mechanical and Manufacturing Technology</string>
         <width>180</width>
         <height>53</height>
        </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Segoe UI</family>
-        <pointsize>10</pointsize>
-       </font>
       </property>
       <property name="text">
        <string>Department of Mechanical and Manufacturing Technology</string>
@@ -1047,11 +1025,8 @@ Department of Mechanical and Manufacturing Technology</string>
       <property name="accessibleName">
        <string>Manufacturing Lab</string>
       </property>
-      <property name="styleSheet">
-       <string>QPushButton { background:transparent; border:2px solid transparent; border-radius:12px; padding:0; } QPushButton:hover, QPushButton:focus { border:2px solid #6099F5; background:rgba(80,140,240,18); }</string>
-      </property>
       <property name="text">
-       <string/>
+       <string />
       </property>
       <property name="flat">
        <bool>true</bool>
@@ -1066,9 +1041,6 @@ Department of Mechanical and Manufacturing Technology</string>
        <width>212</width>
        <height>210</height>
       </rect>
-     </property>
-     <property name="styleSheet">
-      <string>QFrame#cardFrame14 { background:#FFFFFF; border:2px solid #D4DEEB; border-radius:12px; } QFrame#cardFrame14[selected=&quot;true&quot;] { background:#EAF2FF; border-color:#6099F5; }</string>
      </property>
      <property name="frameShape">
       <enum>QFrame::Shape::NoFrame</enum>
@@ -1104,13 +1076,6 @@ Department of Mechanical and Manufacturing Technology</string>
         <height>34</height>
        </rect>
       </property>
-      <property name="font">
-       <font>
-        <family>Segoe UI</family>
-        <pointsize>10</pointsize>
-        <bold>true</bold>
-       </font>
-      </property>
       <property name="text">
        <string>Electrical Machines &amp; Communications Laboratory</string>
       </property>
@@ -1129,12 +1094,6 @@ Department of Mechanical and Manufacturing Technology</string>
         <width>180</width>
         <height>36</height>
        </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Segoe UI</family>
-        <pointsize>10</pointsize>
-       </font>
       </property>
       <property name="text">
        <string>Department of Electrotechnology</string>
@@ -1165,11 +1124,8 @@ Department of Electrotechnology</string>
       <property name="accessibleName">
        <string>Electrical Machines &amp; Communications Laboratory</string>
       </property>
-      <property name="styleSheet">
-       <string>QPushButton { background:transparent; border:2px solid transparent; border-radius:12px; padding:0; } QPushButton:hover, QPushButton:focus { border:2px solid #6099F5; background:rgba(80,140,240,18); }</string>
-      </property>
       <property name="text">
-       <string/>
+       <string />
       </property>
       <property name="flat">
        <bool>true</bool>
@@ -1184,9 +1140,6 @@ Department of Electrotechnology</string>
        <width>212</width>
        <height>210</height>
       </rect>
-     </property>
-     <property name="styleSheet">
-      <string>QFrame#cardFrame15 { background:#FFFFFF; border:2px solid #D4DEEB; border-radius:12px; } QFrame#cardFrame15[selected=&quot;true&quot;] { background:#EAF2FF; border-color:#6099F5; }</string>
      </property>
      <property name="frameShape">
       <enum>QFrame::Shape::NoFrame</enum>
@@ -1222,13 +1175,6 @@ Department of Electrotechnology</string>
         <height>17</height>
        </rect>
       </property>
-      <property name="font">
-       <font>
-        <family>Segoe UI</family>
-        <pointsize>10</pointsize>
-        <bold>true</bold>
-       </font>
-      </property>
       <property name="text">
        <string>Measurement Laboratory</string>
       </property>
@@ -1247,12 +1193,6 @@ Department of Electrotechnology</string>
         <width>180</width>
         <height>53</height>
        </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Segoe UI</family>
-        <pointsize>10</pointsize>
-       </font>
       </property>
       <property name="text">
        <string>Department of Electrotechnology</string>
@@ -1283,11 +1223,8 @@ Department of Electrotechnology</string>
       <property name="accessibleName">
        <string>Measurement Laboratory</string>
       </property>
-      <property name="styleSheet">
-       <string>QPushButton { background:transparent; border:2px solid transparent; border-radius:12px; padding:0; } QPushButton:hover, QPushButton:focus { border:2px solid #6099F5; background:rgba(80,140,240,18); }</string>
-      </property>
       <property name="text">
-       <string/>
+       <string />
       </property>
       <property name="flat">
        <bool>true</bool>
@@ -1307,13 +1244,6 @@ Department of Electrotechnology</string>
      <width>1132</width>
      <height>50</height>
     </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>Segoe UI</family>
-     <pointsize>10</pointsize>
-     <bold>true</bold>
-    </font>
    </property>
    <property name="cursor">
     <cursorShape>PointingHandCursor</cursorShape>
@@ -1339,7 +1269,7 @@ Department of Electrotechnology</string>
   <tabstop>nextBtn</tabstop>
  </tabstops>
  <resources>
-  <include location="../../resources/images.qrc"/>
+  <include location="../../resources/images.qrc" />
  </resources>
- <connections/>
+ <connections />
 </ui>

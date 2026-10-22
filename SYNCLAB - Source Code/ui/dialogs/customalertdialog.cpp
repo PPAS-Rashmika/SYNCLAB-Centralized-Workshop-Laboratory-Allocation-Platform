@@ -23,12 +23,8 @@ CustomAlertDialog::CustomAlertDialog(const QString &title, const QString &messag
     ui->cancelBtn->setVisible(type == Question);
 
     // Info blue, Warning amber, Error red වේ; මේ colour codes වෙනස් කළ හැක.
-    QString accent = "#2563EB";
-    if (type == Warning)
-        accent = "#92400E";
-    else if (type == Error)
-        accent = "#B91C1C";
-    applyDialogTheme(this, accent);
+    const QString alertType = type == Warning ? "warning" : type == Error ? "error" : "info";
+    applyDialogTheme(this, alertType);
     // දිග message එකට ගළපන විට මුල් dialog/control ප්‍රමාණ මෙතැනින් ලබාගනී.
     setProperty("_designerSize", size());
     for (QWidget *widget : {static_cast<QWidget *>(ui->titleLbl), static_cast<QWidget *>(ui->messageLbl),
@@ -65,9 +61,9 @@ void CustomAlertDialog::highlightText(const QString &text)
     // Text එක HTML වීමට පෙර &, < වැනි අකුරු ආරක්ෂිත text ලෙස හරවයි.
     const QString escapedText = text.toHtmlEscaped();
     // Highlight කරන key එකේ පාට, font size සහ bold බව මෙහි වෙනස් කරන්න.
-    const QString badge = QStringLiteral("<span style=\"background-color:#DBEAFE; color:#1E3A8A;"
-                                         " font-size:20pt; font-weight:bold;\">&nbsp;%1&nbsp;</span>")
-                              .arg(escapedText);
+    const QString badge = QStringLiteral("<span style=\"%1\">&nbsp;%2&nbsp;</span>")
+                              .arg(ui->messageLbl->property("highlightCss").toString().toHtmlEscaped(),
+                                   escapedText);
     QString html = ui->messageLbl->text().toHtmlEscaped();
     html.replace(escapedText, badge);
     // සාමාන්‍ය newline එක rich text හි line break එකකට හරවයි.

@@ -8,7 +8,7 @@
 #include <QSettings>
 
 // Save කළ theme එක dialog එකට යොදා warning/error accent එකත් සකසයි.
-void applyDialogTheme(QDialog *dialog, const QString &accent)
+void applyDialogTheme(QDialog *dialog, const QString &alertType)
 {
     // User කලින් save කළ darkMode setting එක කියවයි.
     const bool dark = QSettings(QSettings::defaultFormat(), QSettings::UserScope,
@@ -20,10 +20,7 @@ void applyDialogTheme(QDialog *dialog, const QString &accent)
     dialog->setWindowFlags(Qt::Dialog | Qt::WindowTitleHint | Qt::WindowSystemMenuHint |
                            Qt::WindowCloseButtonHint);
     // Warning/error සඳහා blue accent එක අදාළ colour එකට මාරු කරයි.
-    if (accent != "#2563EB") {
-        dialog->setStyleSheet(QString(dialog->styleSheet()).replace("#2563EB", accent,
-                                                                   Qt::CaseInsensitive));
-    }
+    dialog->setProperty("alertType", alertType);
     applyDesignerTheme(dialog, dark);
 
     // Dialog buttons මත mouse එක තිබෙන විට අත ලකුණ පෙන්වයි.

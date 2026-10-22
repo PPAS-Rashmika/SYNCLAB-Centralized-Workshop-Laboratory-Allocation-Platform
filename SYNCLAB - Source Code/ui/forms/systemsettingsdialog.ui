@@ -1,13 +1,58 @@
 <?xml version='1.0' encoding='utf-8'?>
 <ui version="4.0">
- <!-- Theme, wallpaper සහ passcodes settings dialog එකේ පෙනුමයි. -->
  <class>SystemSettingsDialog</class>
- <!-- SystemSettingsDialog: කුඩා dialog කවුළුව; name එක C++ code එකේද භාවිත විය හැක. -->
  <widget class="QDialog" name="SystemSettingsDialog">
   <property name="windowTitle">
    <string>System settings</string>
   </property>
-  <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
+  <property name="darkStyleSheet" stdset="0">
+   <string notr="true">QWidget { font-family: "Segoe UI"; font-size: 10pt; }
+QDialog { background-color: #172033; color: #F1F5F9; }
+QLabel { color: #F1F5F9; background: transparent; }
+QLineEdit, QComboBox { background-color: #0F172A; color: #F1F5F9; border: 1px solid #475569; border-radius: 7px; padding: 8px; }
+QLineEdit:focus, QComboBox:focus { border: 1px solid #2563EB; }
+QComboBox QAbstractItemView { background-color: #0F172A; color: #F1F5F9; selection-background-color: #2563EB; selection-color: white; border: 1px solid #475569; }
+QPushButton { background-color: #2563EB; color: white; border: 2px solid transparent; border-radius: 8px; padding: 2px 14px; }
+QPushButton:focus, QPushButton:default { border-color: #F1F5F9; }
+QPushButton:hover { border-color: #475569; }
+QPushButton:disabled { background-color: #475569; color: #F1F5F9; }
+QPushButton#cancelBtn, QPushButton#closeBtn { background-color: #0F172A; color: #F1F5F9; border-color: #475569; }
+QGroupBox { color: #F1F5F9; border: 1px solid #475569; border-radius: 8px; margin-top: 16px; padding-top: 10px; }
+QGroupBox::title { subcontrol-origin: margin; left: 12px; padding: 0 4px; }
+#SystemSettingsDialog { font-family: "Segoe UI"; font-size: 10pt; }
+#titleLbl { font-size: 16pt; font-weight: bold; }
+#toggleThemeBtn { font-size: 10pt; font-weight: bold; }
+#changeWallpaperBtn { font-size: 10pt; font-weight: bold; }
+#groupBox { font-weight: bold; }
+#workshopCombo { font-size: 10pt; }
+#newPasscodeInput { font-size: 10pt; }
+#savePasscodeBtn { font-size: 10pt; font-weight: bold; }
+#closeBtn { font-size: 10pt; font-weight: bold; }</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QWidget { font-family: "Segoe UI"; font-size: 10pt; }
+QDialog { background-color: #FFFFFF; color: #0F172A; }
+QLabel { color: #0F172A; background: transparent; }
+QLineEdit, QComboBox { background-color: #F8FAFC; color: #0F172A; border: 1px solid #CBD5E1; border-radius: 7px; padding: 8px; }
+QLineEdit:focus, QComboBox:focus { border: 1px solid #2563EB; }
+QComboBox QAbstractItemView { background-color: #F8FAFC; color: #0F172A; selection-background-color: #2563EB; selection-color: white; border: 1px solid #CBD5E1; }
+QPushButton { background-color: #2563EB; color: white; border: 2px solid transparent; border-radius: 8px; padding: 2px 14px; }
+QPushButton:focus, QPushButton:default { border-color: #0F172A; }
+QPushButton:hover { border-color: #CBD5E1; }
+QPushButton:disabled { background-color: #CBD5E1; color: #0F172A; }
+QPushButton#cancelBtn, QPushButton#closeBtn { background-color: #F8FAFC; color: #0F172A; border-color: #CBD5E1; }
+QGroupBox { color: #0F172A; border: 1px solid #CBD5E1; border-radius: 8px; margin-top: 16px; padding-top: 10px; }
+QGroupBox::title { subcontrol-origin: margin; left: 12px; padding: 0 4px; }
+#SystemSettingsDialog { font-family: "Segoe UI"; font-size: 10pt; }
+#titleLbl { font-size: 16pt; font-weight: bold; }
+#toggleThemeBtn { font-size: 10pt; font-weight: bold; }
+#changeWallpaperBtn { font-size: 10pt; font-weight: bold; }
+#groupBox { font-weight: bold; }
+#workshopCombo { font-size: 10pt; }
+#newPasscodeInput { font-size: 10pt; }
+#savePasscodeBtn { font-size: 10pt; font-weight: bold; }
+#closeBtn { font-size: 10pt; font-weight: bold; }</string>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -16,9 +61,7 @@
     <height>540</height>
    </rect>
   </property>
-  <!-- titleLbl: text/image පෙන්වන label එක; name එක C++ code එකේද භාවිත විය හැක. -->
   <widget class="QLabel" name="titleLbl">
-   <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
    <property name="geometry">
     <rect>
      <x>24</x>
@@ -27,31 +70,20 @@
      <height>34</height>
     </rect>
    </property>
-   <!-- true නම් ඉඩ මදි text එක ඊළඟ පේළියට යයි. -->
    <property name="wordWrap">
     <bool>true</bool>
    </property>
    <property name="textFormat">
     <enum>Qt::PlainText</enum>
    </property>
-   <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
    <property name="text">
     <string>System Settings</string>
-   </property>
-   <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
-   <property name="font">
-    <font>
-     <pointsize>16</pointsize>
-     <bold>true</bold>
-    </font>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>
    </property>
   </widget>
-  <!-- toggleThemeBtn: ක්ලික් කළ හැකි button එක; name එක C++ code එකේද භාවිත විය හැක. -->
   <widget class="QPushButton" name="toggleThemeBtn">
-   <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
    <property name="geometry">
     <rect>
      <x>24</x>
@@ -60,31 +92,14 @@
      <height>46</height>
     </rect>
    </property>
-   <!-- Control එක මෙයට වඩා කුඩා කිරීමට ඉඩ නොදෙන ප්‍රමාණයයි. -->
-   <property name="minimumSize">
-    <size>
-     <width>0</width>
-     <height>45</height>
-    </size>
-   </property>
    <property name="cursor">
     <cursorShape>PointingHandCursor</cursorShape>
    </property>
-   <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
-   <property name="font">
-    <font>
-     <pointsize>10</pointsize>
-     <bold>true</bold>
-    </font>
-   </property>
-   <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
    <property name="text">
     <string>Switch to dark mode</string>
    </property>
   </widget>
-  <!-- changeWallpaperBtn: ක්ලික් කළ හැකි button එක; name එක C++ code එකේද භාවිත විය හැක. -->
   <widget class="QPushButton" name="changeWallpaperBtn">
-   <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
    <property name="geometry">
     <rect>
      <x>24</x>
@@ -93,31 +108,14 @@
      <height>46</height>
     </rect>
    </property>
-   <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
    <property name="text">
     <string>Change Background Wallpaper</string>
-   </property>
-   <!-- Control එක මෙයට වඩා කුඩා කිරීමට ඉඩ නොදෙන ප්‍රමාණයයි. -->
-   <property name="minimumSize">
-    <size>
-     <width>0</width>
-     <height>45</height>
-    </size>
    </property>
    <property name="cursor">
     <cursorShape>PointingHandCursor</cursorShape>
    </property>
-   <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
-   <property name="font">
-    <font>
-     <pointsize>10</pointsize>
-     <bold>true</bold>
-    </font>
-   </property>
   </widget>
-  <!-- groupBox: UI control එක; name එක C++ code එකේද භාවිත විය හැක. -->
   <widget class="QGroupBox" name="groupBox">
-   <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
    <property name="geometry">
     <rect>
      <x>24</x>
@@ -129,15 +127,7 @@
    <property name="title">
     <string>Administrator passcodes</string>
    </property>
-   <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
-   <property name="font">
-    <font>
-     <bold>true</bold>
-    </font>
-   </property>
-   <!-- lblCat: text/image පෙන්වන label එක; name එක C++ code එකේද භාවිත විය හැක. -->
    <widget class="QLabel" name="lblCat">
-    <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
     <property name="geometry">
      <rect>
       <x>12</x>
@@ -146,21 +136,17 @@
       <height>38</height>
      </rect>
     </property>
-    <!-- true නම් ඉඩ මදි text එක ඊළඟ පේළියට යයි. -->
     <property name="wordWrap">
      <bool>true</bool>
     </property>
     <property name="textFormat">
      <enum>Qt::PlainText</enum>
     </property>
-    <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
     <property name="text">
      <string>&amp;Administrator</string>
     </property>
    </widget>
-   <!-- workshopCombo: ලැයිස්තුවෙන් අගයක් තෝරන control එක; name එක C++ code එකේද භාවිත විය හැක. -->
    <widget class="QComboBox" name="workshopCombo">
-    <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
     <property name="geometry">
      <rect>
       <x>160</x>
@@ -169,23 +155,8 @@
       <height>38</height>
      </rect>
     </property>
-    <!-- Control එක මෙයට වඩා කුඩා කිරීමට ඉඩ නොදෙන ප්‍රමාණයයි. -->
-    <property name="minimumSize">
-     <size>
-      <width>0</width>
-      <height>35</height>
-     </size>
-    </property>
-    <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
    </widget>
-   <!-- lblCode: text/image පෙන්වන label එක; name එක C++ code එකේද භාවිත විය හැක. -->
    <widget class="QLabel" name="lblCode">
-    <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
     <property name="geometry">
      <rect>
       <x>12</x>
@@ -194,25 +165,20 @@
       <height>38</height>
      </rect>
     </property>
-    <!-- true නම් ඉඩ මදි text එක ඊළඟ පේළියට යයි. -->
     <property name="wordWrap">
      <bool>true</bool>
     </property>
     <property name="textFormat">
      <enum>Qt::PlainText</enum>
     </property>
-    <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
     <property name="text">
      <string>&amp;New passcode</string>
     </property>
    </widget>
-   <!-- newPasscodeInput: එක් පේළියක text input එක; name එක C++ code එකේද භාවිත විය හැක. -->
    <widget class="QLineEdit" name="newPasscodeInput">
-    <!-- Input එක හිස් විට පෙන්වන උදව් text එක මෙහි වෙනස් කරන්න. -->
     <property name="placeholderText">
      <string>At least 4 characters</string>
     </property>
-    <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
     <property name="geometry">
      <rect>
       <x>160</x>
@@ -221,27 +187,11 @@
       <height>38</height>
      </rect>
     </property>
-    <!-- Control එක මෙයට වඩා කුඩා කිරීමට ඉඩ නොදෙන ප්‍රමාණයයි. -->
-    <property name="minimumSize">
-     <size>
-      <width>0</width>
-      <height>35</height>
-     </size>
-    </property>
-    <!-- Password නම් input අකුරු සැඟවෙයි; Normal නම් පෙන්වයි. -->
     <property name="echoMode">
      <enum>QLineEdit::Password</enum>
     </property>
-    <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
    </widget>
-   <!-- savePasscodeBtn: ක්ලික් කළ හැකි button එක; name එක C++ code එකේද භාවිත විය හැක. -->
    <widget class="QPushButton" name="savePasscodeBtn">
-    <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
     <property name="geometry">
      <rect>
       <x>12</x>
@@ -250,32 +200,15 @@
       <height>46</height>
      </rect>
     </property>
-    <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
     <property name="text">
      <string>Update Passcode</string>
-    </property>
-    <!-- Control එක මෙයට වඩා කුඩා කිරීමට ඉඩ නොදෙන ප්‍රමාණයයි. -->
-    <property name="minimumSize">
-     <size>
-      <width>0</width>
-      <height>40</height>
-     </size>
     </property>
     <property name="cursor">
      <cursorShape>PointingHandCursor</cursorShape>
     </property>
-    <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-      <bold>true</bold>
-     </font>
-    </property>
    </widget>
   </widget>
-  <!-- closeBtn: ක්ලික් කළ හැකි button එක; name එක C++ code එකේද භාවිත විය හැක. -->
   <widget class="QPushButton" name="closeBtn">
-   <!-- ස්ථානය x/y වලින්ද ප්‍රමාණය width/height වලින්ද වෙනස් කරන්න. -->
    <property name="geometry">
     <rect>
      <x>24</x>
@@ -284,59 +217,14 @@
      <height>46</height>
     </rect>
    </property>
-   <!-- පෙන්වන text එක මෙහි වෙනස් කරන්න; dynamic text C++ මගින් නැවත යෙදිය හැක. -->
    <property name="text">
     <string>Close</string>
-   </property>
-   <!-- Control එක මෙයට වඩා කුඩා කිරීමට ඉඩ නොදෙන ප්‍රමාණයයි. -->
-   <property name="minimumSize">
-    <size>
-     <width>0</width>
-     <height>45</height>
-    </size>
    </property>
    <property name="cursor">
     <cursorShape>PointingHandCursor</cursorShape>
    </property>
-   <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
-   <property name="font">
-    <font>
-     <pointsize>10</pointsize>
-     <bold>true</bold>
-    </font>
-   </property>
   </widget>
-  <!-- මෙම control එකේ පාට, border, padding සහ radius සඳහා CSS rules මෙහි ඇත. -->
-  <property name="styleSheet">
-   <string notr="true">QDialog { background-color: #FFFFFF; color: #0F172A; }
-QLabel { color: #0F172A; background: transparent; }
-QLineEdit, QComboBox { background-color: #F8FAFC; color: #0F172A; border: 1px solid #CBD5E1; border-radius: 7px; padding: 8px; }
-QLineEdit:focus, QComboBox:focus { border: 1px solid #2563EB; }
-QComboBox QAbstractItemView { background-color: #F8FAFC; color: #0F172A; selection-background-color: #2563EB; selection-color: white; border: 1px solid #CBD5E1; }
-QPushButton { background-color: #2563EB; color: white; border: 2px solid transparent; border-radius: 8px; padding: 2px 14px; }
-QPushButton:focus, QPushButton:default { border-color: #0F172A; }
-QPushButton:hover { border-color: #CBD5E1; }
-QPushButton:disabled { background-color: #CBD5E1; color: #0F172A; }
-QPushButton#cancelBtn, QPushButton#closeBtn { background-color: #F8FAFC; color: #0F172A; border-color: #CBD5E1; }
-QGroupBox { color: #0F172A; border: 1px solid #CBD5E1; border-radius: 8px; margin-top: 16px; padding-top: 10px; }
-QGroupBox::title { subcontrol-origin: margin; left: 12px; padding: 0 4px; }</string>
-  </property>
-  <!-- මෙම control එකේ font නම, size සහ bold බව මෙහි වෙනස් කරන්න. -->
-  <property name="font">
-   <font>
-    <family>Segoe UI</family>
-    <pointsize>10</pointsize>
-   </font>
-  </property>
-  <!-- Control එක මෙයට වඩා කුඩා කිරීමට ඉඩ නොදෙන ප්‍රමාණයයි. -->
-  <property name="minimumSize">
-   <size>
-    <width>560</width>
-    <height>540</height>
-   </size>
-  </property>
  </widget>
- <!-- Tab key මගින් controls අතර යන අනුපිළිවෙළ මෙහි ඇත. -->
  <tabstops>
   <tabstop>toggleThemeBtn</tabstop>
   <tabstop>changeWallpaperBtn</tabstop>

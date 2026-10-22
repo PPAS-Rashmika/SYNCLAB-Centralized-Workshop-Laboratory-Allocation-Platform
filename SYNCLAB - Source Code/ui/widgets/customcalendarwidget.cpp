@@ -15,15 +15,27 @@ CustomCalendarWidget::CustomCalendarWidget(QWidget *parent) : QCalendarWidget(pa
     // සතියේ මුල් දිනය මෙහි තෝරයි; දැනට Monday වේ.
     setFirstDayOfWeek(Qt::Monday);
     setGridVisible(false);
-    setMinimumSize(320, 240);
+
     setAccessibleName(tr("Allocation calendar"));
 
     // Calendar දින නාම පෙන්වන ඉහළ bar එකේ පාට සහ font මෙහි සකසයි.
-    QTextCharFormat dayBar;
-    dayBar.setBackground(QColor("#DBEAFE"));  
-    dayBar.setForeground(QColor("#1E40AF"));  
-    dayBar.setFontWeight(QFont::Bold);
-    setHeaderTextFormat(dayBar);
+
+}
+
+QColor CustomCalendarWidget::headerBackground() const { return headerTextFormat().background().color(); }
+QColor CustomCalendarWidget::headerForeground() const { return headerTextFormat().foreground().color(); }
+void CustomCalendarWidget::setHeaderBackground(const QColor &color)
+{
+    QTextCharFormat format = headerTextFormat();
+    format.setBackground(color);
+    format.setFontWeight(QFont::Bold);
+    setHeaderTextFormat(format);
+}
+void CustomCalendarWidget::setHeaderForeground(const QColor &color)
+{
+    QTextCharFormat format = headerTextFormat();
+    format.setForeground(color);
+    setHeaderTextFormat(format);
 }
 
 // එක් දිනක status ගණන් save කර calendar දින නැවත අඳියි.
@@ -70,7 +82,7 @@ void CustomCalendarWidget::paintCell(QPainter *painter, const QRect &rect, QDate
     QCalendarWidget::paintCell(painter, rect.adjusted(0, 0, 0, -badgeHeight - 2), date);
 
     QFont badgeFont = painter->font();
-    badgeFont.setPixelSize(qMax(8, badgeHeight - 3));
+    badgeFont.setPixelSize(qMax(1, qMin(badgeFontSize, badgeHeight - 3)));
     badgeFont.setBold(true);
     painter->setFont(badgeFont);
     painter->setRenderHint(QPainter::Antialiasing, true);
@@ -79,7 +91,7 @@ void CustomCalendarWidget::paintCell(QPainter *painter, const QRect &rect, QDate
     // A=Approve, P=Pending, R=Reject; එම අනුපිළිවෙළේ colours පහත ඇත.
     const QString prefixes[] = {"A", "P", "R"};
     // Badges තුනේ green/amber/red පාට මෙහි වෙනස් කරන්න.
-    const QColor fills[] = {QColor("#166534"), QColor("#92400E"), QColor("#B91C1C")};
+    const QColor fills[] = {approvedColor, pendingColor, rejectedColor};
     const int columnWidth = rect.width() / 3;
     for (int column = 0; column < 3; ++column) {
         if (values[column] <= 0)
@@ -95,7 +107,7 @@ void CustomCalendarWidget::paintCell(QPainter *painter, const QRect &rect, QDate
         painter->setPen(Qt::NoPen);
         painter->setBrush(fills[column]);
         painter->drawRoundedRect(badge, 3, 3);
-        painter->setPen(Qt::white);
+        painter->setPen(badgeTextColor);
         painter->drawText(badge, Qt::AlignCenter, label);
     }
     painter->restore();

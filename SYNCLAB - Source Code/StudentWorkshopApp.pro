@@ -59,6 +59,7 @@ HEADERS += \
 
 # Qt Designer .ui files. uic මගින් ui_<name>.h files සාදයි; ඒ generated files අතින් edit නොකරයි.
 FORMS += \
+    ui/forms/mainwindow.ui \
     ui/forms/welcome.ui \
     ui/forms/selection.ui \
     ui/forms/calander.ui \

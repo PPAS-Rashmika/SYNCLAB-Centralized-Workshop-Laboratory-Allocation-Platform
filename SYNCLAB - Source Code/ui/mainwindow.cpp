@@ -3,6 +3,7 @@
 #include "mainwindow.h"
 #include "designertheme.h"
 #include <QStackedWidget>
+#include "ui_mainwindow.h"
 #include "ui_welcome.h"
 #include "ui_selection.h"
 #include "ui_calander.h"
@@ -115,54 +116,9 @@ MainWindow::MainWindow(QWidget *parent, const QString &databasePath)
     : QMainWindow(parent), welcomeUi(new Ui::welcomeWidget), selectionUi(new Ui::selectionWidget),
       calanderUi(new Ui::calanderWidget), formUi(new Ui::formWidget), adminUi(new Ui::adminWidget)
 {
-    setObjectName("MainWindow");
-    // Window එකේ මුල් ප්‍රමාණයයි; Designer page ප්‍රමාණයත් සමඟ ගළපන්න.
-    resize(1180, 780);
-    setWindowTitle(tr("SYNCLAB | Centralized Workshop & Laboratory Allocation Platform"));
-    setWindowIcon(QIcon(":/branding/logo.png"));
-    setFont(QFont("Segoe UI", 10));
-    // පොදු UI පාට සහ borders මෙහි ඇත; # colour codes සහ button rules වෙනස් කළ හැක.
-    setStyleSheet(QStringLiteral(R"CSS(
-QWidget { color:#17243B; }
-QMainWindow, QStackedWidget, QWidget#welcomeWidget, QWidget#selectionWidget, QWidget#calanderWidget, QWidget#formWidget, QWidget#adminWidget { background:#F4F7FB; }
-QScrollArea { border:none; background:transparent; }
- QScrollArea > QWidget > QWidget { background:#F4F7FB; }
-QScrollArea#cardsScrollArea > QWidget, QWidget#cardsScrollContents { background:transparent; }
-QLabel { background:transparent; }
-QLabel#welcomeTitle { color:#52647D; }
-QLabel#syncLabTitle { }
-QLabel#syncLabSubtitle { }
-QLabel#welcomeDesc, QLabel#selectedDescLabel2, QLabel#adminWsDescLbl { color:#52647D; }
-QLabel#selectTitleLabel, QLabel#selectedNameLabel2, QLabel#confirmTitleLbl, QLabel#adminWsTitleLbl { }
-QLineEdit, QTextEdit, QComboBox { background:#FFFFFF; border:1px solid #D4DEEB; border-radius:7px; padding:8px; selection-background-color:#2563EB; selection-color:white; }
-QLineEdit:focus, QTextEdit:focus, QComboBox:focus { border:1px solid #2563EB; }
-QComboBox QAbstractItemView { background:#FFFFFF; color:#17243B; selection-background-color:#2563EB; selection-color:white; }
-QPushButton { background:#FFFFFF; color:#17243B; border:1px solid #D4DEEB; border-radius:8px; padding:9px 14px; }
-QPushButton:hover, QPushButton:focus { background:#EAF2FF; border-color:#2563EB; }
-QPushButton:pressed { border:2px solid #2563EB; }
-QPushButton#allocateNowBtn, QPushButton#nextBtn, QPushButton#nextTo3Btn, QPushButton#submitBtn, QPushButton#updateBtn { background:#2563EB; color:white; border:1px solid #2563EB; }
-QPushButton#allocateNowBtn:hover, QPushButton#nextBtn:hover, QPushButton#nextTo3Btn:hover, QPushButton#submitBtn:hover, QPushButton#updateBtn:hover { background:#1D4ED8; }
-QPushButton#deleteBtn, QPushButton#adminDelBtn { color:#BE123C; }
-QPushButton[timeSlot=true] { padding:10px 8px; }
-QPushButton:checked { background:#2563EB; color:white; border-color:#2563EB; }
-QPushButton:disabled { background:#F4F7FB; color:#52647D; border:1px solid #D4DEEB; }
-QPushButton#allocateNowBtn:disabled, QPushButton#nextBtn:disabled, QPushButton#nextTo3Btn:disabled, QPushButton#submitBtn:disabled, QPushButton#updateBtn:disabled, QPushButton#deleteBtn:disabled, QPushButton#adminDelBtn:disabled { background:#F4F7FB; color:#52647D; border:1px solid #D4DEEB; }
-QFrame#summaryBox { background:#EAF2FF; border:1px solid #D4DEEB; border-radius:10px; }
-QLabel#summaryDateLbl { color:#2563EB; }
-QTableWidget { background:#FFFFFF; alternate-background-color:#F4F7FB; border:1px solid #D4DEEB; gridline-color:#D4DEEB; selection-background-color:#EAF2FF; selection-color:#17243B; }
-QHeaderView::section { background:#EAF2FF; color:#17243B; border:none; padding:10px; }
-QTableWidget QLineEdit, QTableWidget QComboBox { padding:4px; border-radius:4px; }
-QCalendarWidget { background:#FFFFFF; border:1px solid #D4DEEB; border-radius:8px; }
-QCalendarWidget QWidget#qt_calendar_navigationbar { background:#2563EB; }
-QCalendarWidget QToolButton { color:white; background:transparent; padding:6px; }
-QCalendarWidget QMenu, QCalendarWidget QSpinBox { background:#FFFFFF; color:#17243B; }
-QCalendarWidget QAbstractItemView { background:#FFFFFF; color:#17243B; selection-background-color:#2563EB; selection-color:white; outline:0; }
-QToolTip { background:#FFFFFF; color:#17243B; border:1px solid #D4DEEB; padding:6px; }
-)CSS"));
-    // එක් වරකට එක් පිටුවක් පෙන්වන page stack එකයි.
-    stackedWidget = new QStackedWidget(this);
-    stackedWidget->setObjectName("stackedWidget");
-    setCentralWidget(stackedWidget);
+    Ui::MainWindow windowUi;
+    windowUi.setupUi(this);
+    stackedWidget = windowUi.stackedWidget;
     // Page අංක: 0 welcome, 1 selection, 2 calander, 3 form, 4 admin.
     welcomeWidget = new QWidget();
     welcomeUi->setupUi(welcomeWidget);
@@ -327,12 +283,9 @@ void MainWindow::setupDynamicUI()
 
     adminUi->mainTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
     // Admin table columns 11 හි පළලයි; අගයන් column අනුපිළිවෙළින් වෙනස් කරන්න.
-    const QList<int> widths = {155, 150, 100, 150, 200, 200, 140, 210, 200, 190, 130};
+    const QStringList widths = adminUi->mainTable->property("columnWidths").toString().split(',');
     for (int i = 0; i < widths.size(); ++i)
-        adminUi->mainTable->setColumnWidth(i, widths[i]);
-    adminUi->mainTable->horizontalHeader()->setStretchLastSection(true);
-    adminUi->mainTable->verticalHeader()->hide();
-    adminUi->mainTable->verticalHeader()->setDefaultSectionSize(44);
+        adminUi->mainTable->setColumnWidth(i, widths[i].toInt());
     adminUi->mainTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     adminUi->mainTable->setSelectionBehavior(QAbstractItemView::SelectRows);
     adminUi->mainTable->setSelectionMode(QAbstractItemView::SingleSelection);
@@ -477,11 +430,11 @@ void MainWindow::startEditAllocationFlow()
                 matches.append(record);
     }
 
-    // පරණ දත්තවල එකම key එක කිහිපයක තිබේ නම් student index එකෙන් තෝරයි.
+    // පරණ දත්තවල එකම key එක කිහිපයක තිබේ නම් user index එකෙන් තෝරයි.
     if (matches.size() > 1) {
         CustomInputDialog identity(
             "Confirm allocation",
-            "This allocation key matches multiple allocations.\nEnter your student index:", this);
+            "This allocation key matches multiple allocations.\nEnter your user index:", this);
         if (identity.exec() != QDialog::Accepted)
             return;
         const QString identifier = identity.getInput();
@@ -558,11 +511,13 @@ void MainWindow::openSecondInterface(const QString &category)
         workshopDepartment(category) +
         "\n\nChoose a date and one or more available time slots.\nGrey slots are unavailable.");
     adminUi->adminWsTitleLbl->setText(workshopTitle(category));
-    // තෝරාගත් image එකේ උපරිම size එක 160x100; label එක කුඩා නම් ඊටත් ගළපයි.
-    calanderUi->selectedImgLabel2->setPixmap(
-        workshopImage(category, QSize(160, 100).boundedTo(calanderUi->selectedImgLabel2->size())));
-    adminUi->adminImgLabel->setPixmap(
-        workshopImage(category, QSize(160, 100).boundedTo(adminUi->adminImgLabel->size())));
+    // Image dimensions come from the QLabel geometry in Qt Designer.
+    // Keep the original resolution so resizing does not enlarge a 160x100 thumbnail.
+    QPixmap image(QString(":/workshops/%1.png").arg(category));
+    if (image.isNull())
+        image = workshopImage(category, calanderUi->selectedImgLabel2->size());
+    calanderUi->selectedImgLabel2->setPixmap(image);
+    adminUi->adminImgLabel->setPixmap(image);
     updateCalendarHighlights();
     onCalendarSelectionChanged();
     stackedWidget->setCurrentIndex(2);
